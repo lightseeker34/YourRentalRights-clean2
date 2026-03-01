@@ -153,45 +153,41 @@ export default function Profile() {
           <CardContent className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
                 <Input 
                   id="fullName"
                   value={formData.fullName} 
                   onChange={(e) => handleChange("fullName", e.target.value)} 
-                  placeholder="John Smith"
+                  placeholder="Full Name"
                   data-testid="input-fullname"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
                 <Input 
                   id="email"
                   type="email"
                   value={formData.email} 
                   onChange={(e) => handleChange("email", e.target.value)} 
-                  placeholder="john@example.com"
+                  placeholder="Email"
                   data-testid="input-email"
                 />
               </div>
             </div>
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
                 <Input 
                   id="phone"
                   value={formData.phone} 
                   onChange={(e) => handleChange("phone", e.target.value)} 
-                  placeholder="(555) 123-4567"
+                  placeholder="Phone Number"
                   data-testid="input-phone"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="emergencyContact">Emergency Contact</Label>
                 <Input 
                   id="emergencyContact"
                   value={formData.emergencyContact} 
                   onChange={(e) => handleChange("emergencyContact", e.target.value)} 
-                  placeholder="Name - (555) 987-6543"
+                  placeholder="Emergency Contact"
                   data-testid="input-emergency-contact"
                 />
               </div>
@@ -209,22 +205,20 @@ export default function Profile() {
           <CardContent className="space-y-4">
             <div className="grid md:grid-cols-3 gap-4">
               <div className="md:col-span-2 space-y-2">
-                <Label htmlFor="address">Property Address</Label>
                 <Input 
                   id="address"
                   value={formData.address} 
                   onChange={(e) => handleChange("address", e.target.value)} 
-                  placeholder="123 Main St, City, State 12345"
+                  placeholder="Property Address"
                   data-testid="input-address"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="unitNumber">Unit / Apt #</Label>
                 <Input 
                   id="unitNumber"
                   value={formData.unitNumber} 
                   onChange={(e) => handleChange("unitNumber", e.target.value)} 
-                  placeholder="4B"
+                  placeholder="Unit / Apt #"
                   data-testid="input-unit"
                 />
               </div>
@@ -241,12 +235,11 @@ export default function Profile() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="monthlyRent">Monthly Rent</Label>
                 <Input 
                   id="monthlyRent"
                   value={formData.monthlyRent} 
                   onChange={(e) => handleChange("monthlyRent", e.target.value)} 
-                  placeholder="$1,500"
+                  placeholder="Monthly Rent"
                   data-testid="input-rent"
                 />
               </div>
@@ -263,44 +256,40 @@ export default function Profile() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="rentalAgency">Property Management Company</Label>
               <Input 
                 id="rentalAgency"
                 value={formData.rentalAgency} 
                 onChange={(e) => handleChange("rentalAgency", e.target.value)} 
-                placeholder="e.g., Invitation Homes, Progress Residential"
+                placeholder="Property Management Company"
                 data-testid="input-agency"
               />
             </div>
             <div className="grid md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="propertyManagerName">Property Manager Name</Label>
                 <Input 
                   id="propertyManagerName"
                   value={formData.propertyManagerName} 
                   onChange={(e) => handleChange("propertyManagerName", e.target.value)} 
-                  placeholder="Jane Doe"
+                  placeholder="Property Manager Name"
                   data-testid="input-pm-name"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="propertyManagerPhone">Manager Phone</Label>
                 <Input 
                   id="propertyManagerPhone"
                   value={formData.propertyManagerPhone} 
                   onChange={(e) => handleChange("propertyManagerPhone", e.target.value)} 
-                  placeholder="(555) 111-2222"
+                  placeholder="Manager Phone"
                   data-testid="input-pm-phone"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="propertyManagerEmail">Manager Email</Label>
                 <Input 
                   id="propertyManagerEmail"
                   type="email"
                   value={formData.propertyManagerEmail} 
                   onChange={(e) => handleChange("propertyManagerEmail", e.target.value)} 
-                  placeholder="manager@company.com"
+                  placeholder="Manager Email"
                   data-testid="input-pm-email"
                 />
               </div>
@@ -321,35 +310,32 @@ export default function Profile() {
           <CardContent className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="forumDisplayName">Display Name</Label>
                 <Input 
                   id="forumDisplayName"
                   value={formData.forumDisplayName} 
                   onChange={(e) => handleChange("forumDisplayName", e.target.value)} 
-                  placeholder="How you want to be known in the forum"
+                  placeholder="Display Name"
                   data-testid="input-forum-display-name"
                 />
                 <p className="text-xs text-slate-500">Leave blank to use your username</p>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="avatarUrl">Avatar URL</Label>
                 <Input 
                   id="avatarUrl"
                   value={formData.avatarUrl} 
                   onChange={(e) => handleChange("avatarUrl", e.target.value)} 
-                  placeholder="https://example.com/avatar.jpg"
+                  placeholder="Avatar URL"
                   data-testid="input-avatar-url"
                 />
                 <p className="text-xs text-slate-500">Link to your profile picture</p>
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="forumBio">Bio / Signature</Label>
               <Textarea 
                 id="forumBio"
                 value={formData.forumBio} 
                 onChange={(e) => handleChange("forumBio", e.target.value)} 
-                placeholder="A short description about yourself (appears under your posts)"
+                placeholder="Bio / Signature"
                 rows={2}
                 data-testid="input-forum-bio"
               />
