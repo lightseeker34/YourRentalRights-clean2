@@ -736,7 +736,7 @@ CONTEXT-PASS MODE: ${includeBackfill ? "PASS 2 (older routine history included)"
           }));
 
         const completion = await openai.chat.completions.create({
-          model: "gpt-4o",
+          model: "gpt-4.1",
           messages: [
             { role: "system", content: fullSystemPromptPass1 },
             ...chatHistory,
@@ -748,7 +748,7 @@ CONTEXT-PASS MODE: ${includeBackfill ? "PASS 2 (older routine history included)"
         aiResponse = completion.choices[0]?.message?.content || "I apologize, I couldn't generate a response. Please try again.";
 
         const backfillDecision = await openai.chat.completions.create({
-          model: "gpt-4o",
+          model: "gpt-4.1",
           response_format: {
             type: "json_schema",
             json_schema: {
@@ -780,7 +780,7 @@ CONTEXT-PASS MODE: ${includeBackfill ? "PASS 2 (older routine history included)"
         const needsBackfill = parseBackfillDecision(backfillDecision.choices[0]?.message?.content || "");
         if (needsBackfill) {
           const completionPass2 = await openai.chat.completions.create({
-            model: "gpt-4o",
+            model: "gpt-4.1",
             messages: [
               { role: "system", content: fullSystemPromptPass2 },
               ...chatHistory,
@@ -1048,7 +1048,7 @@ Provide your response in this exact JSON format:
         const openai = new OpenAI({ apiKey: openaiApiKey });
         
         const completion = await openai.chat.completions.create({
-          model: "gpt-4o",
+          model: "gpt-4.1",
           messages: [
             { role: "system", content: "You are a legal analyst. Always respond with valid JSON matching the requested format." },
             { role: "user", content: messageContent }

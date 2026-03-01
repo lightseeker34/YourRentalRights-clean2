@@ -1,4 +1,4 @@
-# replit.md
+# YourRentalRights Build Notes
 
 ## Overview
 
@@ -10,8 +10,11 @@ Preferred communication style: Simple, everyday language.
 
 ## System Architecture
 
+- **Current deployment**: Railway (service source repo currently set to `YourRentalRights-clean/main` during cleanup/testing)
+
+
 ### Frontend Architecture
-- **Framework**: React 18 with TypeScript, using Vite as the build tool
+- **Framework**: React 19 with TypeScript, using Vite as the build tool
 - **Routing**: Wouter for lightweight client-side routing
 - **State Management**: TanStack React Query for server state, with custom auth context for user session
 - **UI Components**: shadcn/ui component library built on Radix UI primitives
@@ -68,7 +71,7 @@ Preferred communication style: Simple, everyday language.
 
 ### AI/LLM Integration
 - **xAI Grok**: Primary AI using grok-4-1-fast-reasoning model via OpenAI SDK compatibility (baseURL: https://api.x.ai/v1)
-- **OpenAI**: Fallback to GPT-4o if no Grok API key configured
+- **OpenAI**: Fallback to GPT-4.1 if no Grok API key configured (updated from retired GPT-4o)
 - **Multimodal Vision**: Supports sending images as base64-encoded data URLs for AI analysis (local files converted to base64, external URLs passed directly)
 - **RAG Context Pipeline**: Each chat includes user profile, incident details, and all evidence logs. Shared `server/ai-context.ts` module provides deterministic formatting (ISO dates, stable sort by timestamp+id, structured labels) used by both chat and litigation endpoints.
 - **Litigation Cache**: Litigation review results are cached in appSettings with a SHA-256 hash of the timeline data; cache auto-invalidates when evidence changes.
