@@ -68,7 +68,11 @@ Preferred communication style: Simple, everyday language.
 ### Cloudflare / Edge Layer
 - **Current observed state**: Railway is serving the default Railway domain directly (`*.up.railway.app`).
 - **Custom domain**: No custom domain is currently configured in the Railway service networking panel.
-- **Cloudflare note**: If `yourrentalrights.com` is managed through Cloudflare, document it as DNS/proxy in front of Railway and keep cache rules conservative for `/api/*` routes (bypass cache for API/auth/session endpoints).
+- **Cloudflare R2 storage**: Evidence images/files are uploaded to Cloudflare R2 (S3-compatible API) and referenced by URL in `incident_logs.file_url`, with metadata (including `r2Key`, mime type, size, upload timestamp) stored in `incident_logs.metadata`.
+- **R2 delivery modes**:
+  - If `R2_PUBLIC_BASE_URL` is configured, app returns public object URLs.
+  - Otherwise app serves files via authenticated backend proxy route `/api/r2/:key`.
+- **Cloudflare note**: If `yourrentalrights.com` is proxied through Cloudflare, keep cache rules conservative for `/api/*` routes (bypass cache for API/auth/session endpoints).
 
 ## External Dependencies
 
@@ -91,7 +95,7 @@ Preferred communication style: Simple, everyday language.
 - **Litigation Cache**: Litigation review results are cached in appSettings with a SHA-256 hash of the timeline data; cache auto-invalidates when evidence changes.
 - **Chat Attachments**: Users can attach photos to chat messages (upload new or pick from evidence)
 - **Chat Edit**: User messages can be edited after sending
-- API keys stored in `appSettings` table, managed via admin panel (grok_api_key, openai_api_key)
+- **Secrets handling**: API keys are stored server-side in `appSettings` (admin-only endpoints), not intended to be exposed in public URLs or committed files.
 
 ### Frontend Libraries
 - **@tanstack/react-query**: Data fetching and caching
