@@ -144,7 +144,7 @@ export default function Profile() {
       </div>
       <form
         onSubmit={handleSubmit}
-        className="space-y-6 [&_input::placeholder]:text-slate-400 [&_textarea::placeholder]:text-slate-400"
+        className="space-y-6 [&_input::placeholder]:text-slate-400 [&_textarea::placeholder]:text-slate-400 [&_input::placeholder]:text-[13px] [&_textarea::placeholder]:text-[13px]"
       >
         <Card className="border-slate-200">
           <CardHeader>
