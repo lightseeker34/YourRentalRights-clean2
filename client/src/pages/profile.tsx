@@ -142,7 +142,10 @@ export default function Profile() {
         </h1>
         <p className="text-slate-600 mt-2">This information helps the AI assistant provide personalized advice.</p>
       </div>
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-6 [&_input::placeholder]:text-slate-400 [&_textarea::placeholder]:text-slate-400"
+      >
         <Card className="border-slate-200">
           <CardHeader>
             <CardTitle>Personal Information</CardTitle>
