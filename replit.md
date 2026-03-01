@@ -11,6 +11,13 @@ Preferred communication style: Simple, everyday language.
 ## System Architecture
 
 - **Current deployment**: Railway (service source repo currently set to `YourRentalRights-clean/main` during cleanup/testing)
+- **Railway project/service**: `YourRentalRights` service + `Postgres` in the same Railway project/environment.
+- **Connected source**: `lightseeker34/YourRentalRights-clean` (branch `main`) with auto-deploy from GitHub enabled.
+- **Runtime start command**: `node dist/index.cjs`.
+- **Public app domain**: `yourrentalrights-production.up.railway.app`.
+- **Private service DNS**: `yourrentalrights.railway.internal`.
+- **Build platform**: Railpack builder with Metal build environment enabled.
+- **Scale baseline**: 1 replica in US West (California).
 
 
 ### Frontend Architecture
@@ -58,6 +65,11 @@ Preferred communication style: Simple, everyday language.
 13. **Bulk User Management**: Checkbox selection with bulk actions (activate, suspend, delete) and confirmation dialogs for destructive operations.
 14. **Database Indexing**: Performance indexes on incidents, incident_logs, and forum tables for improved query speed.
 
+### Cloudflare / Edge Layer
+- **Current observed state**: Railway is serving the default Railway domain directly (`*.up.railway.app`).
+- **Custom domain**: No custom domain is currently configured in the Railway service networking panel.
+- **Cloudflare note**: If `yourrentalrights.com` is managed through Cloudflare, document it as DNS/proxy in front of Railway and keep cache rules conservative for `/api/*` routes (bypass cache for API/auth/session endpoints).
+
 ## External Dependencies
 
 ### Database
@@ -71,8 +83,10 @@ Preferred communication style: Simple, everyday language.
 
 ### AI/LLM Integration
 - **xAI Grok**: Primary AI using grok-4-1-fast-reasoning model via OpenAI SDK compatibility (baseURL: https://api.x.ai/v1)
-- **OpenAI**: Fallback to GPT-4.1 if no Grok API key configured (updated from retired GPT-4o)
-- **Multimodal Vision**: Supports sending images as base64-encoded data URLs for AI analysis (local files converted to base64, external URLs passed directly)
+- **OpenAI**: Fallback to GPT-4.1 if no Grok API key configured (updated from retired GPT-4o in this codebase).
+- **Model status check**: GPT-4.1 is still listed by OpenAI as an available API model (confirmed via OpenAI docs/release pages).
+- **Multimodal Vision**: Supports sending images as base64-encoded data URLs for AI analysis (local files converted to base64, external URLs passed directly).
+- **Real-time web data**: Not automatic by model selection alone; requires explicit retrieval/browsing pipeline in backend routes if live web lookup is required.
 - **RAG Context Pipeline**: Each chat includes user profile, incident details, and all evidence logs. Shared `server/ai-context.ts` module provides deterministic formatting (ISO dates, stable sort by timestamp+id, structured labels) used by both chat and litigation endpoints.
 - **Litigation Cache**: Litigation review results are cached in appSettings with a SHA-256 hash of the timeline data; cache auto-invalidates when evidence changes.
 - **Chat Attachments**: Users can attach photos to chat messages (upload new or pick from evidence)
