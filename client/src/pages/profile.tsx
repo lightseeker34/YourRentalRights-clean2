@@ -279,7 +279,7 @@ export default function Profile() {
                   id="propertyManagerPhone"
                   value={formData.propertyManagerPhone} 
                   onChange={(e) => handleChange("propertyManagerPhone", e.target.value)} 
-                  placeholder="Manager Phone"
+                  placeholder="Property Manager Phone"
                   data-testid="input-pm-phone"
                 />
               </div>
@@ -289,7 +289,7 @@ export default function Profile() {
                   type="email"
                   value={formData.propertyManagerEmail} 
                   onChange={(e) => handleChange("propertyManagerEmail", e.target.value)} 
-                  placeholder="Manager Email"
+                  placeholder="Property Manager Email"
                   data-testid="input-pm-email"
                 />
               </div>
