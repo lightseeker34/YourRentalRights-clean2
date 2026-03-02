@@ -2325,7 +2325,7 @@ export default function IncidentView() {
                           </div>
                         </div>
                         
-                        <div className={`flex gap-2 md:mx-10 ${log.isAi ? 'justify-start md:pl-10' : 'justify-end'}`}>
+                        <div className={`flex gap-2 ${log.isAi ? 'justify-start md:ml-10' : 'justify-end md:mr-10'}`}>
                           <Button 
                             variant="ghost" 
                             size="sm" 
