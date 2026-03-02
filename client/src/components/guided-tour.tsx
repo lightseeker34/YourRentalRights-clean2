@@ -238,6 +238,8 @@ export function GuidedTour() {
   // Displayed rect only updates when content is invisible (during transition)
   const [displayedSpotlightRect, setDisplayedSpotlightRect] = useState<{x: number, y: number, width: number, height: number} | null>(null);
   const [displayedTooltipPos, setDisplayedTooltipPos] = useState<{top: string, left: string, width?: string, transform?: string} | null>(null);
+  const tooltipRef = useRef<HTMLDivElement | null>(null);
+  const [desktopTooltipHeight, setDesktopTooltipHeight] = useState(220);
 
   const currentPage = getPageFromPath(location);
   const currentStepData = ALL_TOUR_STEPS[globalStep];
@@ -411,8 +413,8 @@ export function GuidedTour() {
     const padding = 20;
     const mobile = viewportWidth < 768;
     const tooltipWidth = mobile ? Math.min(320, viewportWidth - 40) : 340;
-    // Use larger height estimate on mobile to account for text wrapping
-    const tooltipHeight = mobile ? 300 : 220;
+    // Use measured height on desktop so the tooltip aligns with each step's content
+    const tooltipHeight = mobile ? 300 : desktopTooltipHeight;
 
     if (mobile) {
       const horizontalCenter = (viewportWidth - tooltipWidth) / 2;
@@ -544,7 +546,7 @@ export function GuidedTour() {
     top = Math.max(padding, Math.min(top, viewportHeight - tooltipHeight - padding));
 
     return { top: `${top}px`, left: `${left}px` };
-  }, [currentStepData, targetRect]);
+  }, [currentStepData, targetRect, desktopTooltipHeight]);
 
   // Step transition: fade out -> scroll -> update displayed position -> fade in
   useEffect(() => {
@@ -700,6 +702,26 @@ export function GuidedTour() {
 
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
+  // Measure desktop tooltip height so placement stays aligned with each step's content length
+  useEffect(() => {
+    if (!isOpen || isMobile || !tooltipRef.current) return;
+
+    const element = tooltipRef.current;
+
+    const updateHeight = () => {
+      const measured = element.getBoundingClientRect().height;
+      if (measured > 0) {
+        setDesktopTooltipHeight(measured);
+      }
+    };
+
+    updateHeight();
+    const resizeObserver = new ResizeObserver(updateHeight);
+    resizeObserver.observe(element);
+
+    return () => resizeObserver.disconnect();
+  }, [isOpen, isMobile, globalStep]);
+
   // Calculate tooltip position using current state (for initial/fallback rendering only)
   const tooltipPos = computeTooltipPosition();
   
@@ -811,6 +833,7 @@ export function GuidedTour() {
 
         {/* Tooltip - opacity fade only, position only changes while invisible */}
         <motion.div
+          ref={tooltipRef}
           initial={{ opacity: 0 }}
           animate={{ opacity: isTransitioning ? 0 : 1 }}
           exit={{ opacity: 0 }}
