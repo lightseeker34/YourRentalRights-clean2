@@ -2530,7 +2530,7 @@ export default function IncidentView() {
                           </>
                         )}
                       </div>
-                      <div className={`flex items-center gap-2 pt-[0px] pb-[0px] mt-[0px] mb-[0px] min-w-0 flex-wrap md:mx-10 ${log.isAi ? "justify-start ml-[10px] md:ml-0" : "justify-end"}`}>
+                      <div className={`flex items-center gap-2 pt-[0px] pb-[0px] mt-[0px] mb-[0px] min-w-0 flex-wrap ${log.isAi ? "justify-start ml-[10px] md:ml-10" : "justify-end"}`}>
                         <span className="text-xs text-slate-400 ml-[5px] mr-[5px]">
                           {formatDateTime(log.createdAt)}
                         </span>
