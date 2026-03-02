@@ -42,16 +42,6 @@ const ALL_TOUR_STEPS: TourStep[] = [
   },
   {
     page: "/dashboard",
-    target: '[data-testid^="add-entry-"]',
-    title: "Quick Add Evidence",
-    content: "Use the + button to quickly add a log entry directly from the timeline. You can add notes, record calls, save text messages, log emails, or upload photos.",
-    placement: "bottom",
-    requiresCase: true,
-    noCaseTarget: '[data-testid="add-new-log-button"]',
-    noCaseContent: "After creating a case with this button, you'll see a + button on each case to quickly add evidence like notes, calls, texts, emails, or photos.",
-  },
-  {
-    page: "/dashboard",
     target: '[data-testid^="incident-card-"]',
     title: "Let's Go Inside a Case",
     content: "Now let's explore what's inside a case - including the AI assistant that can help analyze your situation.",
@@ -743,7 +733,7 @@ export function GuidedTour() {
         variant="outline"
         size="sm"
         onClick={restartTour}
-        className="fixed bottom-32 right-4 z-40 gap-2 shadow-lg bg-white"
+        className="fixed bottom-32 right-4 z-40 gap-2 shadow-lg bg-white border-0 hover:border-0"
         data-testid="restart-tour-button"
       >
         <HelpCircle className="w-4 h-4" />
