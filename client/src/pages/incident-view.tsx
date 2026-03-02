@@ -2325,7 +2325,7 @@ export default function IncidentView() {
                           </div>
                         </div>
                         
-                        <div className={`flex gap-2 ${log.isAi ? 'md:ml-10' : 'md:mr-10'} ${log.isAi ? 'justify-start' : 'justify-end'}`}>
+                        <div className={`flex gap-2 ${log.isAi ? 'md:ml-15' : 'md:mr-10'} ${log.isAi ? 'justify-start' : 'justify-end'}`}>
                           <Button 
                             variant="ghost" 
                             size="sm" 
@@ -2530,7 +2530,7 @@ export default function IncidentView() {
                           </>
                         )}
                       </div>
-                      <div className={`flex items-center gap-2 pt-[0px] pb-[0px] mt-[0px] mb-[0px] min-w-0 flex-wrap ${log.isAi ? "justify-start ml-[10px] md:ml-10" : "justify-end md:mr-10"}`}>
+                      <div className={`flex items-center gap-2 pt-[0px] pb-[0px] mt-[0px] mb-[0px] min-w-0 flex-wrap ${log.isAi ? "justify-start ml-[10px] md:ml-15" : "justify-end md:mr-10"}`}>
                         <span className="text-xs text-slate-400 ml-[5px] mr-[5px]">
                           {formatDateTime(log.createdAt)}
                         </span>
