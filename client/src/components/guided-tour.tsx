@@ -722,6 +722,11 @@ export function GuidedTour() {
     return () => resizeObserver.disconnect();
   }, [isOpen, isMobile, globalStep]);
 
+  useEffect(() => {
+    if (!isOpen || isMobile || isTransitioning || !targetRect) return;
+    setDisplayedTooltipPos(computeTooltipPosition(targetRect));
+  }, [isOpen, isMobile, isTransitioning, targetRect, desktopTooltipHeight, computeTooltipPosition]);
+
   // Calculate tooltip position using current state (for initial/fallback rendering only)
   const tooltipPos = computeTooltipPosition();
   
