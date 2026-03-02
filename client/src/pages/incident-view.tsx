@@ -1143,7 +1143,7 @@ export default function IncidentView() {
           </div>
         </DialogContent>
       </Dialog>
-      {/* Fixed back button */}
+      {/* Fixed back button (mobile) */}
       <div className="fixed top-3 left-3 z-30 md:hidden">
         <Button
           variant="ghost"
@@ -1154,6 +1154,20 @@ export default function IncidentView() {
           data-testid="button-back"
         >
           <ArrowLeft className="w-6 h-6 stroke-[2.5] text-slate-700" />
+        </Button>
+      </div>
+
+      {/* Fixed back button (desktop) */}
+      <div className="hidden md:block fixed top-3 right-3 z-30">
+        <Button
+          variant="ghost"
+          className="bg-white/90 border border-slate-200 shadow-md backdrop-blur-sm rounded-xl h-10 px-3 hover:bg-white"
+          onClick={() => navigate('/dashboard')}
+          aria-label="Back to dashboard"
+          data-testid="button-back-desktop"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2 text-slate-700" />
+          <span className="text-sm text-slate-700">Back</span>
         </Button>
       </div>
       {/* Mobile drawer overlay */}
@@ -2168,7 +2182,7 @@ export default function IncidentView() {
       {/* Chat Area */}
       <div className="flex-1 min-w-0 w-full max-w-full overflow-x-hidden flex flex-col">
         <ScrollArea ref={scrollRef} className="chat-scroll-area relative w-full max-w-full overflow-hidden flex-1 p-4 bg-slate-50 pb-[0px]">
-          <div className="w-full min-w-0 max-w-5xl mx-auto space-y-6 pb-28 md:pb-6 overflow-x-hidden">
+          <div className="w-full min-w-0 max-w-5xl mx-auto md:px-2 space-y-6 pb-28 md:pb-6 overflow-x-hidden">
             {chatLogs.length === 0 && (
               <div className="flex items-center justify-center h-full min-h-[280px] bg-gradient-to-b from-slate-50 to-slate-100/50 overflow-hidden mt-16 md:mt-6 mb-6" data-testid="chat-empty-state">
                 <div className="flex flex-col items-center select-none w-full max-w-[calc(100vw-2rem)] px-2 overflow-hidden" data-testid="ai-assistant-placeholder">
@@ -2475,7 +2489,7 @@ export default function IncidentView() {
                   )}
                   {editLogId !== log.id && (
                     <>
-                      <div className={`px-[10px] md:px-4 rounded-xl transition-all duration-500 mt-[10px] mb-[10px] pt-[8px] pb-[8px] min-w-0 max-w-full overflow-hidden ${
+                      <div className={`px-[10px] md:px-5 rounded-xl transition-all duration-500 mt-[10px] mb-[10px] pt-[8px] pb-[8px] min-w-0 max-w-full overflow-hidden ${
                         log.isAi 
                           ? "bg-transparent text-slate-700 text-[16px] md:text-[15px] leading-7 md:leading-relaxed" 
                           : "bg-[var(--color-user-bubble)] text-slate-600 text-sm leading-relaxed font-normal border border-[var(--color-user-bubble-border)] shadow-sm whitespace-pre-wrap break-words max-w-full"
