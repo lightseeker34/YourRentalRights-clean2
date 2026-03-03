@@ -805,44 +805,36 @@ export function GuidedTour() {
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-[9998] pointer-events-none" data-testid="guided-tour-overlay">
-        {/* Dark overlay with spotlight cutout */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isTransitioning ? 0 : 1 }}
-          transition={{ duration: TOUR_FADE_MS / 1000 }}
+        {/* Keep backdrop stable; hide spotlight cutout during transitions to prevent visible movement artifacts */}
+        <svg 
+          className="absolute inset-0 w-full h-full pointer-events-none"
           style={{ zIndex: 9998 }}
-          className="absolute inset-0 pointer-events-none"
         >
-          <svg 
-            className="absolute inset-0 w-full h-full pointer-events-none"
-            style={{ zIndex: 9998 }}
-          >
-            <defs>
-              <mask id="spotlight-mask">
-                <rect x="0" y="0" width="100%" height="100%" fill="white" />
-                {renderSpotlight && (
-                  <rect 
-                    x={renderSpotlight.x} 
-                    y={renderSpotlight.y} 
-                    width={renderSpotlight.width} 
-                    height={renderSpotlight.height} 
-                    rx="12" 
-                    ry="12" 
-                    fill="black"
-                  />
-                )}
-              </mask>
-            </defs>
-            <rect 
-              x="0" 
-              y="0" 
-              width="100%" 
-              height="100%" 
-              fill="rgba(0, 0, 0, 0.6)" 
-              mask="url(#spotlight-mask)" 
-            />
-          </svg>
-        </motion.div>
+          <defs>
+            <mask id="spotlight-mask">
+              <rect x="0" y="0" width="100%" height="100%" fill="white" />
+              {!isTransitioning && renderSpotlight && (
+                <rect 
+                  x={renderSpotlight.x} 
+                  y={renderSpotlight.y} 
+                  width={renderSpotlight.width} 
+                  height={renderSpotlight.height} 
+                  rx="12" 
+                  ry="12" 
+                  fill="black"
+                />
+              )}
+            </mask>
+          </defs>
+          <rect 
+            x="0" 
+            y="0" 
+            width="100%" 
+            height="100%" 
+            fill="rgba(0, 0, 0, 0.6)" 
+            mask="url(#spotlight-mask)" 
+          />
+        </svg>
         
         {/* Highlight ring - fades in/out with transitions */}
         <motion.div
