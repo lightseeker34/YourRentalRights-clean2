@@ -246,6 +246,25 @@ export function GuidedTour() {
   const expectedPage = currentStepData?.page || "/dashboard";
   const totalSteps = ALL_TOUR_STEPS.length;
 
+  const queryVisibleElement = useCallback((selector: string): Element | null => {
+    const elements = Array.from(document.querySelectorAll(selector));
+    if (elements.length === 0) return null;
+
+    const visible = elements.find((el) => {
+      const rect = el.getBoundingClientRect();
+      const style = window.getComputedStyle(el);
+      return (
+        rect.width > 0 &&
+        rect.height > 0 &&
+        style.display !== "none" &&
+        style.visibility !== "hidden" &&
+        style.opacity !== "0"
+      );
+    });
+
+    return visible || elements[0] || null;
+  }, []);
+
   // Check if user has any cases
   useEffect(() => {
     const checkForCases = () => {
@@ -287,7 +306,7 @@ export function GuidedTour() {
         if (savedPath) {
           navigate(savedPath);
         } else {
-          const incidentCard = document.querySelector('[data-testid^="incident-card-"]');
+          const incidentCard = queryVisibleElement('[data-testid^="incident-card-"]');
           if (incidentCard) {
             const link = incidentCard.querySelector("a");
             if (link instanceof HTMLAnchorElement) {
@@ -349,7 +368,7 @@ export function GuidedTour() {
         resolve();
         return;
       }
-      const target = document.querySelector(targetSelector);
+      const target = queryVisibleElement(targetSelector);
       if (!target) {
         resolve();
         return;
@@ -368,14 +387,14 @@ export function GuidedTour() {
       // Fixed wait time for scroll completion
       setTimeout(resolve, 350);
     });
-  }, [getActiveTarget, isElementInViewport]);
+  }, [getActiveTarget, isElementInViewport, queryVisibleElement]);
 
   // Compute and return the current target positions (does not set state)
   const computeTargetPositions = useCallback(() => {
     const targetSelector = getActiveTarget();
     if (!targetSelector) return null;
     
-    const target = document.querySelector(targetSelector);
+    const target = queryVisibleElement(targetSelector);
     if (!target) return null;
     
     const rect = target.getBoundingClientRect();
@@ -387,7 +406,7 @@ export function GuidedTour() {
     };
     
     return { rect, spotlight };
-  }, [getActiveTarget]);
+  }, [getActiveTarget, queryVisibleElement]);
 
   const updateTargetRect = useCallback(() => {
     if (!isOpen || !currentStepData || expectedPage !== currentPage || isNavigating) {
