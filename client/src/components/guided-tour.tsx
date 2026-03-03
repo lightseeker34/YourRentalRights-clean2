@@ -25,10 +25,11 @@ const ALL_TOUR_STEPS: TourStep[] = [
   // Dashboard Steps
   {
     page: "/dashboard",
-    target: '[data-testid="add-new-log-button"]',
+    target: '[data-testid="add-new-log-button-desktop"]',
     title: "Create Your First Incident",
     content: "Click here to start documenting an issue with your landlord. Give it a clear title like 'Broken Heater' or 'Mold in Bathroom'. Each entry becomes your evidence file.",
     placement: "bottom",
+    mobileTarget: '[data-testid="add-new-log-button"]',
   },
   {
     page: "/dashboard",
@@ -37,7 +38,8 @@ const ALL_TOUR_STEPS: TourStep[] = [
     content: "Each card represents a case you're tracking. You can see the status (Open/Closed) and recent activity at a glance.",
     placement: "right",
     requiresCase: true,
-    noCaseTarget: '[data-testid="add-new-log-button"]',
+    noCaseTarget: '[data-testid="add-new-log-button-desktop"]',
+    mobileTarget: '[data-testid="add-new-log-button"]',
     noCaseContent: "Once you create a case using this button, it will appear here as a card. You'll be able to see the status and recent activity at a glance.",
   },
   {
@@ -47,7 +49,8 @@ const ALL_TOUR_STEPS: TourStep[] = [
     content: "Now let's explore what's inside a case - including the AI assistant that can help analyze your situation.",
     placement: "right",
     requiresCase: true,
-    noCaseTarget: '[data-testid="add-new-log-button"]',
+    noCaseTarget: '[data-testid="add-new-log-button-desktop"]',
+    mobileTarget: '[data-testid="add-new-log-button"]',
     noCaseContent: "Create your first case using this button, then come back to the tour to explore the AI assistant and other features inside a case!",
   },
   // Incident View Steps — sidebar steps first, then chat steps
