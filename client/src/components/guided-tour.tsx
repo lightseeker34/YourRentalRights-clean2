@@ -756,10 +756,8 @@ export function GuidedTour() {
   // Use a ref to track initialization so we don't depend on tooltipPos which changes every render
   const initializedRef = useRef(false);
   useEffect(() => {
-    if (isOpen && !isTransitioning && !initializedRef.current) {
-      if (spotlightRect) {
-        setDisplayedSpotlightRect(spotlightRect);
-      }
+    if (isOpen && !isTransitioning && !initializedRef.current && spotlightRect) {
+      setDisplayedSpotlightRect(spotlightRect);
       const initialTooltipPos = computeTooltipPosition();
       if (initialTooltipPos) {
         setDisplayedTooltipPos(initialTooltipPos);
@@ -772,8 +770,8 @@ export function GuidedTour() {
     }
   }, [isOpen, spotlightRect, isTransitioning, computeTooltipPosition]);
   
-  // Use displayed positions for rendering - ONLY use displayed values, fallback to centered if not yet set
-  const renderSpotlight = displayedSpotlightRect || spotlightRect;
+  // Use frozen displayed positions for rendering so there is no visible motion during step transitions
+  const renderSpotlight = displayedSpotlightRect;
   const renderTooltipPos = displayedTooltipPos || { top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
 
   if (!isOpen) {
