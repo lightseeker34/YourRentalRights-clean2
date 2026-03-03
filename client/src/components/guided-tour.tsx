@@ -243,6 +243,8 @@ export function GuidedTour() {
   const [displayedTooltipPos, setDisplayedTooltipPos] = useState<{top: string, left: string, width?: string, transform?: string} | null>(null);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   const [desktopTooltipHeight, setDesktopTooltipHeight] = useState(220);
+  const TOUR_FADE_MS = 260;
+  const TOUR_SETTLE_MS = 120;
 
   const currentPage = getPageFromPath(location);
   const currentStepData = ALL_TOUR_STEPS[globalStep];
@@ -580,16 +582,16 @@ export function GuidedTour() {
       // Fade out
       setIsTransitioning(true);
       
-      // Wait for fade out to fully complete (150ms animation + buffer)
-      await new Promise(r => setTimeout(r, 200));
+      // Wait for fade out to fully complete before any repositioning work
+      await new Promise(r => setTimeout(r, TOUR_FADE_MS + 30));
       if (cancelled) return;
       
       // Scroll to target if needed (content is completely invisible now)
       await scrollToTarget();
       if (cancelled) return;
       
-      // Small delay after scroll
-      await new Promise(r => setTimeout(r, 100));
+      // Small settle delay after scroll before measuring final target position
+      await new Promise(r => setTimeout(r, TOUR_SETTLE_MS));
       if (cancelled) return;
       
       // Now compute the final positions DIRECTLY (not from state)
@@ -616,8 +618,8 @@ export function GuidedTour() {
         setDisplayedTooltipPos(tooltipPosition);
       }
       
-      // Small delay before fade in
-      await new Promise(r => setTimeout(r, 50));
+      // Keep everything hidden briefly after reposition to avoid any visible intermediate frame
+      await new Promise(r => setTimeout(r, TOUR_SETTLE_MS));
       if (cancelled) return;
       
       // Fade in
@@ -807,7 +809,7 @@ export function GuidedTour() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: isTransitioning ? 0 : 1 }}
-          transition={{ duration: 0.15 }}
+          transition={{ duration: TOUR_FADE_MS / 1000 }}
           style={{ zIndex: 9998 }}
           className="absolute inset-0 pointer-events-none"
         >
@@ -846,7 +848,7 @@ export function GuidedTour() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: isTransitioning ? 0 : 1 }}
-          transition={{ duration: 0.15 }}
+          transition={{ duration: TOUR_FADE_MS / 1000 }}
           style={{ zIndex: 9998 }}
         >
           {renderSpotlight && (
@@ -870,7 +872,7 @@ export function GuidedTour() {
           initial={{ opacity: 0 }}
           animate={{ opacity: isTransitioning ? 0 : 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.15 }}
+          transition={{ duration: TOUR_FADE_MS / 1000 }}
           drag
           dragMomentum={false}
           dragElastic={0}
