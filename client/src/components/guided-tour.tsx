@@ -385,7 +385,8 @@ export function GuidedTour() {
         return;
       }
 
-      target.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+      const isMobileDevice = typeof window !== 'undefined' && window.innerWidth < 768;
+      target.scrollIntoView({ behavior: isMobileDevice ? "smooth" : "auto", block: "center", inline: "center" });
       
       // Fixed wait time for scroll completion
       setTimeout(resolve, 350);
@@ -401,11 +402,13 @@ export function GuidedTour() {
     if (!target) return null;
     
     const rect = target.getBoundingClientRect();
+    const isMobileDevice = typeof window !== 'undefined' && window.innerWidth < 768;
+    const padding = isMobileDevice ? 6 : 4;
     const spotlight = {
-      x: rect.left - 8,
-      y: rect.top - 8,
-      width: rect.width + 16,
-      height: rect.height + 16
+      x: Math.round(rect.left - padding),
+      y: Math.round(rect.top - padding),
+      width: Math.round(rect.width + padding * 2),
+      height: Math.round(rect.height + padding * 2)
     };
     
     return { rect, spotlight };
@@ -470,7 +473,7 @@ export function GuidedTour() {
       // Ensure left is also clamped
       const left = Math.max(padding, Math.min(horizontalCenter, viewportWidth - tooltipWidth - padding));
       
-      return { top: `${top}px`, left: `${left}px`, width: `${tooltipWidth}px` };
+      return { top: `${Math.round(top)}px`, left: `${Math.round(left)}px`, width: `${Math.round(tooltipWidth)}px` };
     }
 
     if (!rect) return { top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
@@ -555,7 +558,7 @@ export function GuidedTour() {
       // Clamp to ensure it stays on screen
       left = Math.max(padding, Math.min(left, viewportWidth - tooltipWidth - padding));
       top = Math.max(padding, Math.min(top, viewportHeight - tooltipHeight - padding));
-      return { top: `${top}px`, left: `${left}px` };
+      return { top: `${Math.round(top)}px`, left: `${Math.round(left)}px` };
     }
 
     if (currentStepData?.desktopOffset) {
@@ -567,7 +570,7 @@ export function GuidedTour() {
     left = Math.max(padding, Math.min(left, viewportWidth - tooltipWidth - padding));
     top = Math.max(padding, Math.min(top, viewportHeight - tooltipHeight - padding));
 
-    return { top: `${top}px`, left: `${left}px` };
+    return { top: `${Math.round(top)}px`, left: `${Math.round(left)}px` };
   }, [currentStepData, targetRect, desktopTooltipHeight]);
 
   // Step transition: fade out -> scroll -> update displayed position -> fade in
