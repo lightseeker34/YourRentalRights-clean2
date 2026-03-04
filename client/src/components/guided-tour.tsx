@@ -474,7 +474,7 @@ export function GuidedTour() {
   }, [isOpen, activeStepData, expectedPage, currentPage, isNavigating, computeTargetPositions]);
 
   // Compute tooltip position - accepts optional rect to use instead of state
-  const computeTooltipPosition = useCallback((rectOverride?: DOMRect | null) => {
+  const computeTooltipPosition = useCallback((rectOverride?: DOMRect | null, desktopHeightOverride?: number) => {
     const rect = rectOverride !== undefined ? rectOverride : targetRect;
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
@@ -482,7 +482,7 @@ export function GuidedTour() {
     const mobile = viewportWidth < 768;
     const tooltipWidth = mobile ? Math.min(320, viewportWidth - 40) : 340;
     // Use measured height on desktop so the tooltip aligns with each step's content
-    const tooltipHeight = mobile ? 300 : desktopTooltipHeight;
+    const tooltipHeight = mobile ? 300 : (desktopHeightOverride ?? desktopTooltipHeight);
 
     if (mobile) {
       const horizontalCenter = (viewportWidth - tooltipWidth) / 2;
@@ -652,18 +652,35 @@ export function GuidedTour() {
       if (cancelled) return;
       
       if (positions) {
-        // Update both internal state AND displayed positions atomically
+        // Update target + spotlight while hidden
         setTargetRect(positions.rect);
         setSpotlightRect(positions.spotlight);
         setDisplayedSpotlightRect(positions.spotlight);
-        
-        // Compute and set tooltip position using the computed rect
-        const tooltipPosition = computeTooltipPosition(positions.rect);
+
+        // Switch step content while fully hidden
+        setVisibleStep(globalStep);
+
+        // Wait a frame so tooltip content/layout for the new step is committed
+        await new Promise<void>((r) => requestAnimationFrame(() => r()));
+        await new Promise<void>((r) => requestAnimationFrame(() => r()));
+        if (cancelled) return;
+
+        // Measure real tooltip height for the new step before computing position
+        let measuredDesktopHeight = desktopTooltipHeight;
+        if (typeof window !== "undefined" && window.innerWidth >= 768 && tooltipRef.current) {
+          const measured = tooltipRef.current.getBoundingClientRect().height;
+          if (measured > 0) {
+            measuredDesktopHeight = measured;
+            setDesktopTooltipHeight(measured);
+          }
+        }
+
+        const tooltipPosition = computeTooltipPosition(positions.rect, measuredDesktopHeight);
         setDisplayedTooltipPos(tooltipPosition);
+      } else {
+        // Still update visible content while hidden
+        setVisibleStep(globalStep);
       }
-      
-      // Update visible content only while fully hidden
-      setVisibleStep(globalStep);
 
       // Keep everything hidden briefly after reposition to avoid any visible intermediate frame
       await new Promise(r => setTimeout(r, TOUR_SETTLE_MS));
@@ -801,7 +818,7 @@ export function GuidedTour() {
   useEffect(() => {
     if (!isOpen || isMobile || isTransitioning || !targetRect) return;
     setDisplayedTooltipPos(computeTooltipPosition(targetRect));
-  }, [isOpen, isMobile, isTransitioning, targetRect, desktopTooltipHeight, computeTooltipPosition]);
+  }, [isOpen, isMobile, isTransitioning, targetRect, computeTooltipPosition]);
 
   // Calculate tooltip position using current state (for initial/fallback rendering only)
   const tooltipPos = computeTooltipPosition();
