@@ -245,7 +245,7 @@ export function GuidedTour() {
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   const [desktopTooltipHeight, setDesktopTooltipHeight] = useState(220);
   const TOUR_FADE_MS = 260;
-  const TOUR_SETTLE_MS = 220;
+  const TOUR_SETTLE_MS = 120;
 
   const currentPage = getPageFromPath(location);
   const activeStepData = ALL_TOUR_STEPS[globalStep];
@@ -403,7 +403,13 @@ export function GuidedTour() {
         const elapsed = performance.now() - start;
         const currentTarget = queryVisibleElement(targetSelector);
         const currentRect = currentTarget?.getBoundingClientRect();
-        const inView = !!currentRect && isElementInViewport(currentRect);
+
+        // Loose in-view check to avoid waiting forever on strict margins
+        const inViewLoose = !!currentRect &&
+          currentRect.top >= 20 &&
+          currentRect.left >= 0 &&
+          currentRect.bottom <= window.innerHeight - 20 &&
+          currentRect.right <= window.innerWidth;
 
         const deltaY = Math.abs(window.scrollY - lastScrollY);
         lastScrollY = window.scrollY;
@@ -425,8 +431,8 @@ export function GuidedTour() {
           stableFrames = 0;
         }
 
-        // finish when in viewport + stable long enough, or after hard timeout
-        if ((inView && stableFrames >= 10) || elapsed > 2200) {
+        // finish quickly and consistently once stable; don't force strict viewport match
+        if ((stableFrames >= 8 && (inViewLoose || elapsed > 450)) || elapsed > 1400) {
           resolve();
           return;
         }
