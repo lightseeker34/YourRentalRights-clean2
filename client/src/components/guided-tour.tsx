@@ -580,35 +580,11 @@ export function GuidedTour() {
     left = Math.max(padding, Math.min(left, viewportWidth - tooltipWidth - padding));
     top = Math.max(padding, Math.min(top, viewportHeight - tooltipHeight - padding));
 
-    if (preferredPlacement === "left" || preferredPlacement === "right") {
-      const tooltipBottom = top + tooltipHeight;
-      const targetTop = rect.top - 8;
-      const targetBottom = rect.bottom + 8;
-      
-      if (top < targetBottom && tooltipBottom > targetTop) {
-        const spaceAboveTarget = targetTop - padding;
-        const spaceBelowTarget = viewportHeight - targetBottom - padding;
-        
-        if (spaceBelowTarget >= tooltipHeight) {
-          top = targetBottom + padding;
-        } else if (spaceAboveTarget >= tooltipHeight) {
-          top = targetTop - tooltipHeight - padding;
-        }
-      }
-      // Re-clamp after overlap adjustment
-      top = Math.max(padding, Math.min(top, viewportHeight - tooltipHeight - padding));
-    }
+    // Keep desktop tooltip adjacent to the spotlight target (no secondary reposition pass).
+    // We only clamp to viewport bounds, but do not jump above/below for overlap handling.
 
-    if (visibleStepData?.desktopPosition === "bottom-right") {
-      top = viewportHeight - tooltipHeight - padding;
-      left = viewportWidth - tooltipWidth - padding;
-      if (visibleStepData?.desktopOffset?.top) top += visibleStepData.desktopOffset.top;
-      if (visibleStepData?.desktopOffset?.left) left += visibleStepData.desktopOffset.left;
-      // Clamp to ensure it stays on screen
-      left = Math.max(padding, Math.min(left, viewportWidth - tooltipWidth - padding));
-      top = Math.max(padding, Math.min(top, viewportHeight - tooltipHeight - padding));
-      return { top: `${top}px`, left: `${left}px` };
-    }
+    // Ignore special detached desktop placement; keep everything adjacent on desktop.
+
 
     if (visibleStepData?.desktopOffset) {
       if (visibleStepData.desktopOffset.top) top += visibleStepData.desktopOffset.top;
