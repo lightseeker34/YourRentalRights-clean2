@@ -381,9 +381,9 @@ export function GuidedTour() {
         resolve();
         return;
       }
-      
+
       const rect = target.getBoundingClientRect();
-      
+
       // Skip scroll if already visible
       if (isElementInViewport(rect)) {
         resolve();
@@ -391,9 +391,38 @@ export function GuidedTour() {
       }
 
       target.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
-      
-      // Fixed wait time for scroll completion
-      setTimeout(resolve, 350);
+
+      // Wait until scrolling has actually settled (not just an arbitrary timeout)
+      const start = performance.now();
+      let lastScrollY = window.scrollY;
+      let stableFrames = 0;
+
+      const checkSettled = () => {
+        const elapsed = performance.now() - start;
+        const currentTarget = queryVisibleElement(targetSelector);
+        const currentRect = currentTarget?.getBoundingClientRect();
+        const inView = !!currentRect && isElementInViewport(currentRect);
+
+        const deltaY = Math.abs(window.scrollY - lastScrollY);
+        lastScrollY = window.scrollY;
+
+        // consider scroll stable when virtually no movement for a few frames
+        if (deltaY < 1) {
+          stableFrames += 1;
+        } else {
+          stableFrames = 0;
+        }
+
+        // finish when in viewport + stable, or after hard timeout
+        if ((inView && stableFrames >= 6) || elapsed > 1800) {
+          resolve();
+          return;
+        }
+
+        requestAnimationFrame(checkSettled);
+      };
+
+      requestAnimationFrame(checkSettled);
     });
   }, [getActiveTarget, isElementInViewport, queryVisibleElement]);
 
