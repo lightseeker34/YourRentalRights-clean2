@@ -454,10 +454,10 @@ export function GuidedTour() {
     
     const rect = target.getBoundingClientRect();
     const spotlight = {
-      x: rect.left - 8,
-      y: rect.top - 8,
-      width: rect.width + 16,
-      height: rect.height + 16
+      x: rect.left,
+      y: rect.top,
+      width: rect.width,
+      height: rect.height
     };
     
     return { rect, spotlight };
