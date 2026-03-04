@@ -233,6 +233,7 @@ export function GuidedTour() {
   const [location, navigate] = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [globalStep, setGlobalStep] = useState(0);
+  const [visibleStep, setVisibleStep] = useState(0);
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
   const [hasCase, setHasCase] = useState(true);
@@ -247,8 +248,9 @@ export function GuidedTour() {
   const TOUR_SETTLE_MS = 120;
 
   const currentPage = getPageFromPath(location);
-  const currentStepData = ALL_TOUR_STEPS[globalStep];
-  const expectedPage = currentStepData?.page || "/dashboard";
+  const activeStepData = ALL_TOUR_STEPS[globalStep];
+  const visibleStepData = ALL_TOUR_STEPS[visibleStep];
+  const expectedPage = activeStepData?.page || "/dashboard";
   const totalSteps = ALL_TOUR_STEPS.length;
 
   const queryVisibleElement = useCallback((selector: string): Element | null => {
@@ -288,6 +290,7 @@ export function GuidedTour() {
     const savedState = loadTourState();
     if (savedState?.isActive) {
       setGlobalStep(savedState.globalStepIndex);
+      setVisibleStep(savedState.globalStepIndex);
       setIsOpen(true);
     } else if (!savedState) {
       if (currentPage === "/dashboard") {
@@ -301,7 +304,7 @@ export function GuidedTour() {
   }, [currentPage]);
 
   useEffect(() => {
-    if (!isOpen || !currentStepData) return;
+    if (!isOpen || !activeStepData) return;
 
     if (expectedPage !== currentPage && !isNavigating) {
       setIsNavigating(true);
@@ -338,21 +341,21 @@ export function GuidedTour() {
     } else if (expectedPage === currentPage) {
       setIsNavigating(false);
     }
-  }, [isOpen, expectedPage, currentPage, navigate, globalStep, currentStepData, isNavigating]);
+  }, [isOpen, expectedPage, currentPage, navigate, globalStep, activeStepData, isNavigating]);
 
   // Get the actual target selector to use (fallback to noCaseTarget if no cases, or mobileTarget on mobile)
   const getActiveTarget = useCallback(() => {
-    if (!currentStepData) return null;
-    if (!hasCase && currentStepData.requiresCase && currentStepData.noCaseTarget) {
-      return currentStepData.noCaseTarget;
+    if (!activeStepData) return null;
+    if (!hasCase && activeStepData.requiresCase && activeStepData.noCaseTarget) {
+      return activeStepData.noCaseTarget;
     }
     // Use mobile target on mobile devices if available
     const isMobileDevice = typeof window !== 'undefined' && window.innerWidth < 768;
-    if (isMobileDevice && currentStepData.mobileTarget) {
-      return currentStepData.mobileTarget;
+    if (isMobileDevice && activeStepData.mobileTarget) {
+      return activeStepData.mobileTarget;
     }
-    return currentStepData.target;
-  }, [currentStepData, hasCase]);
+    return activeStepData.target;
+  }, [activeStepData, hasCase]);
 
   // Check if element is visible in viewport
   const isElementInViewport = useCallback((rect: DOMRect) => {
@@ -414,7 +417,7 @@ export function GuidedTour() {
   }, [getActiveTarget, queryVisibleElement]);
 
   const updateTargetRect = useCallback(() => {
-    if (!isOpen || !currentStepData || expectedPage !== currentPage || isNavigating) {
+    if (!isOpen || !activeStepData || expectedPage !== currentPage || isNavigating) {
       setTargetRect(null);
       setSpotlightRect(null);
       return;
@@ -427,7 +430,7 @@ export function GuidedTour() {
       setTargetRect(null);
       setSpotlightRect(null);
     }
-  }, [isOpen, currentStepData, expectedPage, currentPage, isNavigating, computeTargetPositions]);
+  }, [isOpen, activeStepData, expectedPage, currentPage, isNavigating, computeTargetPositions]);
 
   // Compute tooltip position - accepts optional rect to use instead of state
   const computeTooltipPosition = useCallback((rectOverride?: DOMRect | null) => {
@@ -444,9 +447,9 @@ export function GuidedTour() {
       const horizontalCenter = (viewportWidth - tooltipWidth) / 2;
       let top = padding;
       
-      if (currentStepData?.mobilePosition === "bottom") {
+      if (visibleStepData?.mobilePosition === "bottom") {
         top = viewportHeight - tooltipHeight - padding - 95;
-      } else if (currentStepData?.mobilePosition === "top") {
+      } else if (visibleStepData?.mobilePosition === "top") {
         top = padding + 60;
       } else if (rect) {
         const targetCenter = rect.top + rect.height / 2;
@@ -459,8 +462,8 @@ export function GuidedTour() {
         top = (viewportHeight - tooltipHeight) / 2;
       }
       
-      if (currentStepData?.mobileOffset?.top) {
-        top += currentStepData.mobileOffset.top;
+      if (visibleStepData?.mobileOffset?.top) {
+        top += visibleStepData.mobileOffset.top;
       }
       
       // Always clamp on mobile to ensure tooltip stays on screen
@@ -482,7 +485,7 @@ export function GuidedTour() {
     const spaceLeft = rect.left;
     const spaceRight = viewportWidth - rect.right;
 
-    let preferredPlacement = currentStepData?.placement || "bottom";
+    let preferredPlacement = visibleStepData?.placement || "bottom";
     
     const canFit = {
       top: spaceTop >= tooltipHeight + padding,
@@ -549,20 +552,20 @@ export function GuidedTour() {
       top = Math.max(padding, Math.min(top, viewportHeight - tooltipHeight - padding));
     }
 
-    if (currentStepData?.desktopPosition === "bottom-right") {
+    if (visibleStepData?.desktopPosition === "bottom-right") {
       top = viewportHeight - tooltipHeight - padding;
       left = viewportWidth - tooltipWidth - padding;
-      if (currentStepData?.desktopOffset?.top) top += currentStepData.desktopOffset.top;
-      if (currentStepData?.desktopOffset?.left) left += currentStepData.desktopOffset.left;
+      if (visibleStepData?.desktopOffset?.top) top += visibleStepData.desktopOffset.top;
+      if (visibleStepData?.desktopOffset?.left) left += visibleStepData.desktopOffset.left;
       // Clamp to ensure it stays on screen
       left = Math.max(padding, Math.min(left, viewportWidth - tooltipWidth - padding));
       top = Math.max(padding, Math.min(top, viewportHeight - tooltipHeight - padding));
       return { top: `${top}px`, left: `${left}px` };
     }
 
-    if (currentStepData?.desktopOffset) {
-      if (currentStepData.desktopOffset.top) top += currentStepData.desktopOffset.top;
-      if (currentStepData.desktopOffset.left) left += currentStepData.desktopOffset.left;
+    if (visibleStepData?.desktopOffset) {
+      if (visibleStepData.desktopOffset.top) top += visibleStepData.desktopOffset.top;
+      if (visibleStepData.desktopOffset.left) left += visibleStepData.desktopOffset.left;
     }
 
     // Final clamp - always ensure tooltip stays within viewport
@@ -570,11 +573,11 @@ export function GuidedTour() {
     top = Math.max(padding, Math.min(top, viewportHeight - tooltipHeight - padding));
 
     return { top: `${top}px`, left: `${left}px` };
-  }, [currentStepData, targetRect, desktopTooltipHeight]);
+  }, [visibleStepData, targetRect, desktopTooltipHeight]);
 
   // Step transition: fade out -> scroll -> update displayed position -> fade in
   useEffect(() => {
-    if (!isOpen || !currentStepData) return;
+    if (!isOpen || !activeStepData) return;
     
     let cancelled = false;
     
@@ -618,6 +621,9 @@ export function GuidedTour() {
         setDisplayedTooltipPos(tooltipPosition);
       }
       
+      // Update visible content only while fully hidden
+      setVisibleStep(globalStep);
+
       // Keep everything hidden briefly after reposition to avoid any visible intermediate frame
       await new Promise(r => setTimeout(r, TOUR_SETTLE_MS));
       if (cancelled) return;
@@ -631,7 +637,7 @@ export function GuidedTour() {
     return () => { cancelled = true; };
     // Note: computeTooltipPosition excluded from deps - we pass rect directly, avoiding stale closure
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [globalStep, isOpen, currentStepData, scrollToTarget, computeTargetPositions]);
+  }, [globalStep, isOpen, activeStepData, scrollToTarget, computeTargetPositions]);
 
   // Handle resize - update positions immediately (no animation needed)
   useEffect(() => {
@@ -652,6 +658,7 @@ export function GuidedTour() {
   }, [computeTargetPositions, computeTooltipPosition]);
 
   const handleNext = () => {
+    if (isTransitioning) return;
     if (globalStep < totalSteps - 1) {
       const newStep = globalStep + 1;
       setGlobalStep(newStep);
@@ -662,6 +669,7 @@ export function GuidedTour() {
   };
 
   const handlePrev = () => {
+    if (isTransitioning) return;
     if (globalStep > 0) {
       const newStep = globalStep - 1;
       setGlobalStep(newStep);
@@ -684,6 +692,7 @@ export function GuidedTour() {
   };
 
   const handleGoToStep = (stepIndex: number) => {
+    if (isTransitioning) return;
     if (stepIndex >= 0 && stepIndex < totalSteps) {
       setGlobalStep(stepIndex);
       saveTourState({ globalStepIndex: stepIndex, isActive: true });
@@ -711,11 +720,13 @@ export function GuidedTour() {
       // Found steps for current page, start there
       startStep = pageStepIndex;
       setGlobalStep(startStep);
+      setVisibleStep(startStep);
       saveTourState({ globalStepIndex: startStep, isActive: true });
       setTimeout(() => setIsOpen(true), 100);
     } else {
       // No steps for current page, go to dashboard
       setGlobalStep(0);
+      setVisibleStep(0);
       saveTourState({ globalStepIndex: 0, isActive: true });
       if (currentPage !== "/dashboard") {
         navigate("/dashboard");
@@ -791,7 +802,7 @@ export function GuidedTour() {
     );
   }
 
-  if (!currentStepData || isNavigating) {
+  if (!activeStepData || !visibleStepData || isNavigating) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
         <div className="bg-white rounded-xl shadow-2xl p-6 text-center">
@@ -881,21 +892,21 @@ export function GuidedTour() {
 
           <div className="mb-4 mt-2">
             <div className="text-xs text-blue-600 font-medium mb-1">
-              Step {globalStep + 1} of {totalSteps}
+              Step {visibleStep + 1} of {totalSteps}
             </div>
-            <h3 className="text-lg font-bold text-slate-900">{currentStepData.title}</h3>
+            <h3 className="text-lg font-bold text-slate-900">{visibleStepData.title}</h3>
           </div>
 
           <p className="text-sm text-slate-600 mb-4 leading-relaxed font-normal whitespace-pre-line">
-            {(!hasCase && currentStepData.requiresCase && currentStepData.noCaseContent) 
-              ? currentStepData.noCaseContent 
-              : currentStepData.content}
+            {(!hasCase && visibleStepData.requiresCase && visibleStepData.noCaseContent) 
+              ? visibleStepData.noCaseContent 
+              : visibleStepData.content}
           </p>
 
-          {isMobile && currentStepData.mobileHint && (
+          {isMobile && visibleStepData.mobileHint && (
             <div className="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-2 rounded-lg mb-4 text-sm">
               <ArrowLeft className="w-4 h-4" />
-              <span>{currentStepData.mobileHint}</span>
+              <span>{visibleStepData.mobileHint}</span>
             </div>
           )}
 
@@ -911,7 +922,7 @@ export function GuidedTour() {
             </Button>
 
             <div className="flex gap-2">
-              {globalStep > 0 && (
+              {visibleStep > 0 && (
                 <Button
                   variant="outline"
                   size="sm"
@@ -927,8 +938,8 @@ export function GuidedTour() {
                 onClick={handleNext}
                 data-testid="tour-next-button"
               >
-                {globalStep === totalSteps - 1 ? "Finish" : "Next"}
-                {globalStep < totalSteps - 1 && <ChevronRight className="w-4 h-4 ml-1" />}
+                {visibleStep === totalSteps - 1 ? "Finish" : "Next"}
+                {visibleStep < totalSteps - 1 && <ChevronRight className="w-4 h-4 ml-1" />}
               </Button>
             </div>
           </div>
@@ -939,9 +950,9 @@ export function GuidedTour() {
                 key={index}
                 onClick={() => handleGoToStep(index)}
                 className={`w-2.5 h-2.5 rounded-full transition-all hover:scale-125 cursor-pointer ${
-                  index === globalStep 
+                  index === visibleStep 
                     ? "bg-blue-500 ring-2 ring-blue-300" 
-                    : index < globalStep 
+                    : index < visibleStep 
                       ? "bg-blue-300 hover:bg-blue-400" 
                       : "bg-slate-300 hover:bg-slate-400"
                 }`}
