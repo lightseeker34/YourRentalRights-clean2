@@ -33,7 +33,7 @@ const ALL_TOUR_STEPS: TourStep[] = [
   },
   {
     page: "/dashboard",
-    target: '[data-testid^="incident-card-"]',
+    target: '[data-testid^="incident-card-bubble-"]',
     title: "Your Case Timeline",
     content: "Each card represents a case you're tracking. You can see the status (Open/Closed) and recent activity at a glance.",
     placement: "right",
@@ -44,7 +44,7 @@ const ALL_TOUR_STEPS: TourStep[] = [
   },
   {
     page: "/dashboard",
-    target: '[data-testid^="incident-card-"]',
+    target: '[data-testid^="incident-card-bubble-"]',
     title: "Let's Go Inside a Case",
     content: "Now let's explore what's inside a case - including the AI assistant that can help analyze your situation.",
     placement: "right",

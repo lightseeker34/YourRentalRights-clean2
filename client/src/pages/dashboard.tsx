@@ -179,7 +179,10 @@ function TimelineCard({ incident, onPrefetch }: { incident: Incident; onPrefetch
           onMouseEnter={() => onPrefetch?.(incident.id)}
           onFocus={() => onPrefetch?.(incident.id)}
         >
-          <div className="bg-white border border-slate-200 rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer w-[94%] sm:w-[15.5rem] mx-auto">
+          <div
+            className="bg-white border border-slate-200 rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer w-[94%] sm:w-[15.5rem] mx-auto"
+            data-testid={`incident-card-bubble-${incident.id}`}
+          >
             <div className="flex justify-between items-start mb-1">
               <h3 className="font-semibold text-slate-900 text-sm line-clamp-1">{incident.title}</h3>
               <div className="flex items-center gap-1 shrink-0">
