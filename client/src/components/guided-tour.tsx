@@ -245,7 +245,7 @@ export function GuidedTour() {
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   const [desktopTooltipHeight, setDesktopTooltipHeight] = useState(220);
   const TOUR_FADE_MS = 260;
-  const TOUR_SETTLE_MS = 120;
+  const TOUR_SETTLE_MS = 220;
 
   const currentPage = getPageFromPath(location);
   const activeStepData = ALL_TOUR_STEPS[globalStep];
@@ -392,9 +392,11 @@ export function GuidedTour() {
 
       target.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
 
-      // Wait until scrolling has actually settled (not just an arbitrary timeout)
+      // Wait until movement has actually settled (works for window scroll + nested container scroll)
       const start = performance.now();
       let lastScrollY = window.scrollY;
+      let lastTop: number | null = null;
+      let lastLeft: number | null = null;
       let stableFrames = 0;
 
       const checkSettled = () => {
@@ -406,15 +408,25 @@ export function GuidedTour() {
         const deltaY = Math.abs(window.scrollY - lastScrollY);
         lastScrollY = window.scrollY;
 
-        // consider scroll stable when virtually no movement for a few frames
-        if (deltaY < 1) {
+        // Track element motion directly so we catch nested scrolling/layout movement
+        let deltaTop = 0;
+        let deltaLeft = 0;
+        if (currentRect) {
+          if (lastTop !== null) deltaTop = Math.abs(currentRect.top - lastTop);
+          if (lastLeft !== null) deltaLeft = Math.abs(currentRect.left - lastLeft);
+          lastTop = currentRect.top;
+          lastLeft = currentRect.left;
+        }
+
+        // consider settled only when both page and target rect are stable for several frames
+        if (deltaY < 0.75 && deltaTop < 0.75 && deltaLeft < 0.75) {
           stableFrames += 1;
         } else {
           stableFrames = 0;
         }
 
-        // finish when in viewport + stable, or after hard timeout
-        if ((inView && stableFrames >= 6) || elapsed > 1800) {
+        // finish when in viewport + stable long enough, or after hard timeout
+        if ((inView && stableFrames >= 10) || elapsed > 2200) {
           resolve();
           return;
         }
