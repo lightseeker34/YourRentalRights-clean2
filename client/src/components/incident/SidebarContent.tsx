@@ -69,6 +69,8 @@ export interface SidebarContentProps {
   onLogText: () => void;
   onLogEmail: () => void;
   onLogService: () => void;
+  onLogPortal: () => void;
+  onLogCustom: () => void;
   onToggleChatGroup: (id: string) => void;
   onToggleFileGroup: (id: string) => void;
   onSetHighlightedLogId: (id: number | null) => void;
@@ -109,6 +111,8 @@ export function SidebarContent({
   onLogText,
   onLogEmail,
   onLogService,
+  onLogPortal,
+  onLogCustom,
   onToggleChatGroup,
   onToggleFileGroup,
   onSetHighlightedLogId,
@@ -238,23 +242,23 @@ export function SidebarContent({
               data-testid={isMobile ? "button-record-timeline-event-mobile" : "button-record-timeline-event"}
             >
               <span className="inline-flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-slate-500" />
+                <Calendar className="w-4 h-4 text-amber-500" />
                 <span>Record Timeline Event</span>
               </span>
               <ChevronDown className="w-4 h-4 text-slate-500" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" sideOffset={6} className="w-[var(--radix-dropdown-menu-trigger-width)] p-1">
-            <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm mb-1" onClick={onLogService}>
-              <SlidersHorizontal className="w-4 h-4 text-slate-500" />
+            <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm mb-1" onClick={onLogCustom}>
+              <SlidersHorizontal className="w-4 h-4 text-rose-500" />
               <span>Record Custom</span>
             </DropdownMenuItem>
             <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm mb-1" onClick={onLogService}>
               <Wrench className="w-4 h-4 text-orange-500" />
               <span>Record Service</span>
             </DropdownMenuItem>
-            <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm mb-1" onClick={onLogService}>
-              <Globe className="w-4 h-4 text-slate-500" />
+            <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm mb-1" onClick={onLogPortal}>
+              <Globe className="w-4 h-4 text-cyan-500" />
               <span>Record Portal</span>
             </DropdownMenuItem>
             <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm mb-1" onClick={onLogEmail}>

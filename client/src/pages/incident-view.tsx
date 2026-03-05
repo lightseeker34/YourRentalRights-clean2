@@ -70,6 +70,7 @@ export default function IncidentView() {
   const [logTextOpen, setLogTextOpen] = useState(false);
   const [logEmailOpen, setLogEmailOpen] = useState(false);
   const [logServiceOpen, setLogServiceOpen] = useState(false);
+  const [logServiceMode, setLogServiceMode] = useState<'service' | 'portal' | 'custom'>('service');
   const [logTitle, setLogTitle] = useState("");
   const [logNotes, setLogNotes] = useState("");
   const [logSeverity, setLogSeverity] = useState<SeverityLevel>('routine');
@@ -951,6 +952,22 @@ export default function IncidentView() {
   };
 
 
+  const serviceModalTitleByMode: Record<'service' | 'portal' | 'custom', string> = {
+    service: 'Service Request Title',
+    portal: 'Portal Entry Title',
+    custom: 'Custom Entry Title',
+  };
+  const serviceModalDetailsByMode: Record<'service' | 'portal' | 'custom', string> = {
+    service: 'Service request details',
+    portal: 'Portal entry details',
+    custom: 'Custom entry details',
+  };
+  const serviceModalSaveByMode: Record<'service' | 'portal' | 'custom', string> = {
+    service: 'Save Service Request',
+    portal: 'Save Portal Entry',
+    custom: 'Save Custom Entry',
+  };
+
   const sidebarProps = {
     incident,
     logs,
@@ -980,7 +997,9 @@ export default function IncidentView() {
     onLogCall: () => setLogCallOpen(true),
     onLogText: () => setLogTextOpen(true),
     onLogEmail: () => setLogEmailOpen(true),
-    onLogService: () => setLogServiceOpen(true),
+    onLogService: () => { setLogServiceMode('service'); setLogServiceOpen(true); },
+    onLogPortal: () => { setLogServiceMode('portal'); setLogServiceOpen(true); },
+    onLogCustom: () => { setLogServiceMode('custom'); setLogServiceOpen(true); },
     onToggleChatGroup: toggleChatGroup,
     onToggleFileGroup: toggleFileGroup,
     onSetHighlightedLogId: setHighlightedLogId,
@@ -1871,7 +1890,7 @@ export default function IncidentView() {
           <div className="space-y-4 pt-[8px] pb-[8px]">
             <div className="space-y-2">
               <Input 
-                placeholder="Service Request Title"
+                placeholder={serviceModalTitleByMode[logServiceMode]}
                 value={logTitle}
                 onChange={(e) => setLogTitle(e.target.value)}
                 className="mt-[6px] mb-[6px] placeholder:text-slate-400"
@@ -1879,7 +1898,7 @@ export default function IncidentView() {
             </div>
             <div className="space-y-2">
               <Textarea 
-                placeholder="Service request details"
+                placeholder={serviceModalDetailsByMode[logServiceMode]}
                 value={logNotes}
                 onChange={(e) => setLogNotes(e.target.value)}
                 className="min-h-[140px] mt-[5px] mb-[5px] placeholder:text-slate-400"
@@ -2020,7 +2039,7 @@ export default function IncidentView() {
               className="w-full"
               disabled={createLogWithPhotoMutation.isPending}
             >
-              Save Service Request
+              {serviceModalSaveByMode[logServiceMode]}
             </Button>
           </div>
         </DialogContent>
