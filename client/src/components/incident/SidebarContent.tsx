@@ -406,7 +406,7 @@ export function SidebarContent({
                               onClick={() => onToggleChatGroup(item.id)}
                               className="flex items-center justify-between w-full text-xs text-slate-500 hover:text-slate-700"
                             >
-                              <div className={`flex items-center gap-1 ${isMobile ? 'pl-[10px]' : ''}`}>
+                              <div className="flex items-center gap-1 pl-[10px]">
                                 <MessageSquare className="w-3 h-3" />
                                 <span>Chat ({chatCount} messages)</span>
                               </div>
