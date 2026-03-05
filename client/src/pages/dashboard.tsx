@@ -293,9 +293,9 @@ function TimelineCard({ incident, onPrefetch }: { incident: Incident; onPrefetch
                     <div className="space-y-1">
                       <button 
                         onClick={() => toggleChatGroup(item.id)}
-                        className="flex items-center justify-between w-full text-xs text-slate-500 hover:text-slate-700"
+                        className="flex items-center justify-between w-[92%] ml-auto text-xs text-slate-500 hover:text-slate-700"
                       >
-                        <div className="flex items-center gap-1 pl-[10px]">
+                        <div className="flex items-center gap-1">
                           <MessageSquare className="w-3 h-3" />
                           <span className="font-semibold">Chat ({chatCount} msgs)</span>
                         </div>
