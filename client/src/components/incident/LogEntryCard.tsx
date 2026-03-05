@@ -32,15 +32,15 @@ interface LogEntryCardProps {
   onDelete: (logId: number) => void;
 }
 
-const getTypeLabel = (type: string) => {
-  switch (type) {
+const getTypeLabel = (log: IncidentLog) => {
+  switch (log.type) {
     case 'call': return 'Call';
     case 'text': return 'Text';
     case 'email': return 'Email';
     case 'photo': return 'Photo';
-    case 'chat': return 'Chat';
+    case 'chat': return log.isAi ? 'Assistant' : 'You';
     case 'note': return 'Note';
-    default: return type.charAt(0).toUpperCase() + type.slice(1);
+    default: return log.type.charAt(0).toUpperCase() + log.type.slice(1);
   }
 };
 
@@ -87,7 +87,7 @@ export function LogEntryCard({
         <div className="flex items-center gap-1.5 min-w-0">
           <Icon className={`w-3 h-3 ${color} shrink-0`} />
           <span className="font-medium text-slate-800 text-xs line-clamp-1">
-            {getTypeLabel(log.type)}{log.title ? `: ${log.title}` : ''}
+            {getTypeLabel(log)}{log.title ? `: ${log.title}` : ''}
           </span>
         </div>
       </div>
