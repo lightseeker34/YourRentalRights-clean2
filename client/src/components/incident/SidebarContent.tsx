@@ -5,11 +5,17 @@ import { format } from "date-fns";
 import {
   Bot, Phone, MessageSquare, Mail, FileText, Image as ImageIcon,
   Trash2, Calendar, Clock, Pencil, Paperclip, ChevronDown, ChevronRight,
-  Download, Wrench,
+  Download, Wrench, SlidersHorizontal, Globe,
 } from "lucide-react";
 import { Incident, IncidentLog } from "@shared/schema";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -224,22 +230,47 @@ export function SidebarContent({
 
       {/* Add Log section */}
       <div className="space-y-2 mt-2" data-testid={isMobile ? "log-buttons-mobile" : "log-buttons"}>
-        <Button variant="outline" className="w-full justify-start gap-2 bg-[#4d5e700f] border-slate-300" onClick={onLogCall}>
-          <Phone className="w-4 h-4 text-green-500" />
-          <span>Record Call</span>
-        </Button>
-        <Button variant="outline" className="w-full justify-start gap-2 bg-[#4d5e700f] border-slate-300" onClick={onLogText}>
-          <MessageSquare className="w-4 h-4 text-blue-400" />
-          <span>Record Text</span>
-        </Button>
-        <Button variant="outline" className="w-full justify-start gap-2 bg-[#4d5e700f] border-slate-300" onClick={onLogEmail}>
-          <Mail className="w-4 h-4 text-purple-400" />
-          <span>Record Email</span>
-        </Button>
-        <Button variant="outline" className="w-full justify-start gap-2 bg-[#4d5e700f] border-slate-300" onClick={onLogService}>
-          <Wrench className="w-4 h-4 text-orange-500" />
-          <span>Record Service Request</span>
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              className="w-full justify-between gap-2 bg-[#4d5e700f] border-slate-300"
+              data-testid={isMobile ? "button-record-timeline-event-mobile" : "button-record-timeline-event"}
+            >
+              <span className="inline-flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-slate-500" />
+                <span>Record Timeline Event</span>
+              </span>
+              <ChevronDown className="w-4 h-4 text-slate-500" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" sideOffset={6} className="w-[var(--radix-dropdown-menu-trigger-width)] p-1">
+            <DropdownMenuItem className="gap-2" onClick={onLogCall}>
+              <Phone className="w-4 h-4 text-green-500" />
+              <span>Record Call</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="gap-2" onClick={onLogText}>
+              <MessageSquare className="w-4 h-4 text-blue-400" />
+              <span>Record Text</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="gap-2" onClick={onLogEmail}>
+              <Mail className="w-4 h-4 text-purple-400" />
+              <span>Record Email</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="gap-2" onClick={onLogService}>
+              <Wrench className="w-4 h-4 text-orange-500" />
+              <span>Record Service</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="gap-2" disabled>
+              <Globe className="w-4 h-4 text-slate-400" />
+              <span>Record Portal</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="gap-2" disabled>
+              <SlidersHorizontal className="w-4 h-4 text-slate-400" />
+              <span>Record Custom</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <div className="space-y-6 mt-6">
