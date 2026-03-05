@@ -493,36 +493,52 @@ export function GuidedTour() {
 
     if (mobile) {
       const horizontalCenter = (viewportWidth - tooltipWidth) / 2;
+      const gap = 12;
       let top = padding;
-      
-      if (visibleStepData?.mobilePosition === "bottom") {
-        top = viewportHeight - tooltipHeight - padding - 95;
-      } else if (visibleStepData?.mobilePosition === "top") {
-        top = padding + 60;
-      } else if (rect) {
-        const targetCenter = rect.top + rect.height / 2;
-        if (targetCenter < viewportHeight / 2) {
-          top = Math.min(rect.bottom + padding, viewportHeight - tooltipHeight - padding);
+
+      if (rect) {
+        const placeAbove = () => rect.top - tooltipHeight - gap;
+        const placeBelow = () => rect.bottom + gap;
+        const fitsAbove = placeAbove() >= padding;
+        const fitsBelow = placeBelow() + tooltipHeight <= viewportHeight - padding;
+
+        if (visibleStepData?.mobilePosition === "top") {
+          top = fitsAbove ? placeAbove() : (fitsBelow ? placeBelow() : placeAbove());
+        } else if (visibleStepData?.mobilePosition === "bottom") {
+          top = fitsBelow ? placeBelow() : (fitsAbove ? placeAbove() : placeBelow());
         } else {
-          top = Math.max(padding, rect.top - tooltipHeight - padding);
+          const targetCenter = rect.top + rect.height / 2;
+          if (targetCenter < viewportHeight / 2) {
+            top = fitsBelow ? placeBelow() : placeAbove();
+          } else {
+            top = fitsAbove ? placeAbove() : placeBelow();
+          }
         }
       } else {
         top = (viewportHeight - tooltipHeight) / 2;
       }
-      
+
       if (visibleStepData?.mobileOffset?.top) {
         top += visibleStepData.mobileOffset.top;
       }
-      
-      // Always clamp on mobile to ensure tooltip stays on screen
-      // Use a minimum of 75px from top and bottom
-      const minTop = 75;
-      const maxTop = Math.max(minTop, viewportHeight - tooltipHeight - 75);
+
+      const minTop = 20;
+      const maxTop = Math.max(minTop, viewportHeight - tooltipHeight - 20);
       top = Math.max(minTop, Math.min(top, maxTop));
-      
-      // Ensure left is also clamped
+
+      if (rect) {
+        const tooltipBottom = top + tooltipHeight;
+        const overlapsTarget = !(tooltipBottom <= rect.top - gap || top >= rect.bottom + gap);
+        if (overlapsTarget) {
+          const aboveTop = Math.max(minTop, rect.top - tooltipHeight - gap);
+          const belowTop = Math.min(maxTop, rect.bottom + gap);
+          const aboveDistance = Math.abs((aboveTop + tooltipHeight / 2) - (rect.top + rect.height / 2));
+          const belowDistance = Math.abs((belowTop + tooltipHeight / 2) - (rect.top + rect.height / 2));
+          top = aboveDistance > belowDistance ? aboveTop : belowTop;
+        }
+      }
+
       const left = Math.max(padding, Math.min(horizontalCenter, viewportWidth - tooltipWidth - padding));
-      
       return { top: `${top}px`, left: `${left}px`, width: `${tooltipWidth}px` };
     }
 
