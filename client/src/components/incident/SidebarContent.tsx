@@ -245,29 +245,29 @@ export function SidebarContent({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" sideOffset={6} className="w-[var(--radix-dropdown-menu-trigger-width)] p-1">
-            <DropdownMenuItem className="gap-2" onClick={onLogCall}>
-              <Phone className="w-4 h-4 text-green-500" />
-              <span>Record Call</span>
+            <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm mb-1" onClick={onLogService}>
+              <SlidersHorizontal className="w-4 h-4 text-slate-500" />
+              <span>Record Custom</span>
             </DropdownMenuItem>
-            <DropdownMenuItem className="gap-2" onClick={onLogText}>
-              <MessageSquare className="w-4 h-4 text-blue-400" />
-              <span>Record Text</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="gap-2" onClick={onLogEmail}>
-              <Mail className="w-4 h-4 text-purple-400" />
-              <span>Record Email</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="gap-2" onClick={onLogService}>
+            <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm mb-1" onClick={onLogService}>
               <Wrench className="w-4 h-4 text-orange-500" />
               <span>Record Service</span>
             </DropdownMenuItem>
-            <DropdownMenuItem className="gap-2" disabled>
-              <Globe className="w-4 h-4 text-slate-400" />
+            <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm mb-1" onClick={onLogService}>
+              <Globe className="w-4 h-4 text-slate-500" />
               <span>Record Portal</span>
             </DropdownMenuItem>
-            <DropdownMenuItem className="gap-2" disabled>
-              <SlidersHorizontal className="w-4 h-4 text-slate-400" />
-              <span>Record Custom</span>
+            <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm mb-1" onClick={onLogEmail}>
+              <Mail className="w-4 h-4 text-purple-400" />
+              <span>Record Email</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm mb-1" onClick={onLogText}>
+              <MessageSquare className="w-4 h-4 text-blue-400" />
+              <span>Record Text</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm" onClick={onLogCall}>
+              <Phone className="w-4 h-4 text-green-500" />
+              <span>Record Call</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
