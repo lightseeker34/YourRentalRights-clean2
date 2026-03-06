@@ -9,7 +9,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertUserSchema, InsertUser } from "@shared/schema";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
-import { Scale } from "lucide-react";
 import { useEffect } from "react";
 
 export default function AuthPage() {
@@ -31,13 +30,6 @@ export default function AuthPage() {
 
   return (
     <div className="w-full bg-slate-50 flex flex-col items-center justify-start px-4 pt-1 pb-4">
-      <div className="mb-4 flex items-center gap-2">
-        <div className="bg-slate-900 p-2 rounded-lg">
-          <Scale className="w-6 h-6 text-white" />
-        </div>
-        <h1 className="text-2xl font-bold text-slate-900">YourRentalRights.com</h1>
-      </div>
-
       <Card className="w-full max-w-md shadow-xl border-slate-200">
         <Tabs defaultValue="login" className="w-full">
           <CardHeader>

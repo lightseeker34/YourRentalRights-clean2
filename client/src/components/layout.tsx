@@ -21,7 +21,7 @@ export function Layout({ children, hideTicker = false, hideFooter = false }: Lay
   const isAuth = location.startsWith('/auth');
   const isIncidentView = location.startsWith('/dashboard/incident/');
   const shouldHideTicker = hideTicker || isDashboard || isAuth;
-  const shouldHideFooter = hideFooter || isDashboard || isAuth;
+  const shouldHideFooter = hideFooter || isDashboard;
   const shouldHideHeader = isDashboard; // Keep header (hamburger) on auth routes
 
   const navItems = [
