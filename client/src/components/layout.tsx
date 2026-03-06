@@ -18,11 +18,11 @@ export function Layout({ children, hideTicker = false, hideFooter = false }: Lay
 
   // Auto-hide ticker/footer on dashboard pages and enable immersive incident view
   const isDashboard = location.startsWith('/dashboard');
+  const isAuth = location.startsWith('/auth');
   const isIncidentView = location.startsWith('/dashboard/incident/');
-  const isAuthRoute = location.startsWith('/auth');
-  const shouldHideTicker = hideTicker || isDashboard || isAuthRoute;
-  const shouldHideFooter = hideFooter || isDashboard;
-  const shouldHideHeader = isDashboard || isAuthRoute; // Hide global header on dashboard + auth routes
+  const shouldHideTicker = hideTicker || isDashboard || isAuth;
+  const shouldHideFooter = hideFooter || isDashboard || isAuth;
+  const shouldHideHeader = isDashboard || isAuth; // Hide global chrome on dashboard + auth routes
 
   const navItems = [
     { href: "/", label: "Home", icon: Home },
