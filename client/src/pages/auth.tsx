@@ -16,7 +16,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from 
 
 export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const [open, setOpen] = useState(false);
 
   const navItems = [
@@ -42,14 +42,21 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md mb-6 md:mb-8">
-        <div className="md:hidden flex items-center gap-2">
+        <div className="md:hidden flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5">
+            <div className="bg-slate-900 p-1.5 rounded-lg">
+              <Scale className="w-4 h-4 text-white" />
+            </div>
+            <h1 className="text-lg font-bold text-slate-900">YourRentalRights.com</h1>
+          </div>
+
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-slate-700 -ml-2">
-                <Menu className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="text-slate-700">
+                <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[300px] sm:w-[380px]">
+            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
               <SheetTitle className="text-left font-bold text-slate-900 mt-4 mb-2">Menu</SheetTitle>
               <SheetDescription className="text-left mb-6 text-slate-500">
                 Navigate our services and resources.
@@ -59,7 +66,11 @@ export default function AuthPage() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="flex items-center gap-3 px-4 py-3 rounded-md transition-colors cursor-pointer text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    className={`flex items-center gap-3 px-4 py-3 rounded-md transition-colors cursor-pointer ${
+                      location === item.href
+                        ? "bg-slate-100 text-slate-900 font-semibold"
+                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    }`}
                     onClick={() => setOpen(false)}
                   >
                     <item.icon className="w-5 h-5" />
@@ -69,13 +80,6 @@ export default function AuthPage() {
               </nav>
             </SheetContent>
           </Sheet>
-
-          <div className="flex items-center gap-1.5">
-            <div className="bg-slate-900 p-1.5 rounded-lg">
-              <Scale className="w-4 h-4 text-white" />
-            </div>
-            <h1 className="text-lg font-bold text-slate-900">YourRentalRights.com</h1>
-          </div>
         </div>
 
         <div className="hidden md:flex items-center justify-center gap-2">
