@@ -22,7 +22,7 @@ export function Layout({ children, hideTicker = false, hideFooter = false }: Lay
   const isIncidentView = location.startsWith('/dashboard/incident/');
   const shouldHideTicker = hideTicker || isDashboard || isAuth;
   const shouldHideFooter = hideFooter || isDashboard || isAuth;
-  const shouldHideHeader = isDashboard || isAuth; // Hide global chrome on dashboard + auth routes
+  const shouldHideHeader = isDashboard; // Keep header (hamburger) on auth routes
 
   const navItems = [
     { href: "/", label: "Home", icon: Home },
