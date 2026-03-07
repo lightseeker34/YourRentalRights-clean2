@@ -40,9 +40,9 @@ export function ImagePreviewModal({
                 <button
                   type="button"
                   aria-label="Close preview"
-                  className="absolute right-4 top-4 z-10 inline-flex h-8 w-8 items-center justify-center rounded-md bg-background text-foreground shadow-sm transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="absolute right-4 top-4 z-10 inline-flex h-7 w-7 items-center justify-center rounded-sm bg-accent text-muted-foreground opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-3.5 w-3.5" />
                 </button>
               </DialogClose>
               <div className="flex items-center justify-center w-full h-full">
