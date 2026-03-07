@@ -5,7 +5,7 @@ import { format } from "date-fns";
 import {
   Bot, Phone, MessageSquare, Mail, FileText, Image as ImageIcon,
   Trash2, Calendar, Clock, Pencil, Paperclip, ChevronDown, ChevronRight,
-  Download, Wrench, SlidersHorizontal, Globe,
+  Download, Wrench, SlidersHorizontal, Globe, X,
 } from "lucide-react";
 import { Incident, IncidentLog } from "@shared/schema";
 import { Card } from "@/components/ui/card";
@@ -77,6 +77,7 @@ export interface SidebarContentProps {
   openPreview: (log: IncidentLog) => void;
   openEditLog: (log: IncidentLog) => void;
   onDeleteLog: (logId: number) => void;
+  onClosePanel?: () => void;
   /** 'mobile' adds mobile-specific data-testids and styling */
   variant?: 'mobile' | 'desktop';
 }
@@ -119,6 +120,7 @@ export function SidebarContent({
   openPreview,
   openEditLog,
   onDeleteLog,
+  onClosePanel,
   variant = 'desktop',
 }: SidebarContentProps) {
   const isMobile = variant === 'mobile';
@@ -135,21 +137,34 @@ export function SidebarContent({
     <>
       <div className={`border border-slate-300 rounded-lg p-4 ${isMobile ? 'pt-[16px] pb-[16px] mt-[13px] mb-[13px]' : 'mb-6'}`}>
         <div className="flex justify-end mb-2">
-          <button
-            onClick={onToggleStatus}
-            disabled={toggleStatusPending}
-            className={`px-3 py-1 rounded text-xs font-bold uppercase flex items-center gap-1 cursor-pointer transition-colors ${
-              isMobile ? 'pl-[10px] pr-[10px] pt-[4px] pb-[4px]' : ''
-            } ${
-              incident.status === 'open'
-                ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                : 'bg-red-100 text-red-700 hover:bg-red-200'
-            }`}
-            data-testid={isMobile ? "status-toggle-mobile" : "status-toggle"}
-          >
-            <Clock className="w-3 h-3" />
-            {incident.status === 'open' ? 'Open' : 'Closed'}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onToggleStatus}
+              disabled={toggleStatusPending}
+              className={`px-3 py-1 rounded text-xs font-bold uppercase flex items-center gap-1 cursor-pointer transition-colors ${
+                isMobile ? 'pl-[10px] pr-[10px] pt-[4px] pb-[4px]' : ''
+              } ${
+                incident.status === 'open'
+                  ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                  : 'bg-red-100 text-red-700 hover:bg-red-200'
+              }`}
+              data-testid={isMobile ? "status-toggle-mobile" : "status-toggle"}
+            >
+              <Clock className="w-3 h-3" />
+              {incident.status === 'open' ? 'Open' : 'Closed'}
+            </button>
+            {isMobile && onClosePanel && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-slate-500 hover:text-slate-700 hover:bg-slate-50"
+                onClick={onClosePanel}
+                data-testid="button-close-incident-panel"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
         </div>
         <div className="flex flex-wrap items-center gap-1 mb-3">
           <Button

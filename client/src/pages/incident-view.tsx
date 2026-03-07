@@ -1006,6 +1006,10 @@ export default function IncidentView() {
     openPreview,
     openEditLog,
     onDeleteLog: (logId: number) => deleteMutation.mutate(logId),
+    onClosePanel: () => {
+      setMobileDrawerOpen(false);
+      setDrawerOpenedByTour(false);
+    },
   } as const;
 
 
@@ -1198,13 +1202,7 @@ export default function IncidentView() {
       )}
       {/* Mobile drawer */}
       <div className={`fixed top-0 left-0 h-[100dvh] w-80 bg-white z-50 transform transition-transform duration-300 ease-out md:hidden flex flex-col shadow-xl rounded-r-xl ${mobileDrawerOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="flex justify-between items-center p-4 border-b shrink-0 pt-[1px] pb-[1px]">
-          <h2 className="font-bold text-lg pt-[10px] pb-[10px]">Case Details</h2>
-          <Button variant="ghost" size="icon" onClick={() => { setMobileDrawerOpen(false); setDrawerOpenedByTour(false); }}>
-            <X className="w-5 h-5" />
-          </Button>
-        </div>
-          <div className="flex-1 overflow-y-auto p-4 scrollbar-hide pb-32">
+        <div className="flex-1 overflow-y-auto p-4 scrollbar-hide pb-32">
           <SidebarContent {...sidebarProps} variant="mobile" />
         </div>
       </div>
