@@ -1,5 +1,5 @@
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Paperclip } from "lucide-react";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Paperclip, X } from "lucide-react";
 import type { ReactNode } from "react";
 
 type ImagePreviewModalProps = {
@@ -23,7 +23,8 @@ export function ImagePreviewModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         aria-describedby={undefined}
-        className={previewType === 'image' ? "w-[98vw] max-w-none h-[96vh] max-h-[96vh] rounded-xl mx-auto p-1 [&>button]:top-8 [&>button]:right-4" : "w-[90vw] max-w-3xl max-h-[90vh] rounded-xl mx-auto [&>button]:top-8 [&>button]:right-4"}
+        hideCloseButton={previewType === 'image'}
+        className={previewType === 'image' ? "w-[98vw] max-w-none h-[96vh] max-h-[96vh] rounded-xl mx-auto p-1" : "w-[90vw] max-w-3xl max-h-[90vh] rounded-xl mx-auto [&>button]:top-8 [&>button]:right-4"}
       >
         {previewType !== 'image' && (
           <DialogHeader>
@@ -32,11 +33,22 @@ export function ImagePreviewModal({
           </DialogHeader>
         )}
 
-        <div className={previewType === 'image' ? "flex items-center justify-center pt-16 px-1 pb-1 w-full h-full overflow-auto" : "flex items-center justify-center p-4 w-full max-h-[75vh] overflow-auto"}>
+        <div className={previewType === 'image' ? "relative flex items-center justify-center px-1 py-1 w-full h-full overflow-auto" : "flex items-center justify-center p-4 w-full max-h-[75vh] overflow-auto"}>
           {previewType === 'image' ? (
-            <div className="flex items-center justify-center w-full h-full">
-              {renderImage()}
-            </div>
+            <>
+              <DialogClose asChild>
+                <button
+                  type="button"
+                  aria-label="Close preview"
+                  className="absolute right-4 top-4 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/70 text-white shadow-md transition hover:bg-black/85 focus:outline-none focus:ring-2 focus:ring-white/80"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </DialogClose>
+              <div className="flex items-center justify-center w-full h-full">
+                {renderImage()}
+              </div>
+            </>
           ) : (
             <div className="flex flex-col items-center gap-4">
               <Paperclip className="w-16 h-16 text-slate-400" />
