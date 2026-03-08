@@ -264,19 +264,22 @@ export function SidebarContent({
           {/* Add Log section */}
           <div className="space-y-2 mt-2 mb-3" data-testid={isMobile ? "log-buttons-mobile" : "log-buttons"}>
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-between gap-2 h-7 px-2 text-xs text-slate-600 hover:text-slate-700 bg-[#4d5e700f] border border-slate-300 focus-visible:ring-0 focus-visible:outline-none active:ring-0"
-                  data-testid={isMobile ? "button-record-timeline-event-mobile" : "button-record-timeline-event"}
-                >
-                  <span className="inline-flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-amber-500" />
-                    <span>Record Timeline Event</span>
-                  </span>
-                  <ChevronDown className="w-4 h-4 text-slate-500" />
-                </Button>
-              </DropdownMenuTrigger>
+              <div className="relative">
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-between gap-2 h-7 px-2 pr-16 text-xs text-slate-600 hover:text-slate-700 bg-[#4d5e700f] border border-slate-300 focus-visible:ring-0 focus-visible:outline-none active:ring-0"
+                    data-testid={isMobile ? "button-record-timeline-event-mobile" : "button-record-timeline-event"}
+                  >
+                    <span className="inline-flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-amber-500" />
+                      <span>Record Timeline Event</span>
+                    </span>
+                    <ChevronDown className="w-4 h-4 text-slate-500" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <div className="absolute right-0 top-0 h-full w-12 z-10" aria-hidden="true" />
+              </div>
               <DropdownMenuContent align="start" sideOffset={6} className="w-[var(--radix-dropdown-menu-trigger-width)] p-1">
                 <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm mb-1" onClick={onLogCustom}>
                   <SlidersHorizontal className="w-4 h-4 text-rose-500" />
