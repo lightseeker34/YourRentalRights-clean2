@@ -577,7 +577,7 @@ CONTEXT-PASS MODE: ${includeBackfill ? "PASS 2 (older routine history included)"
         '.jpg': 'image/jpeg',
         '.jpeg': 'image/jpeg'
       };
-      const isSupportedRemoteImage = (url: string) =>
+      const isImageUrl = (url: string) =>
         /\.(png|gif|webp|jpe?g)(?:[?#].*)?$/i.test(url);
 
       // Try xAI Grok first
@@ -617,7 +617,7 @@ CONTEXT-PASS MODE: ${includeBackfill ? "PASS 2 (older routine history included)"
                     image_url: { url: `data:${mimeType};base64,${base64}` }
                   });
                 }
-              } else if (imageUrl.startsWith('http') && isSupportedRemoteImage(imageUrl)) {
+              } else if (imageUrl.startsWith('http') && isImageUrl(imageUrl)) {
                 // External URLs can be passed directly
                 messageContent.push({
                   type: "image_url",
@@ -713,7 +713,7 @@ CONTEXT-PASS MODE: ${includeBackfill ? "PASS 2 (older routine history included)"
                     image_url: { url: `data:${mimeType};base64,${base64}` }
                   });
                 }
-              } else if (imageUrl.startsWith('http') && isSupportedRemoteImage(imageUrl)) {
+              } else if (imageUrl.startsWith('http') && isImageUrl(imageUrl)) {
                 messageContent.push({
                   type: "image_url",
                   image_url: { url: imageUrl }

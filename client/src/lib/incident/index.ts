@@ -18,7 +18,27 @@ export const isLikelyImageUrl = (url: string): boolean =>
 export const getAttachmentDisplayName = (log: IncidentLog): string =>
   log.title || (log.metadata as any)?.originalName || log.content || "Attachment";
 
+const PHOTO_ATTACHMENT_PARENT_TYPES = new Set([
+  "call",
+  "text",
+  "email",
+  "photo",
+  "service",
+  "portal",
+  "custom",
+]);
+
+const DOCUMENT_ATTACHMENT_PARENT_TYPES = new Set([
+  "call",
+  "text",
+  "email",
+  "service",
+  "portal",
+  "custom",
+]);
+
 export const getAttachedPhotos = (log: IncidentLog, logs: IncidentLog[]): IncidentLog[] => {
+  if (!PHOTO_ATTACHMENT_PARENT_TYPES.has(log.type)) return [];
   return logs.filter(l => {
     const parentLogId = (l.metadata as any)?.parentLogId;
     return l.type === 'photo' && parentLogId === log.id;
@@ -26,6 +46,7 @@ export const getAttachedPhotos = (log: IncidentLog, logs: IncidentLog[]): Incide
 };
 
 export const getAttachedDocuments = (log: IncidentLog, logs: IncidentLog[]): IncidentLog[] => {
+  if (!DOCUMENT_ATTACHMENT_PARENT_TYPES.has(log.type)) return [];
   return logs.filter(l => {
     const parentLogId = (l.metadata as any)?.parentLogId;
     return l.type === 'document' && parentLogId === log.id;
@@ -54,19 +75,30 @@ export const buildAiConversationDraftFromLog = (
   log: IncidentLog,
   logs: IncidentLog[],
 ): { message: string; attachments: string[] } => {
-  const typeLabel = log.type === "chat"
-    ? (log.isAi ? "Assistant" : "You")
-    : log.type === "photo"
-      ? "Photo"
-      : log.type === "note"
-        ? "Note"
-        : log.type === "portal"
-          ? "Portal Entry"
-          : log.type === "service"
-            ? "Service Request"
-            : log.type === "custom"
-              ? "Custom Entry"
-              : log.type.charAt(0).toUpperCase() + log.type.slice(1);
+  let typeLabel: string;
+  switch (log.type) {
+    case "chat":
+      typeLabel = log.isAi ? "Assistant" : "You";
+      break;
+    case "photo":
+      typeLabel = "Photo";
+      break;
+    case "note":
+      typeLabel = "Note";
+      break;
+    case "portal":
+      typeLabel = "Portal Entry";
+      break;
+    case "service":
+      typeLabel = "Service Request";
+      break;
+    case "custom":
+      typeLabel = "Custom Entry";
+      break;
+    default:
+      typeLabel = log.type.charAt(0).toUpperCase() + log.type.slice(1);
+      break;
+  }
 
   const attachedFiles = getAttachedFiles(log, logs);
   const attachmentUrls = attachedFiles

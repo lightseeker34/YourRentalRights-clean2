@@ -429,9 +429,9 @@ export function SidebarContent({
                             </button>
                             {item.chats.map((log) => (
                               <div key={log.id} id={`log-entry-${log.id}`} className="scroll-mb-24 md:scroll-mb-16 transition-all duration-500">
-                                <LogEntryCard
+                                  <LogEntryCard
                                   log={log}
-                                  logs={logs}
+                                  logs={logs || []}
                                   icon={MessageSquare}
                                   color="text-slate-900"
                                   highlightedLogId={highlightedLogId}
@@ -481,7 +481,7 @@ export function SidebarContent({
                     >
                       <LogEntryCard
                         log={log}
-                        logs={logs}
+                        logs={logs || []}
                         icon={icon}
                         color={color}
                         highlightedLogId={highlightedLogId}

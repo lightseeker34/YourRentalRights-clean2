@@ -23,7 +23,7 @@ import { compactMarkdownComponents } from "@/lib/markdown/incidentMarkdown";
 
 interface LogEntryCardProps {
   log: IncidentLog;
-  logs?: IncidentLog[];
+  logs: IncidentLog[];
   icon: React.ComponentType<{ className?: string }>;
   color: string;
   highlightedLogId: number | null;
@@ -63,7 +63,9 @@ export function LogEntryCard({
 }: LogEntryCardProps) {
   const isUserChat = log.type === 'chat' && !log.isAi;
   const canAddToAiConversation = canAddLogToAiConversation(log);
-  const aiConversationDraft = logs ? buildAiConversationDraftFromLog(log, logs) : { message: log.content, attachments: [] };
+  const aiConversationDraft = canAddToAiConversation
+    ? buildAiConversationDraftFromLog(log, logs)
+    : null;
 
   return (
     <Card
@@ -128,6 +130,7 @@ export function LogEntryCard({
               size="icon"
               className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-blue-500 hover:text-blue-700"
               onClick={() => {
+                if (!aiConversationDraft) return;
                 chatInputRef.current?.setInput(aiConversationDraft.message);
                 chatInputRef.current?.setAttachments(aiConversationDraft.attachments);
                 setTimeout(() => { chatInputRef.current?.focus(); }, 100);
