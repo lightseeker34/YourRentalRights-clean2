@@ -1208,11 +1208,10 @@ export default function IncidentView() {
       </div>
       {/* Mobile edge indicator - swipe hint */}
       <div 
-        className="fixed left-0 top-1/2 -translate-y-1/2 z-30 md:hidden bg-white border border-slate-300 px-1 py-4 rounded-r-lg shadow-md flex items-center cursor-pointer"
+        className="fixed left-0 top-1/2 -translate-y-1/2 z-30 md:hidden bg-white border border-slate-300 w-2 h-24 rounded-r-lg shadow-md cursor-pointer"
         onClick={() => { setMobileDrawerOpen(true); setDrawerOpenedByTour(false); }}
-      >
-        <span className="text-black text-xs font-medium" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}>Open</span>
-      </div>
+        aria-label="Open incident panel"
+      />
       {/* Desktop Sidebar / Case Info */}
       <div className="w-96 border-r border-slate-200 bg-white p-6 hidden md:block overflow-y-auto pl-[20px] pr-[20px]">
         <SidebarContent {...sidebarProps} variant="desktop" />
