@@ -29,7 +29,8 @@ import { useToast } from "@/hooks/use-toast";
 import { format, formatDistanceToNow } from "date-fns";
 import { 
   MessageSquare, Users, Eye, Clock, Pin, Lock, Plus, Search,
-  TrendingUp, MessageCircle, HelpCircle, ChevronRight, Paperclip, X, FileText, Image, Music, Video, FolderUp
+  TrendingUp, MessageCircle, HelpCircle, ChevronRight, Paperclip, X, FileText, Image, Music, Video, FolderUp,
+  Scale, ShieldAlert, FolderArchive, Building2, Wrench, Gavel, Wallet, Bot
 } from "lucide-react";
 import { useRef, useEffect } from "react";
 import { GuidedTour } from "@/components/guided-tour";
@@ -40,6 +41,14 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   TrendingUp,
   MessageCircle,
   HelpCircle,
+  Scale,
+  ShieldAlert,
+  FolderArchive,
+  Building2,
+  Wrench,
+  Gavel,
+  Wallet,
+  Bot,
 };
 
 function getTrustLevelBadge(level: number) {
@@ -84,15 +93,20 @@ function CategoryCard({ category, postCount }: { category: ForumCategory; postCo
 
   return (
     <Card 
-      className="cursor-pointer hover:bg-slate-50 transition-colors"
+      className="cursor-pointer hover:bg-slate-50 transition-colors w-full min-w-0 overflow-hidden"
       onClick={() => navigate(`/forum/category/${category.id}`)}
       data-testid={`category-card-${category.id}`}
     >
-      <CardContent className="p-4 flex items-center gap-3 sm:gap-4 overflow-hidden">
+      <CardContent className="p-4 flex items-center gap-2 sm:gap-4 overflow-hidden min-w-0">
         <div 
-          className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center bg-slate-100 shrink-0"
+          className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 border"
+          style={{
+            backgroundColor: `${category.color ?? "#64748b"}14`,
+            borderColor: `${category.color ?? "#64748b"}33`,
+            color: category.color ?? "#475569",
+          }}
         >
-          <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 text-slate-600" />
+          <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 text-current" />
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-slate-900 truncate">{category.name}</h3>
@@ -100,12 +114,12 @@ function CategoryCard({ category, postCount }: { category: ForumCategory; postCo
             <p className="text-sm text-slate-500 truncate">{category.description}</p>
           )}
         </div>
-        <div className="flex items-center gap-2 sm:gap-4 text-sm text-slate-500 shrink-0">
+        <div className="flex items-center gap-2 text-sm text-slate-500 shrink-0">
           <div className="flex items-center gap-1">
             <MessageSquare className="w-4 h-4" />
             <span>{postCount}</span>
           </div>
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-4 h-4 hidden sm:block" />
         </div>
       </CardContent>
     </Card>
@@ -119,14 +133,14 @@ function PostRow({ post, author }: { post: ForumPost; author?: ForumUser }) {
 
   return (
     <Card 
-      className="hover:bg-slate-50 cursor-pointer transition-colors"
+      className="hover:bg-slate-50 cursor-pointer transition-colors w-full min-w-0 overflow-hidden"
       onClick={() => navigate(`/forum/post/${post.id}`)}
       data-testid={`post-row-${post.id}`}
     >
-      <CardContent className="p-3 sm:p-4 flex items-start gap-3 overflow-hidden">
+      <CardContent className="p-3 sm:p-4 flex items-start gap-3 overflow-hidden min-w-0">
         <UserAvatar user={author} size="md" />
         <div className="flex-1 min-w-0 overflow-hidden">
-          <div className="flex items-center gap-2 mb-1 flex-wrap">
+          <div className="flex items-center gap-2 mb-1 flex-wrap min-w-0">
             {post.isPinned && (
               <Badge variant="secondary" className="text-xs shrink-0">
                 <Pin className="w-3 h-3 mr-1" /> Pinned
@@ -137,7 +151,7 @@ function PostRow({ post, author }: { post: ForumPost; author?: ForumUser }) {
                 <Lock className="w-3 h-3 mr-1" /> Locked
               </Badge>
             )}
-            <h4 className="font-medium text-slate-900 truncate">{post.title}</h4>
+            <h4 className="font-medium text-slate-900 truncate min-w-0 flex-1">{post.title}</h4>
           </div>
           <p className="text-sm text-slate-500 line-clamp-2 pt-[4px] pb-[4px]">{stripHtml(post.content)}</p>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-2 gap-2">
@@ -443,8 +457,8 @@ export default function Forum() {
         />
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid gap-8 lg:grid-cols-3 min-w-0">
+        <div className="lg:col-span-2 space-y-6 min-w-0">
           <div>
             <h2 className="text-lg font-semibold text-slate-900 mb-4">Categories</h2>
             <div className="space-y-2">
@@ -484,7 +498,7 @@ export default function Forum() {
           </div>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-6 min-w-0">
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-base">Forum Stats</CardTitle>
