@@ -458,6 +458,8 @@ export function SidebarContent({
                   else if (log.type === 'email') { icon = Mail; color = "text-purple-500"; }
                   else if (log.type === 'photo') { icon = ImageIcon; color = "text-blue-500"; }
                   else if (log.type === 'service') { icon = Wrench; color = "text-orange-500"; }
+                  else if (log.type === 'portal') { icon = Globe; color = "text-cyan-500"; }
+                  else if (log.type === 'custom') { icon = SlidersHorizontal; color = "text-rose-500"; }
                   else if (log.type === 'note') { icon = FileText; color = "text-slate-500"; }
 
                   const attachedPhotos = logs?.filter(l => {

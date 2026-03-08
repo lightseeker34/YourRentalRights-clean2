@@ -4,7 +4,7 @@ import { Incident, InsertIncident, IncidentLog } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Plus, FolderOpen, Clock, CheckCircle, Phone, MessageSquare, Mail, FileText, Image as ImageIcon, Trash2, ChevronRight, ChevronDown, Paperclip, X, FolderUp, Menu, LayoutDashboard, User, Settings, LogOut, LogIn, Home, Info } from "lucide-react";
+import { Plus, FolderOpen, Clock, CheckCircle, Phone, MessageSquare, Mail, FileText, Image as ImageIcon, Trash2, ChevronRight, ChevronDown, Paperclip, X, FolderUp, Menu, LayoutDashboard, User, Settings, LogOut, LogIn, Home, Info, Wrench, Globe, SlidersHorizontal } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -162,6 +162,9 @@ function TimelineCard({ incident, onPrefetch }: { incident: Incident; onPrefetch
       case 'call': return <Phone className="w-3 h-3 text-blue-500" />;
       case 'text': return <MessageSquare className="w-3 h-3 text-green-500" />;
       case 'email': return <Mail className="w-3 h-3 text-purple-500" />;
+      case 'service': return <Wrench className="w-3 h-3 text-orange-500" />;
+      case 'portal': return <Globe className="w-3 h-3 text-cyan-500" />;
+      case 'custom': return <SlidersHorizontal className="w-3 h-3 text-rose-500" />;
       case 'note': return <FileText className="w-3 h-3 text-slate-500" />;
       case 'photo': return <ImageIcon className="w-3 h-3 text-blue-500" />;
       case 'chat': return <MessageSquare className="w-3 h-3 text-slate-900" />;
