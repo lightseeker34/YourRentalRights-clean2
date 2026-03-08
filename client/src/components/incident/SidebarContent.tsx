@@ -268,14 +268,14 @@ export function SidebarContent({
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
-                    className="w-full justify-between gap-2 h-7 px-2 pr-20 text-xs text-slate-600 hover:text-slate-700 bg-[#4d5e700f] border border-slate-300 focus-visible:ring-0 focus-visible:outline-none active:ring-0"
+                    className="relative w-full justify-start gap-2 h-7 px-2 pr-20 text-xs text-slate-600 hover:text-slate-700 bg-[#4d5e700f] border border-slate-300 focus-visible:ring-0 focus-visible:outline-none active:ring-0"
                     data-testid={isMobile ? "button-record-timeline-event-mobile" : "button-record-timeline-event"}
                   >
                     <span className="inline-flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-amber-500" />
                       <span>Record Timeline Event</span>
                     </span>
-                    <ChevronDown className="w-4 h-4 text-slate-500" />
+                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                   </Button>
                 </DropdownMenuTrigger>
                 <div className="absolute right-0 top-0 h-full w-16 z-10" aria-hidden="true" />
