@@ -249,7 +249,7 @@ function TimelineCard({ incident, onPrefetch }: { incident: Incident; onPrefetch
                 <div key={item.id}>
                   {!isExpanded && (
                     <div 
-                      className="bg-slate-50 border border-slate-200 rounded-lg p-2 shadow-sm hover:bg-slate-100 transition-colors cursor-pointer w-[92%] ml-auto"
+                      className="bg-slate-50 border border-slate-200 rounded-lg p-2 min-h-[88px] shadow-sm hover:bg-slate-100 transition-colors cursor-pointer w-[92%] ml-auto flex flex-col"
                       onClick={() => toggleChatGroup(item.id)}
                     >
                       <div className="flex items-center justify-between gap-1.5 mb-1">
@@ -287,7 +287,7 @@ function TimelineCard({ incident, onPrefetch }: { incident: Incident; onPrefetch
                           {firstChat.content}
                         </ReactMarkdown>
                       </div>
-                      <div className="text-xs text-slate-400 mt-1">
+                      <div className="text-xs text-slate-400 mt-auto pt-1">
                         {format(new Date(firstChat.createdAt), "MMM d, yyyy  h:mm a")}
                       </div>
                     </div>
@@ -306,7 +306,7 @@ function TimelineCard({ incident, onPrefetch }: { incident: Incident; onPrefetch
                       </button>
                       {item.chats.map((log) => (
                         <Link key={log.id} href={`/dashboard/incident/${incident.id}?log=${log.id}`} className="block w-full">
-                          <div className={`border rounded-lg p-2 shadow-sm transition-colors cursor-pointer w-[92%] ml-auto ${
+                          <div className={`border rounded-lg p-2 min-h-[88px] shadow-sm transition-colors cursor-pointer w-[92%] ml-auto flex flex-col ${
                             log.isAi 
                               ? "bg-slate-100 border-slate-300 hover:bg-slate-200" 
                               : "bg-[var(--color-user-bubble)] border-[var(--color-user-bubble-border)] hover:bg-[var(--color-user-bubble)]/90"
@@ -342,7 +342,7 @@ function TimelineCard({ incident, onPrefetch }: { incident: Incident; onPrefetch
                                 {log.content}
                               </ReactMarkdown>
                             </div>
-                            <div className="text-xs text-slate-400 mt-0.5">
+                            <div className="text-xs text-slate-400 mt-auto pt-1">
                               {format(new Date(log.createdAt), "MMM d, yyyy  h:mm a")}
                             </div>
                           </div>
@@ -358,7 +358,7 @@ function TimelineCard({ incident, onPrefetch }: { incident: Incident; onPrefetch
             return (
               <div key={log.id} className="relative group/entry">
                 <Link href={`/dashboard/incident/${incident.id}?log=${log.id}`} className="block w-full">
-                  <div className="bg-slate-50 border border-slate-200 rounded-lg p-2 shadow-sm hover:bg-slate-100 transition-colors cursor-pointer w-[92%] ml-auto">
+                  <div className="bg-slate-50 border border-slate-200 rounded-lg p-2 min-h-[88px] shadow-sm hover:bg-slate-100 transition-colors cursor-pointer w-[92%] ml-auto flex flex-col">
                     <div className="flex items-center justify-between gap-1.5 mb-1">
                       <div className="flex items-center gap-1.5 min-w-0">
                         {getEntryIcon(log.type)}
@@ -392,7 +392,7 @@ function TimelineCard({ incident, onPrefetch }: { incident: Incident; onPrefetch
                         {log.content}
                       </ReactMarkdown>
                     </div>
-                    <div className="text-xs text-slate-400 mt-1">
+                    <div className="text-xs text-slate-400 mt-auto pt-1">
                       {format(new Date(log.createdAt), "MMM d, yyyy  h:mm a")}
                     </div>
                   </div>

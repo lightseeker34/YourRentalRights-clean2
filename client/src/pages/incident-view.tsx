@@ -2440,6 +2440,7 @@ export default function IncidentView() {
                             size="sm" 
                             onClick={() => editAndResendMutation.mutate({ logId: log.id, newContent: editLogContent, attachments: editLogAttachments })}
                             disabled={editAndResendMutation.isPending}
+                            className={editAndResendMutation.isPending ? 'animate-pulse' : ''}
                             data-testid={`save-edit-chat-${log.id}`}
                           >
                             {editAndResendMutation.isPending ? 'Reanalyzing...' : 'Save & Resend'}
@@ -2580,6 +2581,7 @@ export default function IncidentView() {
                                 size="sm" 
                                 onClick={() => editAndResendMutation.mutate({ logId: log.id, newContent: editLogContent, attachments: editLogAttachments })}
                                 disabled={editAndResendMutation.isPending}
+                                className={editAndResendMutation.isPending ? 'animate-pulse' : ''}
                               >
                                 {editAndResendMutation.isPending ? 'Reanalyzing...' : 'Save & Resend'}
                               </Button>

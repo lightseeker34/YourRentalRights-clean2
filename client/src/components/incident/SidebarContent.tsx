@@ -406,7 +406,7 @@ export function SidebarContent({
                               </div>
                               <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
                             </div>
-                            <p className="m-0 text-slate-600 text-[11px] leading-4 line-clamp-2 font-normal bg-[var(--color-user-bubble)] border border-[var(--color-user-bubble-border)] p-2 rounded-lg mt-1 overflow-hidden break-words">
+                            <p className="m-0 text-slate-600 text-xs leading-4 line-clamp-2 font-normal mt-1 overflow-hidden break-words">
                               {firstChat.content}
                             </p>
                             <div className="text-xs text-slate-400 mt-auto pt-1">
