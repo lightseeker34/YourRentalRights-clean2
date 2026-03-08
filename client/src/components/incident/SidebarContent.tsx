@@ -256,7 +256,7 @@ export function SidebarContent({
               : "relative inline-block text-sm font-bold text-slate-900 uppercase tracking-wider"
             }>
               <span className="relative z-10">Timeline</span>
-              <span className="absolute -left-4 top-1/2 w-4 -translate-y-1/2 border-t-2 border-slate-200" />
+              <span className="absolute -left-8 top-1/2 w-4 -translate-y-1/2 border-t-2 border-slate-200" />
               <span className="absolute left-[calc(100%+4px)] top-1/2 w-16 -translate-y-1/2 border-t-2 border-slate-200" />
             </h3>
           </div>
