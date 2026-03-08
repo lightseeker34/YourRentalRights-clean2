@@ -250,11 +250,16 @@ export function SidebarContent({
 
       <div className="space-y-6 mt-6">
         <div>
-          <h3 className={isMobile
-            ? "font-bold uppercase tracking-wider text-left pl-[20px] pr-[20px] text-[16px] mt-[10px] mb-[10px] text-[#0f172a]"
-            : "text-sm font-bold text-slate-900 mb-3 uppercase tracking-wider"
-          }>Timeline</h3>
-          <div className="w-8 border-t-2 border-slate-200 mb-2" />
+          <div className="mb-3 ml-[10px]">
+            <h3 className={isMobile
+              ? "relative inline-block font-bold uppercase tracking-wider text-left text-[16px] mt-[10px] mb-[10px] text-[#0f172a]"
+              : "relative inline-block text-sm font-bold text-slate-900 uppercase tracking-wider"
+            }>
+              <span className="relative z-10">Timeline</span>
+              <span className="absolute -left-2 top-1/2 w-2 -translate-y-1/2 border-t-2 border-slate-200" />
+              <span className="absolute left-[52%] top-1/2 w-16 -translate-y-1/2 border-t-2 border-slate-200" />
+            </h3>
+          </div>
 
           {/* Add Log section */}
           <div className="space-y-2 mt-2 mb-3" data-testid={isMobile ? "log-buttons-mobile" : "log-buttons"}>
