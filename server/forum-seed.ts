@@ -174,6 +174,32 @@ export const starterCategories: CategorySeed[] = [
       { title: "Building a Violation Packet for Court", content: "How to combine inspector reports, photos, notices, and timelines into a clear court-ready evidence bundle." },
     ],
   },
+  {
+    name: "YRR Assistant Help & Experience",
+    description: "How the YRR assistant works, best practices, feedback, and feature requests.",
+    icon: "Bot",
+    color: "#6366f1",
+    sortOrder: 11,
+    topics: [
+      { title: "Start Here: How to Use the YRR Assistant Effectively", content: "Pinned quickstart: what to provide, how to phrase requests, and how to get better letter/timeline outputs from the assistant.", pinned: true },
+      { title: "Share Your Experience: What worked well (and what didn’t)", content: "Report wins, friction points, and where the assistant helped or missed. Include specific examples so we can improve quality." },
+      { title: "Prompt Patterns That Get Better Results", content: "Community prompt templates for notices, follow-ups, damage calculations, and evidence summaries." },
+      { title: "Feature Requests: Assistant + Workflow Improvements", content: "Post requested features, UX pain points, and prioritization ideas for YRR assistant workflows." },
+    ],
+  },
+  {
+    name: "General Discussion & Category Requests",
+    description: "Catch-all discussion, where-does-this-go questions, and requested new forum categories.",
+    icon: "MessageSquare",
+    color: "#64748b",
+    sortOrder: 12,
+    topics: [
+      { title: "Start Here: I Don’t Know Where This Goes", content: "Pinned triage thread. If you’re unsure where to post, drop your issue here and mods/community will route you to the right category.", pinned: true },
+      { title: "Requested Categories", content: "Pinned request board for new forum categories. Include suggested category name, why it matters, and sample thread topics.", pinned: true },
+      { title: "General Q&A", content: "Open discussion for topics that don’t cleanly fit elsewhere yet." },
+      { title: "Community Suggestions for Forum Organization", content: "Ideas to improve navigation, naming, and discoverability across forum sections." },
+    ],
+  },
 ];
 
 async function getSeedAuthorId(): Promise<number> {
@@ -299,7 +325,7 @@ export async function upsertCommunityTopics(): Promise<{ categories: number; cre
 }
 
 const COMMUNITY_SEED_VERSION_KEY = "community_seed_version";
-const COMMUNITY_SEED_VERSION = "2026-03-08-categories-v5-codes-roommates";
+const COMMUNITY_SEED_VERSION = "2026-03-08-categories-v6-assistant-general";
 
 export async function syncCommunityTopicsVersioned(): Promise<{ ran: boolean; version: string; created: number; updated: number; categories: number }> {
   const existing = await db.select().from(appSettings).where(eq(appSettings.key, COMMUNITY_SEED_VERSION_KEY)).limit(1);
