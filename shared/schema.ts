@@ -281,6 +281,12 @@ export const DEFAULT_SEVERITY_BY_TYPE: Record<string, SeverityLevel> = {
   service: 'important',
   service_photo: 'important',
   service_document: 'important',
+  portal: 'important',
+  portal_photo: 'important',
+  portal_document: 'important',
+  custom: 'routine',
+  custom_photo: 'routine',
+  custom_document: 'routine',
 };
 
 export function getLogSeverity(log: { type: string; metadata: any }): SeverityLevel {

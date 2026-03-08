@@ -408,7 +408,7 @@ export async function exportToPDF({
     }
 
     const evidenceLogs = logs.filter(l =>
-      l.type === 'call' || l.type === 'text' || l.type === 'email' || l.type === 'service' || l.type === 'note'
+      l.type === 'call' || l.type === 'text' || l.type === 'email' || l.type === 'service' || l.type === 'portal' || l.type === 'custom' || l.type === 'note'
     ).sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
     if (evidenceLogs.length > 0) {
@@ -426,7 +426,9 @@ export async function exportToPDF({
         const typeLabel = log.type === 'call' ? '[CALL]' :
                          log.type === 'text' ? '[TEXT]' :
                          log.type === 'email' ? '[EMAIL]' :
-                         log.type === 'service' ? '[SERVICE]' : '[NOTE]';
+                         log.type === 'service' ? '[SERVICE]' :
+                         log.type === 'portal' ? '[PORTAL]' :
+                         log.type === 'custom' ? '[CUSTOM]' : '[NOTE]';
 
         pdf.setFontSize(11);
         pdf.setFont('helvetica', 'bold');

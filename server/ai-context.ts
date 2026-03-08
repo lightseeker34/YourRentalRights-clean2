@@ -10,9 +10,11 @@ const LOG_TYPE_LABELS: Record<string, string> = {
   document: "DOCUMENT",
   note: "NOTE",
   service: "SERVICE REQUEST",
+  portal: "PORTAL ENTRY",
+  custom: "CUSTOM ENTRY",
 };
 
-const EVIDENCE_TYPES = ["call", "text", "email", "photo", "document", "note", "service"];
+const EVIDENCE_TYPES = ["call", "text", "email", "photo", "document", "note", "service", "portal", "custom"];
 
 function formatLogDate(createdAt: Date | string): string {
   const d = new Date(createdAt);

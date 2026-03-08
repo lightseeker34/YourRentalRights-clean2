@@ -46,6 +46,19 @@ import { ThumbnailWithDelete } from "@/components/incident/ThumbnailWithDelete";
 import { SidebarContent } from "@/components/incident/SidebarContent";
 import { MarkdownRenderer } from "@/components/incident/MarkdownRenderer";
 
+const LOG_TYPE_DISPLAY_LABELS: Record<string, string> = {
+  call: 'Call',
+  text: 'Text',
+  email: 'Email',
+  service: 'Service Request',
+  portal: 'Portal Entry',
+  custom: 'Custom Entry',
+};
+
+function getLogTypeLabel(type: string): string {
+  return LOG_TYPE_DISPLAY_LABELS[type] ?? 'Entry';
+}
+
 export default function IncidentView() {
   const [match, params] = useRoute("/dashboard/incident/:id");
   const id = params?.id;
@@ -547,7 +560,7 @@ export default function IncidentView() {
   const createLogWithPhotoMutation = useMutation({
     mutationFn: async ({ type, title, notes, photos, documents, severity }: { type: string; title: string; notes: string; photos: File[]; documents: File[]; severity?: SeverityLevel }) => {
       const now = new Date();
-      const typeLabel = type === 'call' ? 'Call' : type === 'text' ? 'Text' : 'Email';
+      const typeLabel = getLogTypeLabel(type);
       const effectiveSeverity = severity || DEFAULT_SEVERITY_BY_TYPE[type] || 'routine';
       
       const logRes = await apiRequest("POST", `/api/incidents/${id}/logs`, {
@@ -594,7 +607,7 @@ export default function IncidentView() {
       await queryClient.cancelQueries({ queryKey: [`/api/incidents/${id}/logs`] });
       const previousLogs = queryClient.getQueryData<IncidentLog[]>([`/api/incidents/${id}/logs`]);
       const now = new Date();
-      const typeLabel = type === 'call' ? 'Call' : type === 'text' ? 'Text' : 'Email';
+      const typeLabel = getLogTypeLabel(type);
       const effectiveSeverity = severity || DEFAULT_SEVERITY_BY_TYPE[type] || 'routine';
       const optimisticLog: IncidentLog = {
         id: -Date.now(),
@@ -618,6 +631,7 @@ export default function IncidentView() {
       setLogCallOpen(false);
       setLogTextOpen(false);
       setLogEmailOpen(false);
+      setLogServiceOpen(false);
       return { previousLogs };
     },
     onError: (err, variables, context) => {
@@ -628,7 +642,7 @@ export default function IncidentView() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: [`/api/incidents/${id}/logs`] });
-      const typeLabel = variables.type === 'call' ? 'Call' : variables.type === 'text' ? 'Text' : 'Email';
+      const typeLabel = getLogTypeLabel(variables.type);
       toast({ title: `${typeLabel} Logged`, description: `${typeLabel} has been recorded.` });
     },
   });
@@ -801,6 +815,8 @@ export default function IncidentView() {
     l.type === 'text' ||
     l.type === 'email' ||
     l.type === 'service' ||
+    l.type === 'portal' ||
+    l.type === 'custom' ||
     l.type === 'chat' ||
     (l.type === 'photo' && (getMetaCategory(l) || l.title))
   ).sort((a, b) => {
@@ -2032,7 +2048,7 @@ export default function IncidentView() {
               </div>
             </div>
             <Button 
-              onClick={() => handleLogSubmit('service')} 
+              onClick={() => handleLogSubmit(logServiceMode)} 
               className="w-full"
               disabled={createLogWithPhotoMutation.isPending}
             >
