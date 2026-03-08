@@ -2458,7 +2458,7 @@ export default function IncidentView() {
                             size="sm" 
                             onClick={() => editAndResendMutation.mutate({ logId: log.id, newContent: editLogContent, attachments: editLogAttachments })}
                             disabled={editAndResendMutation.isPending}
-                            className={editAndResendMutation.isPending ? 'animate-pulse disabled:opacity-100' : ''}
+                            className={editAndResendMutation.isPending ? 'animate-pulse disabled:opacity-100 min-w-[130px]' : 'min-w-[130px]'}
                             data-testid={`save-edit-chat-${log.id}`}
                           >
                             {editAndResendMutation.isPending ? `Reanalyzing${loadingDots}` : 'Save & Resend'}
@@ -2599,7 +2599,7 @@ export default function IncidentView() {
                                 size="sm" 
                                 onClick={() => editAndResendMutation.mutate({ logId: log.id, newContent: editLogContent, attachments: editLogAttachments })}
                                 disabled={editAndResendMutation.isPending}
-                                className={editAndResendMutation.isPending ? 'animate-pulse disabled:opacity-100' : ''}
+                                className={editAndResendMutation.isPending ? 'animate-pulse disabled:opacity-100 min-w-[130px]' : 'min-w-[130px]'}
                               >
                                 {editAndResendMutation.isPending ? `Reanalyzing${loadingDots}` : 'Save & Resend'}
                               </Button>
@@ -2788,7 +2788,7 @@ export default function IncidentView() {
                 <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center shrink-0">
                   <Bot className="w-5 h-5" />
                 </div>
-                <div className="p-4 rounded-xl bg-white border border-slate-200 text-slate-500 text-sm italic">
+                <div className="p-4 min-w-[120px] rounded-xl bg-white border border-slate-200 text-slate-500 text-sm italic">
                   {`Analyzing${loadingDots}`}
                 </div>
               </div>
