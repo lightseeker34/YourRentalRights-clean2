@@ -1208,7 +1208,7 @@ export default function IncidentView() {
       </div>
       {/* Mobile edge indicator - swipe hint */}
       <div 
-        className="fixed left-0 top-1/2 -translate-y-1/2 z-30 md:hidden bg-white border border-slate-300 w-5 h-72 rounded-r-lg shadow-md cursor-pointer"
+        className="fixed left-0 top-1/2 -translate-y-1/2 z-30 md:hidden bg-white border border-slate-300 w-2 h-[22.5rem] rounded-r-lg shadow-md cursor-pointer"
         onClick={() => { setMobileDrawerOpen(true); setDrawerOpenedByTour(false); }}
         aria-label="Open incident panel"
       />
