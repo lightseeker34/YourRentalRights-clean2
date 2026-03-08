@@ -166,46 +166,7 @@ export function SidebarContent({
             )}
           </div>
         </div>
-        <h2 className="text-xl font-bold text-slate-900 mb-2">{incident.title}</h2>
-        <div className="flex flex-wrap items-center gap-1 mb-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onExportPdf}
-            disabled={isExporting}
-            className="text-slate-600 hover:text-green-700 h-7 px-2 text-xs border border-slate-300 bg-[#4d5e700f]"
-            data-testid={isMobile ? "button-export-pdf" : "button-export-pdf-desktop"}
-          >
-            <Download className={`w-3.5 h-3.5 mr-1 ${isExporting ? 'animate-pulse' : ''}`} />
-            {isExporting ? 'Exporting...' : 'Export PDF'}
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onTriggerAnalysis}
-            disabled={!canRunAnalysis}
-            className={`h-7 px-2 text-xs border border-slate-300 ${
-              isMobile
-                ? 'inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover-elevate active-elevate-2 min-h-8 rounded-md text-slate-600 hover:text-blue-700 bg-[#4d5e700f] pt-[0px] pb-[0px] mt-[5px] mb-[5px] pl-[8px] pr-[8px] ml-[5px] mr-[5px]'
-                : canRunAnalysis ? 'text-slate-600 hover:text-blue-700 bg-[#4d5e700f]' : 'text-slate-400 bg-slate-100 opacity-60 cursor-not-allowed'
-            }`}
-            title={hasReachedDailyLimit ? 'Daily limit reached — try again tomorrow' : 'Run AI case analysis'}
-            data-testid={isMobile ? "button-ai-analysis" : "button-ai-analysis-desktop"}
-          >
-            <Bot className={`w-3.5 h-3.5 mr-1 ${isAnalyzing ? 'animate-pulse' : ''}`} />
-            AI Analysis
-          </Button>
-        </div>
-        <AnalysisUnlockChecklist
-          hasEnoughEvidence={hasEnoughEvidence}
-          evidenceCount={evidenceCount}
-          remainingEvidence={remainingEvidence}
-          hasReachedDailyLimit={hasReachedDailyLimit}
-          analysisUsageCount={analysisUsageCount}
-          hasUnlockRequirements={hasUnlockRequirements}
-          ANALYSIS_DAILY_LIMIT={ANALYSIS_DAILY_LIMIT}
-          MIN_EVIDENCE_COUNT={MIN_EVIDENCE_COUNT}
-        />
+        <h2 className="text-xl font-bold text-slate-900 mb-2 mt-3">{incident.title}</h2>
         <p className="text-sm text-slate-600 mb-2">{incident.description}</p>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1 text-xs text-slate-400">
@@ -245,6 +206,46 @@ export function SidebarContent({
             </AlertDialog>
           </div>
         </div>
+
+        <div className="flex flex-wrap items-center gap-1 mb-3 mt-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onExportPdf}
+            disabled={isExporting}
+            className="text-slate-600 hover:text-green-700 h-7 px-2 text-xs border border-slate-300 bg-[#4d5e700f]"
+            data-testid={isMobile ? "button-export-pdf" : "button-export-pdf-desktop"}
+          >
+            <Download className={`w-3.5 h-3.5 mr-1 ${isExporting ? 'animate-pulse' : ''}`} />
+            {isExporting ? 'Exporting...' : 'Export PDF'}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onTriggerAnalysis}
+            disabled={!canRunAnalysis}
+            className={`h-7 px-2 text-xs border border-slate-300 ${
+              isMobile
+                ? 'inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover-elevate active-elevate-2 min-h-8 rounded-md text-slate-600 hover:text-blue-700 bg-[#4d5e700f] pt-[0px] pb-[0px] mt-[5px] mb-[5px] pl-[8px] pr-[8px] ml-[5px] mr-[5px]'
+                : canRunAnalysis ? 'text-slate-600 hover:text-blue-700 bg-[#4d5e700f]' : 'text-slate-400 bg-slate-100 opacity-60 cursor-not-allowed'
+            }`}
+            title={hasReachedDailyLimit ? 'Daily limit reached — try again tomorrow' : 'Run AI case analysis'}
+            data-testid={isMobile ? "button-ai-analysis" : "button-ai-analysis-desktop"}
+          >
+            <Bot className={`w-3.5 h-3.5 mr-1 ${isAnalyzing ? 'animate-pulse' : ''}`} />
+            AI Analysis
+          </Button>
+        </div>
+        <AnalysisUnlockChecklist
+          hasEnoughEvidence={hasEnoughEvidence}
+          evidenceCount={evidenceCount}
+          remainingEvidence={remainingEvidence}
+          hasReachedDailyLimit={hasReachedDailyLimit}
+          analysisUsageCount={analysisUsageCount}
+          hasUnlockRequirements={hasUnlockRequirements}
+          ANALYSIS_DAILY_LIMIT={ANALYSIS_DAILY_LIMIT}
+          MIN_EVIDENCE_COUNT={MIN_EVIDENCE_COUNT}
+        />
       </div>
 
       {/* Add Log section */}
