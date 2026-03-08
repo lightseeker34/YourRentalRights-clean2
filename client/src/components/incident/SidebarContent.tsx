@@ -314,8 +314,8 @@ export function SidebarContent({
           <div className="space-y-2">
             {/* Master Bubble */}
             <div className={isMobile
-              ? "bg-purple-50/30 border border-purple-100 shadow-sm rounded-lg p-3"
-              : "bg-white border-2 border-input rounded-lg p-3 shadow-md"
+              ? "bg-purple-50/30 border border-purple-100 shadow-sm rounded-lg p-3 min-h-[88px]"
+              : "bg-white border-2 border-input rounded-lg p-3 shadow-md min-h-[88px]"
             }>
               <div className="flex justify-between items-start mb-1">
                 <h3 className="font-semibold text-slate-900 text-sm line-clamp-1">{incident.title}</h3>
@@ -357,7 +357,7 @@ export function SidebarContent({
                       ))}
                     </div>
                   ) : (
-                    <div className="ml-4 border-l-2 border-slate-200 pl-3 mt-1 flex flex-wrap gap-0.5">
+                    <div className="ml-4 border-l-2 border-slate-200 pl-3 mt-0.5 flex flex-wrap gap-1">
                       {incidentPhotos.map((photo) => (
                         <ThumbnailWithDelete
                           key={photo.id}
@@ -393,7 +393,7 @@ export function SidebarContent({
                       <div key={item.id}>
                         {!isExpanded && (
                           <Card
-                            className="p-2 rounded-lg shadow-sm cursor-pointer bg-slate-50 border-slate-200 hover:bg-slate-100 transition-colors"
+                            className="p-2 rounded-lg min-h-[88px] shadow-sm cursor-pointer bg-slate-50 border-slate-200 hover:bg-slate-100 transition-colors"
                             onClick={() => onToggleChatGroup(item.id)}
                           >
                             <div className="flex items-center justify-between gap-1.5 mb-1">
