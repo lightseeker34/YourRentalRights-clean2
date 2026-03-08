@@ -130,7 +130,7 @@ export function LogEntryCard({
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-blue-500 hover:text-blue-700"
+              className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-slate-500 hover:text-slate-700"
               onClick={() => {
                 if (!aiConversationDraft) return;
                 chatInputRef.current?.setInput(aiConversationDraft.message);

@@ -104,6 +104,7 @@ export default function IncidentView() {
   const [editLogAttachments, setEditLogAttachments] = useState<string[]>([]);
   const [editLogSeverity, setEditLogSeverity] = useState<SeverityLevel>('routine');
   const [showEditEvidencePicker, setShowEditEvidencePicker] = useState(false);
+  const [editUploadedAttachmentLogIds, setEditUploadedAttachmentLogIds] = useState<number[]>([]);
   const editPhotoInputRef = useRef<HTMLInputElement>(null);
   const editFolderInputRef = useRef<HTMLInputElement>(null);
   
@@ -407,10 +408,7 @@ export default function IncidentView() {
       return await res.json();
     },
     onSuccess: () => {
-      setEditLogId(null);
-      setEditLogContent("");
-      setEditLogAttachments([]);
-      setShowEditEvidencePicker(false);
+      resetEditComposerState();
       queryClient.invalidateQueries({ queryKey: [`/api/incidents/${id}/logs`] });
     },
     onError: () => {
@@ -418,6 +416,30 @@ export default function IncidentView() {
     },
   });
   
+  const resetEditComposerState = () => {
+    setEditLogId(null);
+    setEditLogContent("");
+    setEditLogPhoto(null);
+    setEditLogAttachments([]);
+    setShowEditEvidencePicker(false);
+    setEditUploadedAttachmentLogIds([]);
+  };
+
+  const cancelEditComposer = async () => {
+    const pendingLogIds = [...editUploadedAttachmentLogIds];
+    for (const uploadedLogId of pendingLogIds) {
+      try {
+        await apiRequest("DELETE", `/api/logs/${uploadedLogId}`);
+      } catch (err) {
+        console.warn("Failed to delete cancelled edit attachment", uploadedLogId, err);
+      }
+    }
+    resetEditComposerState();
+    if (pendingLogIds.length > 0) {
+      queryClient.invalidateQueries({ queryKey: [`/api/incidents/${id}/logs`] });
+    }
+  };
+
   // Handle file upload during edit (supports multiple files - photos and documents)
   const handleEditPhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -452,6 +474,9 @@ export default function IncidentView() {
         if (res.ok) {
           const data = await res.json();
           setEditLogAttachments(prev => [...prev, data.fileUrl]);
+          if (typeof data.id === 'number') {
+            setEditUploadedAttachmentLogIds(prev => [...prev, data.id]);
+          }
         }
       } catch (err) {
         toast({ title: "Error", description: "Failed to upload file.", variant: "destructive" });
@@ -770,6 +795,7 @@ export default function IncidentView() {
     setEditLogId(log.id);
     setEditLogContent(log.content);
     setEditLogSeverity(getLogSeverity(log));
+    setEditUploadedAttachmentLogIds([]);
     // Load existing attachments (photos and documents) linked via parentLogId
     const attachedPhotos = getAttachedPhotos(log, logs || []);
     const attachedDocs = getAttachedDocuments(log, logs || []);
@@ -1277,7 +1303,7 @@ export default function IncidentView() {
         <SidebarContent {...sidebarProps} variant="desktop" />
       </div>
       {/* Edit Log Dialog */}
-      <Dialog open={editLogId !== null && !chatLogs.some(l => l.id === editLogId)} onOpenChange={(open) => { if (!open) { setEditLogId(null); setEditLogPhoto(null); setEditLogAttachments([]); setShowEditEvidencePicker(false); } }}>
+      <Dialog open={editLogId !== null && !chatLogs.some(l => l.id === editLogId)} onOpenChange={(open) => { if (!open) { void cancelEditComposer(); } }}>
         <DialogContent aria-describedby={undefined} className="w-[90%] rounded-xl py-[45px]">
           <div className="space-y-4">
             <Textarea 
@@ -2405,7 +2431,7 @@ export default function IncidentView() {
                           <Button 
                             variant="ghost" 
                             size="sm" 
-                            onClick={() => { setEditLogId(null); setEditLogContent(""); setEditLogAttachments([]); setShowEditEvidencePicker(false); }}
+                            onClick={() => { void cancelEditComposer(); }}
                             data-testid={`cancel-edit-chat-${log.id}`}
                           >
                             Cancel
@@ -2426,13 +2452,13 @@ export default function IncidentView() {
                         {/* Backdrop */}
                         <div 
                           className="fixed inset-0 bg-black/50 z-[9998]"
-                          onClick={() => { setEditLogId(null); setEditLogContent(""); setEditLogAttachments([]); setShowEditEvidencePicker(false); }}
+                          onClick={() => { void cancelEditComposer(); }}
                         />
                         {/* Centered modal */}
                         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
                           <div className="w-[90%] max-w-md bg-white border border-slate-200 rounded-xl shadow-lg pt-12 pb-4 px-4 flex flex-col gap-2 relative">
                             <button
-                              onClick={() => { setEditLogId(null); setEditLogContent(""); setEditLogAttachments([]); setShowEditEvidencePicker(false); }}
+                              onClick={() => { void cancelEditComposer(); }}
                               className="absolute top-4 right-4 p-1 rounded-full hover:bg-slate-100 transition-colors"
                               data-testid="close-edit-chat-mobile"
                             >
@@ -2546,7 +2572,7 @@ export default function IncidentView() {
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
-                                onClick={() => { setEditLogId(null); setEditLogContent(""); setEditLogAttachments([]); setShowEditEvidencePicker(false); }}
+                                onClick={() => { void cancelEditComposer(); }}
                               >
                                 Cancel
                               </Button>
