@@ -4,6 +4,7 @@ import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 import { pool } from "./db";
+import { seedCommunityTopicsIfEmpty } from "./forum-seed";
 
 const app = express();
 app.use(compression());
@@ -64,6 +65,15 @@ app.use((req, res, next) => {
 
 (async () => {
   await registerRoutes(httpServer, app);
+
+  try {
+    const seeded = await seedCommunityTopicsIfEmpty();
+    if (seeded.seeded) {
+      log(`forum starter content seeded (${seeded.categories} categories, ${seeded.posts} posts)`, "seed");
+    }
+  } catch (error) {
+    console.error("forum seed on startup failed:", error);
+  }
 
   app.get("/healthz", async (_req, res) => {
     try {
