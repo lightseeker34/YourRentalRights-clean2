@@ -267,7 +267,7 @@ export function SidebarContent({
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full justify-between gap-2 bg-[#4d5e700f] border-slate-300 focus-visible:ring-0 focus-visible:outline-none active:ring-0"
+                  className="w-full justify-between gap-2 h-7 px-2 text-xs text-slate-600 hover:text-slate-700 bg-[#4d5e700f] border border-slate-300 focus-visible:ring-0 focus-visible:outline-none active:ring-0"
                   data-testid={isMobile ? "button-record-timeline-event-mobile" : "button-record-timeline-event"}
                 >
                   <span className="inline-flex items-center gap-2">
