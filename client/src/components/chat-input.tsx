@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Send, Plus, Paperclip, FolderOpen, FolderUp, X, Check } from "lucide-react";
 import type { IncidentLog } from "@shared/schema";
+import { getAttachmentDisplayName, isImageAttachmentLog, isLikelyImageUrl } from "@/lib/incident";
 
 export interface ChatInputHandle {
   setInput: (value: string) => void;
@@ -169,13 +170,33 @@ export const ChatInput = memo(forwardRef<ChatInputHandle, ChatInputProps>(functi
             <div className="flex gap-2 flex-wrap px-3 pt-3">
               {chatAttachments.map((url, idx) => (
                 <div key={idx} className="relative group">
-                  <img
-                    src={url}
-                    loading="lazy"
-                    alt="Attached"
-                    className="w-14 h-14 object-cover rounded-lg border border-slate-200"
-                    data-testid={`chat-attachment-preview-${idx}`}
-                  />
+                  {(() => {
+                    const attachmentLog = logs?.find((log) => log.fileUrl === url);
+                    const isImage = attachmentLog ? isImageAttachmentLog(attachmentLog) : isLikelyImageUrl(url);
+                    const attachmentName = attachmentLog ? getAttachmentDisplayName(attachmentLog) : `Attachment ${idx + 1}`;
+
+                    if (isImage) {
+                      return (
+                        <img
+                          src={url}
+                          loading="lazy"
+                          alt={attachmentName}
+                          className="w-14 h-14 object-cover rounded-lg border border-slate-200"
+                          data-testid={`chat-attachment-preview-${idx}`}
+                        />
+                      );
+                    }
+
+                    return (
+                      <div
+                        className="w-14 h-14 rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-center"
+                        data-testid={`chat-attachment-preview-${idx}`}
+                        title={attachmentName}
+                      >
+                        <Paperclip className="w-5 h-5 text-slate-500" />
+                      </div>
+                    );
+                  })()}
                   <button
                     onClick={() => removeAttachment(url)}
                     className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5 md:opacity-0 md:group-hover:opacity-100 transition-opacity"

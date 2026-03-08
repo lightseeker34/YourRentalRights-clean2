@@ -18,10 +18,12 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { type ChatInputHandle } from "@/components/chat-input";
+import { buildAiConversationDraftFromLog, canAddLogToAiConversation } from "@/lib/incident";
 import { compactMarkdownComponents } from "@/lib/markdown/incidentMarkdown";
 
 interface LogEntryCardProps {
   log: IncidentLog;
+  logs?: IncidentLog[];
   icon: React.ComponentType<{ className?: string }>;
   color: string;
   highlightedLogId: number | null;
@@ -49,6 +51,7 @@ const formatDateTime = (date: Date | string) =>
 
 export function LogEntryCard({
   log,
+  logs,
   icon: Icon,
   color,
   highlightedLogId,
@@ -59,6 +62,8 @@ export function LogEntryCard({
   onDelete,
 }: LogEntryCardProps) {
   const isUserChat = log.type === 'chat' && !log.isAi;
+  const canAddToAiConversation = canAddLogToAiConversation(log);
+  const aiConversationDraft = logs ? buildAiConversationDraftFromLog(log, logs) : { message: log.content, attachments: [] };
 
   return (
     <Card
@@ -117,14 +122,14 @@ export function LogEntryCard({
           })()}
         </div>
         <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-          {(log.type === 'call' || log.type === 'text' || log.type === 'email' || log.type === 'service') && (
+          {canAddToAiConversation && (
             <Button
               variant="ghost"
               size="icon"
               className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-blue-500 hover:text-blue-700"
               onClick={() => {
-                const typeLabel = log.type === 'call' ? 'Call log' : log.type === 'text' ? 'Text log' : log.type === 'email' ? 'Email log' : 'Service request log';
-                chatInputRef.current?.setInput(`Add this to our discussion: [${typeLabel}] ${log.content}`);
+                chatInputRef.current?.setInput(aiConversationDraft.message);
+                chatInputRef.current?.setAttachments(aiConversationDraft.attachments);
                 setTimeout(() => { chatInputRef.current?.focus(); }, 100);
               }}
               title="Add to AI Chat"

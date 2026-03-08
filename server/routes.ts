@@ -570,6 +570,16 @@ CONTEXT-PASS MODE: ${includeBackfill ? "PASS 2 (older routine history included)"
     let aiResponse = "";
 
     try {
+      const imageMimeTypes: Record<string, string> = {
+        '.png': 'image/png',
+        '.gif': 'image/gif',
+        '.webp': 'image/webp',
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg'
+      };
+      const isSupportedRemoteImage = (url: string) =>
+        /\.(png|gif|webp|jpe?g)(?:[?#].*)?$/i.test(url);
+
       // Try xAI Grok first
       if (grokApiKey) {
         const xai = new OpenAI({
@@ -600,20 +610,14 @@ CONTEXT-PASS MODE: ${includeBackfill ? "PASS 2 (older routine history included)"
                   const fileBuffer = fs.readFileSync(filePath);
                   const base64 = fileBuffer.toString('base64');
                   const ext = path.extname(filePath).toLowerCase();
-                  const mimeTypes: Record<string, string> = {
-                    '.png': 'image/png',
-                    '.gif': 'image/gif',
-                    '.webp': 'image/webp',
-                    '.jpg': 'image/jpeg',
-                    '.jpeg': 'image/jpeg'
-                  };
-                  const mimeType = mimeTypes[ext] || 'image/jpeg';
+                  const mimeType = imageMimeTypes[ext];
+                  if (!mimeType) continue;
                   messageContent.push({
                     type: "image_url",
                     image_url: { url: `data:${mimeType};base64,${base64}` }
                   });
                 }
-              } else if (imageUrl.startsWith('http')) {
+              } else if (imageUrl.startsWith('http') && isSupportedRemoteImage(imageUrl)) {
                 // External URLs can be passed directly
                 messageContent.push({
                   type: "image_url",
@@ -702,20 +706,14 @@ CONTEXT-PASS MODE: ${includeBackfill ? "PASS 2 (older routine history included)"
                   const fileBuffer = fs.readFileSync(filePath);
                   const base64 = fileBuffer.toString('base64');
                   const ext = path.extname(filePath).toLowerCase();
-                  const mimeTypes: Record<string, string> = {
-                    '.png': 'image/png',
-                    '.gif': 'image/gif',
-                    '.webp': 'image/webp',
-                    '.jpg': 'image/jpeg',
-                    '.jpeg': 'image/jpeg'
-                  };
-                  const mimeType = mimeTypes[ext] || 'image/jpeg';
+                  const mimeType = imageMimeTypes[ext];
+                  if (!mimeType) continue;
                   messageContent.push({
                     type: "image_url",
                     image_url: { url: `data:${mimeType};base64,${base64}` }
                   });
                 }
-              } else if (imageUrl.startsWith('http')) {
+              } else if (imageUrl.startsWith('http') && isSupportedRemoteImage(imageUrl)) {
                 messageContent.push({
                   type: "image_url",
                   image_url: { url: imageUrl }

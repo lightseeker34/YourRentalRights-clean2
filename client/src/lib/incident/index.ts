@@ -6,8 +6,19 @@ export const getMetaCategory = (log: IncidentLog): string | undefined =>
 export const isAnalysisPdf = (log: IncidentLog): boolean =>
   getMetaCategory(log) === "analysis_pdf";
 
+export const isImageAttachmentLog = (log: IncidentLog): boolean => {
+  if (log.type === "photo") return true;
+  const mimeType = (log.metadata as any)?.mimeType;
+  return typeof mimeType === "string" && mimeType.startsWith("image/");
+};
+
+export const isLikelyImageUrl = (url: string): boolean =>
+  /\.(png|gif|webp|jpe?g)(?:[?#].*)?$/i.test(url);
+
+export const getAttachmentDisplayName = (log: IncidentLog): string =>
+  log.title || (log.metadata as any)?.originalName || log.content || "Attachment";
+
 export const getAttachedPhotos = (log: IncidentLog, logs: IncidentLog[]): IncidentLog[] => {
-  if (log.type !== 'call' && log.type !== 'text' && log.type !== 'email' && log.type !== 'photo' && log.type !== 'service' && log.type !== 'portal' && log.type !== 'custom') return [];
   return logs.filter(l => {
     const parentLogId = (l.metadata as any)?.parentLogId;
     return l.type === 'photo' && parentLogId === log.id;
@@ -15,9 +26,67 @@ export const getAttachedPhotos = (log: IncidentLog, logs: IncidentLog[]): Incide
 };
 
 export const getAttachedDocuments = (log: IncidentLog, logs: IncidentLog[]): IncidentLog[] => {
-  if (log.type !== 'call' && log.type !== 'text' && log.type !== 'email' && log.type !== 'service' && log.type !== 'portal' && log.type !== 'custom') return [];
   return logs.filter(l => {
     const parentLogId = (l.metadata as any)?.parentLogId;
     return l.type === 'document' && parentLogId === log.id;
   });
+};
+
+export const getAttachedFiles = (log: IncidentLog, logs: IncidentLog[]): IncidentLog[] => {
+  const attachedFiles = [...getAttachedPhotos(log, logs), ...getAttachedDocuments(log, logs)];
+
+  if ((log.type === "photo" || log.type === "document") && log.fileUrl) {
+    attachedFiles.unshift(log);
+  }
+
+  const seen = new Set<number>();
+  return attachedFiles.filter((entry) => {
+    if (seen.has(entry.id)) return false;
+    seen.add(entry.id);
+    return true;
+  });
+};
+
+export const canAddLogToAiConversation = (log: IncidentLog): boolean =>
+  log.type !== "chat";
+
+export const buildAiConversationDraftFromLog = (
+  log: IncidentLog,
+  logs: IncidentLog[],
+): { message: string; attachments: string[] } => {
+  const typeLabel = log.type === "chat"
+    ? (log.isAi ? "Assistant" : "You")
+    : log.type === "photo"
+      ? "Photo"
+      : log.type === "note"
+        ? "Note"
+        : log.type === "portal"
+          ? "Portal Entry"
+          : log.type === "service"
+            ? "Service Request"
+            : log.type === "custom"
+              ? "Custom Entry"
+              : log.type.charAt(0).toUpperCase() + log.type.slice(1);
+
+  const attachedFiles = getAttachedFiles(log, logs);
+  const attachmentUrls = attachedFiles
+    .map((entry) => entry.fileUrl)
+    .filter((fileUrl): fileUrl is string => Boolean(fileUrl));
+
+  const nonImageAttachments = attachedFiles
+    .filter((entry) => !isImageAttachmentLog(entry))
+    .map(getAttachmentDisplayName);
+
+  const messageParts = [
+    `Add this to our discussion: [${typeLabel}${log.title ? `: ${log.title}` : ""}] ${log.content}`.trim(),
+  ];
+
+  if (nonImageAttachments.length > 0) {
+    messageParts.push(`Associated files: ${nonImageAttachments.join(", ")}`);
+  }
+
+  return {
+    message: messageParts.join("\n\n"),
+    attachments: attachmentUrls,
+  };
 };

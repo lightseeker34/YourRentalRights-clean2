@@ -37,7 +37,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { getMetaCategory, getAttachedPhotos, getAttachedDocuments } from "@/lib/incident";
+import {
+  getMetaCategory,
+  getAttachedPhotos,
+  getAttachedDocuments,
+  getAttachmentDisplayName,
+  isImageAttachmentLog,
+  isLikelyImageUrl,
+} from "@/lib/incident";
 import { buildFileGroups } from "@/lib/incident/buildFileGroups";
 import { buildTimelineItems } from "@/lib/incident/buildTimelineItems";
 import { exportToPDF } from "@/lib/pdf/exportIncident";
@@ -2537,25 +2544,55 @@ export default function IncidentView() {
                             {(log.metadata as any)?.attachedImages?.length > 0 && (
                               <div className="flex gap-1 mt-2 flex-wrap max-w-full overflow-hidden">
                                 {((log.metadata as any).attachedImages as string[]).map((url, idx) => (
-                                  <img
-                                    key={idx}
-                                    src={url}
-                                    loading="lazy"
-                                    alt={`Attachment ${idx + 1}`}
-                                    className="w-8 h-8 object-cover rounded border border-white/30 cursor-pointer hover:opacity-80 transition-opacity"
-                                    onClick={(e) => {
+                                  (() => {
+                                    const attachmentLog = logs?.find((entry) => entry.fileUrl === url);
+                                    const isImage = attachmentLog ? isImageAttachmentLog(attachmentLog) : isLikelyImageUrl(url);
+                                    const attachmentName = attachmentLog ? getAttachmentDisplayName(attachmentLog) : `Attachment ${idx + 1}`;
+
+                                    const handleAttachmentClick = (e: React.MouseEvent) => {
                                       e.stopPropagation();
-                                      const photoLog = logs?.find(l => l.fileUrl === url);
-                                      if (photoLog) {
-                                        openPreview(photoLog);
-                                      } else {
+                                      if (attachmentLog) {
+                                        openPreview(attachmentLog);
+                                        return;
+                                      }
+
+                                      if (isImage) {
                                         setPreviewUrl(url);
                                         setPreviewType('image');
-                                        setPreviewName(`Attachment ${idx + 1}`);
+                                        setPreviewName(attachmentName);
+                                        return;
                                       }
-                                    }}
-                                    data-testid={`chat-attachment-thumb-${log.id}-${idx}`}
-                                  />
+
+                                      window.open(url, "_blank", "noopener,noreferrer");
+                                    };
+
+                                    if (isImage) {
+                                      return (
+                                        <img
+                                          key={idx}
+                                          src={url}
+                                          loading="lazy"
+                                          alt={attachmentName}
+                                          className="w-8 h-8 object-cover rounded border border-white/30 cursor-pointer hover:opacity-80 transition-opacity"
+                                          onClick={handleAttachmentClick}
+                                          data-testid={`chat-attachment-thumb-${log.id}-${idx}`}
+                                        />
+                                      );
+                                    }
+
+                                    return (
+                                      <button
+                                        key={idx}
+                                        type="button"
+                                        className="w-8 h-8 rounded border border-white/30 bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center"
+                                        onClick={handleAttachmentClick}
+                                        title={attachmentName}
+                                        data-testid={`chat-attachment-thumb-${log.id}-${idx}`}
+                                      >
+                                        <Paperclip className="w-3 h-3 text-white" />
+                                      </button>
+                                    );
+                                  })()
                                 ))}
                               </div>
                             )}

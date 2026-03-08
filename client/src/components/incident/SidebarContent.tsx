@@ -431,6 +431,7 @@ export function SidebarContent({
                               <div key={log.id} id={`log-entry-${log.id}`} className="scroll-mb-24 md:scroll-mb-16 transition-all duration-500">
                                 <LogEntryCard
                                   log={log}
+                                  logs={logs}
                                   icon={MessageSquare}
                                   color="text-slate-900"
                                   highlightedLogId={highlightedLogId}
@@ -480,6 +481,7 @@ export function SidebarContent({
                     >
                       <LogEntryCard
                         log={log}
+                        logs={logs}
                         icon={icon}
                         color={color}
                         highlightedLogId={highlightedLogId}
