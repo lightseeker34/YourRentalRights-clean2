@@ -925,7 +925,7 @@ export default function IncidentView() {
     if (touchStartX.current !== null && touchCurrentX.current !== null) {
       const diff = touchCurrentX.current - touchStartX.current;
       // Swipe right from left edge to open
-      if (touchStartX.current < 50 && diff > 80) {
+      if (touchStartX.current < 80 && diff > 45) {
         setMobileDrawerOpen(true);
         setDrawerOpenedByTour(false);
       }
@@ -1208,7 +1208,7 @@ export default function IncidentView() {
       </div>
       {/* Mobile edge indicator - swipe hint */}
       <div 
-        className="fixed left-0 top-1/2 -translate-y-1/2 z-30 md:hidden bg-white border border-slate-300 w-2 h-[22.5rem] rounded-r-lg shadow-md cursor-pointer"
+        className="fixed left-0 top-1/2 -translate-y-1/2 z-30 md:hidden bg-white border border-slate-300 w-3 h-[22.5rem] rounded-r-lg shadow-md cursor-pointer"
         onClick={() => { setMobileDrawerOpen(true); setDrawerOpenedByTour(false); }}
         aria-label="Open incident panel"
       />
