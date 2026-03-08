@@ -10,6 +10,7 @@ type Topic = {
 
 type CategorySeed = {
   name: string;
+  legacyNames?: string[];
   description: string;
   icon: string;
   color: string;
@@ -19,7 +20,8 @@ type CategorySeed = {
 
 export const starterCategories: CategorySeed[] = [
   {
-    name: "⚖️ Legal & Lease Defense",
+    name: "Legal & Lease Defense",
+    legacyNames: ["⚖️ Legal & Lease Defense"],
     description: "Lease clauses, deposits, eviction defenses, legal process, and tenant-rights counsel.",
     icon: "Scale",
     color: "#334155",
@@ -34,7 +36,8 @@ export const starterCategories: CategorySeed[] = [
     ],
   },
   {
-    name: "🌬️ Health, Air Quality & Safety",
+    name: "Health, Air Quality & Safety",
+    legacyNames: ["🌬️ Health, Air Quality & Safety"],
     description: "Mold, HVAC, VOCs, pests, hazardous materials, and home habitability concerns.",
     icon: "ShieldAlert",
     color: "#0f766e",
@@ -49,7 +52,8 @@ export const starterCategories: CategorySeed[] = [
     ],
   },
   {
-    name: "📸 The Evidence Locker (Documentation)",
+    name: "The Evidence Locker (Documentation)",
+    legacyNames: ["📸 The Evidence Locker (Documentation)"],
     description: "Paper trails, repair notices, photo/video evidence, and communication logs.",
     icon: "FolderArchive",
     color: "#7c3aed",
@@ -63,7 +67,8 @@ export const starterCategories: CategorySeed[] = [
     ],
   },
   {
-    name: "🏢 The Wall of Shame & Reviews",
+    name: "The Wall of Shame & Reviews",
+    legacyNames: ["🏢 The Wall of Shame & Reviews"],
     description: "Property management experiences, red flags, and lease-break outcomes.",
     icon: "Building2",
     color: "#b45309",
@@ -75,7 +80,8 @@ export const starterCategories: CategorySeed[] = [
     ],
   },
   {
-    name: "🛠️ Renter-Friendly Maintenance",
+    name: "Renter-Friendly Maintenance",
+    legacyNames: ["🛠️ Renter-Friendly Maintenance"],
     description: "DIY mitigation, emergency steps, and move-out restoration tips.",
     icon: "Wrench",
     color: "#2563eb",
@@ -88,7 +94,8 @@ export const starterCategories: CategorySeed[] = [
     ],
   },
   {
-    name: "🤝 Community & Advocacy",
+    name: "Community & Advocacy",
+    legacyNames: ["🤝 Community & Advocacy"],
     description: "Organizing, policy updates, local resources, and collective tenant support.",
     icon: "Users",
     color: "#059669",
@@ -100,7 +107,8 @@ export const starterCategories: CategorySeed[] = [
     ],
   },
   {
-    name: "⚠️ Eviction & Court Response",
+    name: "Eviction & Court Response",
+    legacyNames: ["⚠️ Eviction & Court Response"],
     description: "Notice triage, court deadlines, hearing prep, and post-judgment options.",
     icon: "Gavel",
     color: "#dc2626",
@@ -113,7 +121,8 @@ export const starterCategories: CategorySeed[] = [
     ],
   },
   {
-    name: "💰 Money, Fees & Credit Impact",
+    name: "Money, Fees & Credit Impact",
+    legacyNames: ["💰 Money, Fees & Credit Impact"],
     description: "Rent ledgers, late fees, collections disputes, and protecting your credit.",
     icon: "Wallet",
     color: "#16a34a",
@@ -126,7 +135,8 @@ export const starterCategories: CategorySeed[] = [
     ],
   },
   {
-    name: "🧠 AI, Letters & Case Building",
+    name: "AI, Letters & Case Building",
+    legacyNames: ["🧠 AI, Letters & Case Building"],
     description: "Using the platform tools to draft notices, organize facts, and build stronger cases.",
     icon: "Bot",
     color: "#7c3aed",
@@ -189,10 +199,31 @@ export async function upsertCommunityTopics(): Promise<{ categories: number; cre
 
   for (const seedCategory of starterCategories) {
     let categoryId: number;
-    const existingCategory = await db.select().from(forumCategories).where(eq(forumCategories.name, seedCategory.name)).limit(1);
+
+    let existingCategory = await db
+      .select()
+      .from(forumCategories)
+      .where(eq(forumCategories.name, seedCategory.name))
+      .limit(1);
+
+    if (!existingCategory[0] && seedCategory.legacyNames?.length) {
+      for (const legacyName of seedCategory.legacyNames) {
+        const legacyMatch = await db
+          .select()
+          .from(forumCategories)
+          .where(eq(forumCategories.name, legacyName))
+          .limit(1);
+        if (legacyMatch[0]) {
+          existingCategory = legacyMatch;
+          break;
+        }
+      }
+    }
+
     if (existingCategory[0]) {
       categoryId = existingCategory[0].id;
       await db.update(forumCategories).set({
+        name: seedCategory.name,
         description: seedCategory.description,
         icon: seedCategory.icon,
         color: seedCategory.color,
@@ -242,7 +273,7 @@ export async function upsertCommunityTopics(): Promise<{ categories: number; cre
 }
 
 const COMMUNITY_SEED_VERSION_KEY = "community_seed_version";
-const COMMUNITY_SEED_VERSION = "2026-03-08-categories-v3";
+const COMMUNITY_SEED_VERSION = "2026-03-08-categories-v4-no-emoji";
 
 export async function syncCommunityTopicsVersioned(): Promise<{ ran: boolean; version: string; created: number; updated: number; categories: number }> {
   const existing = await db.select().from(appSettings).where(eq(appSettings.key, COMMUNITY_SEED_VERSION_KEY)).limit(1);
