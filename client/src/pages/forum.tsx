@@ -114,12 +114,8 @@ function CategoryCard({ category, postCount }: { category: ForumCategory; postCo
             <p className="text-sm text-slate-500 truncate">{category.description}</p>
           )}
         </div>
-        <div className="flex items-center gap-2 text-sm text-slate-500 shrink-0">
-          <div className="flex items-center gap-1">
-            <MessageSquare className="w-4 h-4" />
-            <span>{postCount}</span>
-          </div>
-          <ChevronRight className="w-4 h-4 hidden sm:block" />
+        <div className="text-sm text-slate-500 shrink-0">
+          <span>{postCount} posts</span>
         </div>
       </CardContent>
     </Card>
