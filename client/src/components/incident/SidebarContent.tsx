@@ -167,6 +167,12 @@ export function SidebarContent({
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-1 mb-3">
+          <h2 className="w-full text-xl font-bold text-slate-900 mb-1">{incident.title}</h2>
+          <p className="w-full text-sm text-slate-600 mb-1">{incident.description}</p>
+          <div className="w-full flex items-center gap-1 text-xs text-slate-400 mb-1">
+            <Calendar className="w-3 h-3" />
+            <span>{formatDateTime(incident.createdAt)}</span>
+          </div>
           <Button
             variant="ghost"
             size="sm"
@@ -205,13 +211,7 @@ export function SidebarContent({
           ANALYSIS_DAILY_LIMIT={ANALYSIS_DAILY_LIMIT}
           MIN_EVIDENCE_COUNT={MIN_EVIDENCE_COUNT}
         />
-        <h2 className="text-xl font-bold text-slate-900 mb-2 mt-3">{incident.title}</h2>
-        <p className="text-sm text-slate-600 mb-2">{incident.description}</p>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1 text-xs text-slate-400">
-            <Calendar className="w-3 h-3" />
-            <span>{formatDateTime(incident.createdAt)}</span>
-          </div>
+        <div className="flex items-center justify-end">
           <div className="flex items-center gap-1">
             <Button
               variant="ghost"
