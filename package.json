@@ -10,7 +10,8 @@
     "start": "NODE_ENV=production node dist/index.cjs",
     "check": "tsc",
     "db:push": "drizzle-kit push",
-    "qa:smoke": "bash script/smoke-test.sh"
+    "qa:smoke": "bash script/smoke-test.sh",
+    "forum:seed-topics": "npx tsx script/seed-community-topics.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
