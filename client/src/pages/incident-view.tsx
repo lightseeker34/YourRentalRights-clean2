@@ -2442,7 +2442,7 @@ export default function IncidentView() {
                             disabled={editAndResendMutation.isPending}
                             data-testid={`save-edit-chat-${log.id}`}
                           >
-                            Save & Resend
+                            {editAndResendMutation.isPending ? 'Reanalyzing...' : 'Save & Resend'}
                           </Button>
                         </div>
                       </div>
@@ -2581,7 +2581,7 @@ export default function IncidentView() {
                                 onClick={() => editAndResendMutation.mutate({ logId: log.id, newContent: editLogContent, attachments: editLogAttachments })}
                                 disabled={editAndResendMutation.isPending}
                               >
-                                Save & Resend
+                                {editAndResendMutation.isPending ? 'Reanalyzing...' : 'Save & Resend'}
                               </Button>
                             </div>
                           </div>
@@ -2763,13 +2763,13 @@ export default function IncidentView() {
                 </div>
               </div>
             ))}
-            {(sendMutation.isPending || resendMutation.isPending) && (
-              <div className="flex gap-4 animate-fade-in-pulse">
+            {(sendMutation.isPending || resendMutation.isPending || editAndResendMutation.isPending) && (
+              <div className="flex gap-4 animate-pulse">
                 <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center shrink-0">
                   <Bot className="w-5 h-5" />
                 </div>
                 <div className="p-4 rounded-xl bg-white border border-slate-200 text-slate-500 text-sm italic">
-                  Analyzing your case...
+                  Analyzing...
                 </div>
               </div>
             )}

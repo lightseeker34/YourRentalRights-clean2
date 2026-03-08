@@ -406,11 +406,9 @@ export function SidebarContent({
                               </div>
                               <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
                             </div>
-                            <div className="text-slate-600 text-[11px] leading-4 line-clamp-2 font-normal prose prose-slate max-w-none prose-p:my-0 bg-[var(--color-user-bubble)] border border-[var(--color-user-bubble-border)] p-2 rounded-lg mt-1 overflow-hidden">
-                              <ReactMarkdown remarkPlugins={[remarkGfm]} components={compactMarkdownComponents}>
-                                {firstChat.content}
-                              </ReactMarkdown>
-                            </div>
+                            <p className="m-0 text-slate-600 text-[11px] leading-4 line-clamp-2 font-normal bg-[var(--color-user-bubble)] border border-[var(--color-user-bubble-border)] p-2 rounded-lg mt-1 overflow-hidden break-words">
+                              {firstChat.content}
+                            </p>
                             <div className="text-xs text-slate-400 mt-auto pt-1">
                               {formatDateTime(firstChat.createdAt)}
                             </div>
