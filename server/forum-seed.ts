@@ -99,6 +99,45 @@ export const starterCategories: CategorySeed[] = [
       { title: "Local Resource Map: Rent assistance, food banks, and moving help", content: "Curate location-specific support programs and emergency resources with eligibility notes." },
     ],
   },
+  {
+    name: "⚠️ Eviction & Court Response",
+    description: "Notice triage, court deadlines, hearing prep, and post-judgment options.",
+    icon: "Gavel",
+    color: "#dc2626",
+    sortOrder: 6,
+    topics: [
+      { title: "Notice Triage: Pay-or-quit, cure-or-quit, and unconditional notices", content: "Break down what each notice means, what deadlines matter, and immediate do/don't steps." },
+      { title: "Answering an Eviction Filing: What to file and by when", content: "Share state-specific answer forms, filing links, fee waiver options, and timing pitfalls." },
+      { title: "Hearing Prep Pack: Evidence checklist and courtroom strategy", content: "Witness prep, exhibit organization, timeline format, and practical day-of-hearing tips." },
+      { title: "After Judgment: Stays, appeals, payment plans, and move-out planning", content: "What options may still exist after a judgment and how to minimize long-term damage." },
+    ],
+  },
+  {
+    name: "💰 Money, Fees & Credit Impact",
+    description: "Rent ledgers, late fees, collections disputes, and protecting your credit.",
+    icon: "Wallet",
+    color: "#16a34a",
+    sortOrder: 7,
+    topics: [
+      { title: "Ledger Audits: Spotting bogus charges and double-billing", content: "How to review rent ledgers line-by-line and challenge unsupported or duplicate charges." },
+      { title: "Late Fees, Utility Back-Billing, and Admin Charges", content: "When fees are likely enforceable vs. likely challengeable, with sample dispute language." },
+      { title: "Collections Disputes: Validation letters and credit bureau disputes", content: "Step-by-step process to demand debt validation and dispute incorrect rental debt entries." },
+      { title: "Move-Out Accounting: Itemized deductions and damage claim rebuttals", content: "How to respond when a landlord sends inflated invoices or vague deduction statements." },
+    ],
+  },
+  {
+    name: "🧠 AI, Letters & Case Building",
+    description: "Using the platform tools to draft notices, organize facts, and build stronger cases.",
+    icon: "Bot",
+    color: "#7c3aed",
+    sortOrder: 8,
+    topics: [
+      { title: "Prompt Library: Best prompts for drafting landlord notices", content: "Community-tested prompts for repair demands, follow-ups, and escalation letters." },
+      { title: "Incident Timeline Mastery: Turning chaos into a court-ready narrative", content: "How to structure events, evidence, and damages so your timeline is easy to follow." },
+      { title: "Evidence-to-PDF Workflows: Building a judge-friendly packet", content: "Formatting and ordering tips for exports that are readable, persuasive, and complete." },
+      { title: "Privacy & Redaction: Sharing docs safely in community threads", content: "What to redact before posting screenshots, leases, notices, and correspondence." },
+    ],
+  },
 ];
 
 async function getSeedAuthorId(): Promise<number> {
@@ -203,7 +242,7 @@ export async function upsertCommunityTopics(): Promise<{ categories: number; cre
 }
 
 const COMMUNITY_SEED_VERSION_KEY = "community_seed_version";
-const COMMUNITY_SEED_VERSION = "2026-03-08-pinned-v2";
+const COMMUNITY_SEED_VERSION = "2026-03-08-categories-v3";
 
 export async function syncCommunityTopicsVersioned(): Promise<{ ran: boolean; version: string; created: number; updated: number; categories: number }> {
   const existing = await db.select().from(appSettings).where(eq(appSettings.key, COMMUNITY_SEED_VERSION_KEY)).limit(1);
