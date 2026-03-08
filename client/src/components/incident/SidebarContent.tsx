@@ -314,14 +314,14 @@ export function SidebarContent({
           <div className="space-y-2">
             {/* Master Bubble */}
             <div className={isMobile
-              ? "bg-purple-50/30 border border-purple-100 shadow-sm rounded-lg p-3 min-h-[88px]"
-              : "bg-white border-2 border-input rounded-lg p-3 shadow-md min-h-[88px]"
+              ? "bg-purple-50/30 border border-purple-100 shadow-sm rounded-lg p-3 min-h-[88px] flex flex-col"
+              : "bg-white border-2 border-input rounded-lg p-3 shadow-md min-h-[88px] flex flex-col"
             }>
               <div className="flex justify-between items-start mb-1">
                 <h3 className="font-semibold text-slate-900 text-sm line-clamp-1">{incident.title}</h3>
               </div>
               <p className="text-slate-500 text-xs line-clamp-2 mb-1">{incident.description}</p>
-              <div className="text-xs text-slate-400">
+              <div className="text-xs text-slate-400 mt-auto pt-1">
                 {format(new Date(incident.createdAt), "MMM d, yyyy  h:mm a")}
               </div>
             </div>
@@ -393,7 +393,7 @@ export function SidebarContent({
                       <div key={item.id}>
                         {!isExpanded && (
                           <Card
-                            className="p-2 rounded-lg min-h-[88px] shadow-sm cursor-pointer bg-slate-50 border-slate-200 hover:bg-slate-100 transition-colors"
+                            className="p-2 rounded-lg min-h-[88px] shadow-sm cursor-pointer bg-slate-50 border-slate-200 hover:bg-slate-100 transition-colors flex flex-col"
                             onClick={() => onToggleChatGroup(item.id)}
                           >
                             <div className="flex items-center justify-between gap-1.5 mb-1">
@@ -406,12 +406,12 @@ export function SidebarContent({
                               </div>
                               <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
                             </div>
-                            <div className="text-slate-600 text-xs line-clamp-2 font-normal prose prose-slate max-w-none prose-p:my-0 bg-[var(--color-user-bubble)] border border-[var(--color-user-bubble-border)] p-2 rounded-lg mt-1">
+                            <div className="text-slate-600 text-[11px] leading-4 line-clamp-2 font-normal prose prose-slate max-w-none prose-p:my-0 bg-[var(--color-user-bubble)] border border-[var(--color-user-bubble-border)] p-2 rounded-lg mt-1 overflow-hidden">
                               <ReactMarkdown remarkPlugins={[remarkGfm]} components={compactMarkdownComponents}>
                                 {firstChat.content}
                               </ReactMarkdown>
                             </div>
-                            <div className="text-xs text-slate-400 mt-1">
+                            <div className="text-xs text-slate-400 mt-auto pt-1">
                               {formatDateTime(firstChat.createdAt)}
                             </div>
                           </Card>
