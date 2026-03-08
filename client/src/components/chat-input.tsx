@@ -2,7 +2,7 @@ import { useState, useRef, memo, forwardRef, useImperativeHandle, useEffect } fr
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Send, Plus, Paperclip, FolderOpen, FolderUp, X, Check } from "lucide-react";
+import { Send, Plus, Paperclip, FolderOpen, FolderUp, X, Check, GripHorizontal } from "lucide-react";
 import type { IncidentLog } from "@shared/schema";
 import { getAttachmentDisplayName, isImageAttachmentLog, isLikelyImageUrl } from "@/lib/incident";
 
@@ -42,6 +42,10 @@ export const ChatInput = memo(forwardRef<ChatInputHandle, ChatInputProps>(functi
   const [chatAttachments, setChatAttachments] = useState<string[]>([]);
   const [showPlusMenu, setShowPlusMenu] = useState(false);
   const [showEvidencePicker, setShowEvidencePicker] = useState(false);
+
+  useEffect(() => {
+    autoResizeTextarea();
+  }, [input]);
   const chatFileInputRef = useRef<HTMLInputElement>(null);
   const chatFolderInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -123,6 +127,13 @@ export const ChatInput = memo(forwardRef<ChatInputHandle, ChatInputProps>(functi
     }
   };
 
+  function autoResizeTextarea() {
+    if (!textareaRef.current) return;
+    textareaRef.current.style.height = "auto";
+    const nextHeight = Math.min(textareaRef.current.scrollHeight, 320);
+    textareaRef.current.style.height = `${nextHeight}px`;
+  }
+
   const handleSend = () => {
     if (!input.trim() && chatAttachments.length === 0) return;
     onSend(input, chatAttachments);
@@ -130,6 +141,7 @@ export const ChatInput = memo(forwardRef<ChatInputHandle, ChatInputProps>(functi
     setChatAttachments([]);
     setShowPlusMenu(false);
     setShowEvidencePicker(false);
+    if (textareaRef.current) textareaRef.current.style.height = "auto";
   };
 
   const photoTypes = ['photo', 'call_photo', 'text_photo', 'email_photo', 'chat_photo', 'service_photo'];
@@ -231,21 +243,27 @@ export const ChatInput = memo(forwardRef<ChatInputHandle, ChatInputProps>(functi
             </div>
           )}
 
-          <Textarea
-            ref={textareaRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey && !isSending) {
-                e.preventDefault();
-                handleSend();
-              }
-            }}
-            placeholder="Type a message..."
-            className="border-0 shadow-none focus-visible:ring-0 resize-none min-h-[34px] max-h-[160px] px-3 py-1.5 text-sm caret-slate-800 placeholder:text-slate-400"
-            data-testid="input-chat-message"
-            rows={1}
-          />
+          <div className="relative">
+            <Textarea
+              ref={textareaRef}
+              value={input}
+              onChange={(e) => {
+                setInput(e.target.value);
+                autoResizeTextarea();
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey && !isSending) {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
+              placeholder="Type a message..."
+              className="border-0 shadow-none focus-visible:ring-0 resize-y md:resize-none min-h-[34px] max-h-[320px] px-3 py-1.5 pr-8 text-sm caret-slate-800 placeholder:text-slate-400"
+              data-testid="input-chat-message"
+              rows={1}
+            />
+            <GripHorizontal className="pointer-events-none absolute right-2 top-1.5 w-3.5 h-3.5 text-slate-300 md:hidden" />
+          </div>
 
           <div className="flex items-center justify-between px-2 pb-2">
             <div className="flex items-center gap-0.5 relative">
