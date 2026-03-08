@@ -63,7 +63,6 @@ export function LogEntryCard({
   onDelete,
   onAddToAiChat,
 }: LogEntryCardProps) {
-  const isUserChat = log.type === 'chat' && !log.isAi;
   const canAddToAiConversation = canAddLogToAiConversation(log);
   const aiConversationDraft = canAddToAiConversation
     ? buildAiConversationDraftFromLog(log, logs)
@@ -73,11 +72,7 @@ export function LogEntryCard({
     <Card
       id={`log-entry-${log.id}`}
       key={log.id}
-      className={`p-2 rounded-lg min-h-[88px] group transition-colors cursor-pointer shadow-sm flex flex-col ${
-        isUserChat
-          ? 'bg-[var(--color-user-bubble)] border-[var(--color-user-bubble-border)] hover:bg-[var(--color-user-bubble)]/90'
-          : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
-      } ${highlightedLogId === log.id ? 'ring-2 ring-blue-500 bg-blue-50' : ''}`}
+      className={`p-2 rounded-lg min-h-[88px] group transition-colors cursor-pointer shadow-sm flex flex-col bg-slate-50 border-slate-200 hover:bg-slate-100 ${highlightedLogId === log.id ? 'ring-2 ring-blue-500 bg-blue-50' : ''}`}
       onClick={() => {
         if (log.type === 'chat') {
           const element = document.getElementById(`chat-entry-${log.id}`);

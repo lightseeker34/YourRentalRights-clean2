@@ -130,6 +130,7 @@ export default function IncidentView() {
   const [analysisUsageCount, setAnalysisUsageCount] = useState(() => {
     try { return parseInt(localStorage.getItem(`analysis_usage_${id}_${new Date().toISOString().slice(0, 10)}`) || '0', 10); } catch { return 0; }
   });
+  const [loadingDots, setLoadingDots] = useState('.');
   const ANALYSIS_DAILY_LIMIT = 3;
   const MIN_EVIDENCE_COUNT = 3;
 
@@ -415,6 +416,23 @@ export default function IncidentView() {
       toast({ title: "Error", description: "Failed to resend message.", variant: "destructive" });
     },
   });
+
+  useEffect(() => {
+    const isBusy = sendMutation.isPending || resendMutation.isPending || editAndResendMutation.isPending;
+    if (!isBusy) {
+      setLoadingDots('.');
+      return;
+    }
+
+    const dots = ['.', '..', '...'];
+    let idx = 0;
+    const interval = setInterval(() => {
+      idx = (idx + 1) % dots.length;
+      setLoadingDots(dots[idx]);
+    }, 450);
+
+    return () => clearInterval(interval);
+  }, [sendMutation.isPending, resendMutation.isPending, editAndResendMutation.isPending]);
   
   const resetEditComposerState = () => {
     setEditLogId(null);
@@ -2440,10 +2458,10 @@ export default function IncidentView() {
                             size="sm" 
                             onClick={() => editAndResendMutation.mutate({ logId: log.id, newContent: editLogContent, attachments: editLogAttachments })}
                             disabled={editAndResendMutation.isPending}
-                            className={editAndResendMutation.isPending ? 'animate-pulse' : ''}
+                            className={editAndResendMutation.isPending ? 'animate-pulse disabled:opacity-100' : ''}
                             data-testid={`save-edit-chat-${log.id}`}
                           >
-                            {editAndResendMutation.isPending ? 'Reanalyzing...' : 'Save & Resend'}
+                            {editAndResendMutation.isPending ? `Reanalyzing${loadingDots}` : 'Save & Resend'}
                           </Button>
                         </div>
                       </div>
@@ -2581,9 +2599,9 @@ export default function IncidentView() {
                                 size="sm" 
                                 onClick={() => editAndResendMutation.mutate({ logId: log.id, newContent: editLogContent, attachments: editLogAttachments })}
                                 disabled={editAndResendMutation.isPending}
-                                className={editAndResendMutation.isPending ? 'animate-pulse' : ''}
+                                className={editAndResendMutation.isPending ? 'animate-pulse disabled:opacity-100' : ''}
                               >
-                                {editAndResendMutation.isPending ? 'Reanalyzing...' : 'Save & Resend'}
+                                {editAndResendMutation.isPending ? `Reanalyzing${loadingDots}` : 'Save & Resend'}
                               </Button>
                             </div>
                           </div>
@@ -2771,7 +2789,7 @@ export default function IncidentView() {
                   <Bot className="w-5 h-5" />
                 </div>
                 <div className="p-4 rounded-xl bg-white border border-slate-200 text-slate-500 text-sm italic">
-                  Analyzing...
+                  {`Analyzing${loadingDots}`}
                 </div>
               </div>
             )}
