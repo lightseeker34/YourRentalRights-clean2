@@ -256,7 +256,7 @@ export function SidebarContent({
               : "relative inline-block text-sm font-bold text-slate-900 uppercase tracking-wider"
             }>
               <span className="relative z-10">Timeline</span>
-              <span className="absolute -left-6 top-1/2 w-4 -translate-y-1/2 border-t-2 border-slate-200" />
+              <span className="absolute -left-4 top-1/2 w-4 -translate-y-1/2 border-t-2 border-slate-200" />
               <span className="absolute left-[calc(100%+6px)] top-1/2 w-16 -translate-y-1/2 border-t-2 border-slate-200" />
             </h3>
           </div>
@@ -314,17 +314,6 @@ export function SidebarContent({
             }>
               <div className="flex justify-between items-start mb-1">
                 <h3 className="font-semibold text-slate-900 text-sm line-clamp-1">{incident.title}</h3>
-                <div className="flex items-center gap-1 shrink-0">
-                  {incident.status === 'open' ? (
-                    <span className="bg-green-100 text-green-700 px-1.5 py-0.5 rounded text-xs font-bold uppercase flex items-center gap-0.5 shrink-0">
-                      <Clock className="w-2.5 h-2.5" /> Open
-                    </span>
-                  ) : (
-                    <span className="bg-red-100 text-red-700 px-1.5 py-0.5 rounded text-xs font-bold uppercase flex items-center gap-0.5 shrink-0">
-                      <Clock className="w-2.5 h-2.5" /> Closed
-                    </span>
-                  )}
-                </div>
               </div>
               <p className="text-slate-500 text-xs line-clamp-2 mb-1">{incident.description}</p>
               <div className="text-xs text-slate-400">
