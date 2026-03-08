@@ -274,13 +274,15 @@ export async function upsertCommunityTopics(): Promise<{ categories: number; cre
 
     if (existingCategory[0]) {
       categoryId = existingCategory[0].id;
-      await db.update(forumCategories).set({
-        name: seedCategory.name,
-        description: seedCategory.description,
-        icon: seedCategory.icon,
-        color: seedCategory.color,
-        sortOrder: seedCategory.sortOrder,
-      }).where(eq(forumCategories.id, categoryId));
+
+      // Preserve admin-managed ordering/content fields.
+      // Only normalize legacy/seed names (e.g., emoji-prefixed legacy names).
+      if (existingCategory[0].name !== seedCategory.name) {
+        await db.update(forumCategories).set({
+          name: seedCategory.name,
+        }).where(eq(forumCategories.id, categoryId));
+        updated += 1;
+      }
     } else {
       const [createdCategory] = await db.insert(forumCategories).values({
         name: seedCategory.name,
@@ -302,12 +304,8 @@ export async function upsertCommunityTopics(): Promise<{ categories: number; cre
         .limit(1);
 
       if (existingPost[0]) {
-        await db.update(forumPosts).set({
-          content: topic.content,
-          isPinned: !!topic.pinned,
-          updatedAt: new Date(),
-        }).where(eq(forumPosts.id, existingPost[0].id));
-        updated += 1;
+        // Preserve admin edits to post body/pinned state; do not overwrite existing seeded topics.
+        continue;
       } else {
         await db.insert(forumPosts).values({
           categoryId,

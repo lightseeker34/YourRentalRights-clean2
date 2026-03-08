@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
-import { Settings, Users, Key, Save, Brain, Trash2, MessageSquare, Plus, Pencil, GripVertical, Search, UserPlus, Shield, Ban, KeyRound, BarChart3, CheckSquare, Square, FileText, Scale, Bot, Download } from "lucide-react";
+import { Settings, Users, Key, Save, Brain, Trash2, MessageSquare, Plus, Pencil, GripVertical, Search, UserPlus, Shield, Ban, KeyRound, BarChart3, CheckSquare, Square, FileText, Scale, Bot, Download, ArrowUp, ArrowDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Redirect } from "wouter";
 import { ForumCategory } from "@shared/schema";
@@ -454,6 +454,31 @@ export default function AdminPanel() {
     },
     onError: () => {
       toast({ title: "Error", description: "Failed to delete category.", variant: "destructive" });
+    },
+  });
+
+  const moveCategoryMutation = useMutation({
+    mutationFn: async ({ id, direction }: { id: number; direction: "up" | "down" }) => {
+      const sorted = [...forumCategories].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+      const index = sorted.findIndex((c) => c.id === id);
+      if (index < 0) return;
+
+      const swapIndex = direction === "up" ? index - 1 : index + 1;
+      if (swapIndex < 0 || swapIndex >= sorted.length) return;
+
+      const current = sorted[index];
+      const target = sorted[swapIndex];
+
+      await Promise.all([
+        apiRequest("PATCH", `/api/forum/categories/${current.id}`, { sortOrder: target.sortOrder ?? swapIndex }),
+        apiRequest("PATCH", `/api/forum/categories/${target.id}`, { sortOrder: current.sortOrder ?? index }),
+      ]);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/forum/categories"] });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to reorder category.", variant: "destructive" });
     },
   });
 
@@ -909,13 +934,15 @@ export default function AdminPanel() {
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {forumCategories.map((category, index) => (
+                  {[...forumCategories]
+                    .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+                    .map((category, index, arr) => (
                     <div 
                       key={category.id}
                       className="flex items-center gap-4 p-4 border rounded-lg hover:bg-slate-50"
                       data-testid={`category-row-${category.id}`}
                     >
-                      <GripVertical className="w-4 h-4 text-slate-400 cursor-grab" />
+                      <GripVertical className="w-4 h-4 text-slate-400" />
                       <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
                         <MessageSquare className="w-5 h-5 text-slate-600" />
                       </div>
@@ -927,6 +954,24 @@ export default function AdminPanel() {
                       </div>
                       <Badge variant="outline" className="shrink-0">Order: {category.sortOrder}</Badge>
                       <div className="flex items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => moveCategoryMutation.mutate({ id: category.id, direction: "up" })}
+                          disabled={index === 0 || moveCategoryMutation.isPending}
+                          data-testid={`move-up-category-${category.id}`}
+                        >
+                          <ArrowUp className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => moveCategoryMutation.mutate({ id: category.id, direction: "down" })}
+                          disabled={index === arr.length - 1 || moveCategoryMutation.isPending}
+                          data-testid={`move-down-category-${category.id}`}
+                        >
+                          <ArrowDown className="w-4 h-4" />
+                        </Button>
                         <Button
                           variant="ghost"
                           size="icon"
