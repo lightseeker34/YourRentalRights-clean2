@@ -1,4 +1,4 @@
-import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
 const accountId = process.env.R2_ACCOUNT_ID;
 const accessKeyId = process.env.R2_ACCESS_KEY_ID;
@@ -56,6 +56,16 @@ export async function getFromR2(key: string) {
   const { client, bucket } = requireR2();
   return client.send(
     new GetObjectCommand({
+      Bucket: bucket,
+      Key: key,
+    }),
+  );
+}
+
+export async function deleteFromR2(key: string) {
+  const { client, bucket } = requireR2();
+  return client.send(
+    new DeleteObjectCommand({
       Bucket: bucket,
       Key: key,
     }),

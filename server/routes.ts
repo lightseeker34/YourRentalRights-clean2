@@ -9,7 +9,7 @@ import path from "path";
 import fs from "fs";
 import OpenAI from "openai";
 import { assembleContextTwoPasses, formatStructuredTimelineForPrompt, formatEvidenceTimeline, formatPhotoList, formatTimelineForPrompt, formatPhotoListForPrompt, buildUserContext, buildIncidentContext, computeTimelineHash } from "./ai-context";
-import { getFromR2, isR2Enabled, uploadToR2 } from "./r2";
+import { deleteFromR2, getFromR2, isR2Enabled, uploadToR2 } from "./r2";
 
 const uploadDir = path.join(process.cwd(), "uploads");
 if (!fs.existsSync(uploadDir)) {
@@ -299,6 +299,15 @@ export async function registerRoutes(
     const incident = await storage.getIncident(log.incidentId);
     if (!incident) return res.sendStatus(404);
     if (incident.userId !== req.user!.id && !req.user!.isAdmin) return res.sendStatus(403);
+
+    const r2Key = (log.metadata as any)?.r2Key as string | undefined;
+    if (r2Key && isR2Enabled()) {
+      try {
+        await deleteFromR2(r2Key);
+      } catch (err) {
+        console.warn("Failed to delete R2 object for log", logId, err);
+      }
+    }
     
     await storage.deleteLog(logId);
     res.sendStatus(204);
@@ -340,6 +349,14 @@ export async function registerRoutes(
     });
     
     for (const logToDelete of logsToDelete) {
+      const r2Key = (logToDelete.metadata as any)?.r2Key as string | undefined;
+      if (r2Key && isR2Enabled()) {
+        try {
+          await deleteFromR2(r2Key);
+        } catch (err) {
+          console.warn("Failed to delete R2 object for log", logToDelete.id, err);
+        }
+      }
       await storage.deleteLog(logToDelete.id);
     }
     

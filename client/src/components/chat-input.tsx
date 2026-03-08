@@ -1,5 +1,5 @@
 import { useState, useRef, memo, forwardRef, useImperativeHandle, useEffect } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Send, Plus, Paperclip, FolderOpen, FolderUp, X, Check } from "lucide-react";
@@ -45,6 +45,7 @@ export const ChatInput = memo(forwardRef<ChatInputHandle, ChatInputProps>(functi
   const chatFileInputRef = useRef<HTMLInputElement>(null);
   const chatFolderInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const uploadChatPhotoMutation = useMutation({
     mutationFn: async ({ file, tempUrl }: { file: File; tempUrl: string }) => {
@@ -97,8 +98,29 @@ export const ChatInput = memo(forwardRef<ChatInputHandle, ChatInputProps>(functi
     }
   };
 
-  const removeAttachment = (url: string) => {
+  const removeAttachment = async (url: string) => {
     setChatAttachments(prev => prev.filter(u => u !== url));
+
+    const uploadedChatFileLog = logs?.find((log) => {
+      if (log.fileUrl !== url) return false;
+      const category = (log.metadata as any)?.category;
+      return category === 'chat_photo' || category === 'chat_document';
+    });
+
+    if (!uploadedChatFileLog) return;
+
+    try {
+      const res = await fetch(`/api/logs/${uploadedChatFileLog.id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      if (!res.ok) {
+        throw new Error('Failed to delete uploaded attachment');
+      }
+      queryClient.invalidateQueries({ queryKey: [`/api/incidents/${incidentId}/logs`] });
+    } catch (error) {
+      toast({ title: "Delete Failed", description: "Could not remove uploaded file from server.", variant: "destructive" });
+    }
   };
 
   const handleSend = () => {
@@ -136,7 +158,7 @@ export const ChatInput = memo(forwardRef<ChatInputHandle, ChatInputProps>(functi
                     key={l.id}
                     onClick={() => {
                       if (isSelected) {
-                        removeAttachment(l.fileUrl!);
+                        void removeAttachment(l.fileUrl!);
                       } else {
                         addExistingEvidence(l.fileUrl!);
                       }
@@ -198,7 +220,7 @@ export const ChatInput = memo(forwardRef<ChatInputHandle, ChatInputProps>(functi
                     );
                   })()}
                   <button
-                    onClick={() => removeAttachment(url)}
+                    onClick={() => { void removeAttachment(url); }}
                     className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
                     data-testid={`remove-chat-attachment-${idx}`}
                   >
