@@ -1017,15 +1017,48 @@ export default function IncidentView() {
     onTriggerAnalysis: triggerLitigationReview,
     onSetEditIncidentOpen: setEditIncidentOpen,
     onDeleteIncident: () => deleteIncidentMutation.mutate(),
-    onLogCall: () => setLogCallOpen(true),
-    onLogText: () => setLogTextOpen(true),
-    onLogEmail: () => setLogEmailOpen(true),
-    onLogService: () => { setLogServiceMode('service'); setLogServiceOpen(true); },
-    onLogPortal: () => { setLogServiceMode('portal'); setLogServiceOpen(true); },
-    onLogCustom: () => { setLogServiceMode('custom'); setLogServiceOpen(true); },
+    onLogCall: () => {
+      setLogCallOpen(true);
+      setMobileDrawerOpen(false);
+      setDrawerOpenedByTour(false);
+    },
+    onLogText: () => {
+      setLogTextOpen(true);
+      setMobileDrawerOpen(false);
+      setDrawerOpenedByTour(false);
+    },
+    onLogEmail: () => {
+      setLogEmailOpen(true);
+      setMobileDrawerOpen(false);
+      setDrawerOpenedByTour(false);
+    },
+    onLogService: () => {
+      setLogServiceMode('service');
+      setLogServiceOpen(true);
+      setMobileDrawerOpen(false);
+      setDrawerOpenedByTour(false);
+    },
+    onLogPortal: () => {
+      setLogServiceMode('portal');
+      setLogServiceOpen(true);
+      setMobileDrawerOpen(false);
+      setDrawerOpenedByTour(false);
+    },
+    onLogCustom: () => {
+      setLogServiceMode('custom');
+      setLogServiceOpen(true);
+      setMobileDrawerOpen(false);
+      setDrawerOpenedByTour(false);
+    },
     onToggleChatGroup: toggleChatGroup,
     onToggleFileGroup: toggleFileGroup,
-    onSetHighlightedLogId: setHighlightedLogId,
+    onSetHighlightedLogId: (logId: number | null) => {
+      setHighlightedLogId(logId);
+      if (logId !== null) {
+        setMobileDrawerOpen(false);
+        setDrawerOpenedByTour(false);
+      }
+    },
     openPreview,
     openEditLog,
     onDeleteLog: (logId: number) => deleteMutation.mutate(logId),
