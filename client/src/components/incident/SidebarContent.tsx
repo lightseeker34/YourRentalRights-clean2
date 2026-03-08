@@ -248,57 +248,13 @@ export function SidebarContent({
         />
       </div>
 
-      {/* Add Log section */}
-      <div className="space-y-2 mt-2" data-testid={isMobile ? "log-buttons-mobile" : "log-buttons"}>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              className="w-full justify-between gap-2 bg-[#4d5e700f] border-slate-300"
-              data-testid={isMobile ? "button-record-timeline-event-mobile" : "button-record-timeline-event"}
-            >
-              <span className="inline-flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-amber-500" />
-                <span>Record Timeline Event</span>
-              </span>
-              <ChevronDown className="w-4 h-4 text-slate-500" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" sideOffset={6} className="w-[var(--radix-dropdown-menu-trigger-width)] p-1">
-            <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm mb-1" onClick={onLogCustom}>
-              <SlidersHorizontal className="w-4 h-4 text-rose-500" />
-              <span>Record Custom</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm mb-1" onClick={onLogService}>
-              <Wrench className="w-4 h-4 text-orange-500" />
-              <span>Record Service</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm mb-1" onClick={onLogPortal}>
-              <Globe className="w-4 h-4 text-cyan-500" />
-              <span>Record Portal</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm mb-1" onClick={onLogEmail}>
-              <Mail className="w-4 h-4 text-purple-400" />
-              <span>Record Email</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm mb-1" onClick={onLogText}>
-              <MessageSquare className="w-4 h-4 text-blue-400" />
-              <span>Record Text</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm" onClick={onLogCall}>
-              <Phone className="w-4 h-4 text-green-500" />
-              <span>Record Call</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
       <div className="space-y-6 mt-6">
         <div>
           <h3 className={isMobile
             ? "font-bold uppercase tracking-wider text-left pl-[20px] pr-[20px] text-[16px] mt-[10px] mb-[10px] text-[#0f172a]"
             : "text-sm font-bold text-slate-900 mb-3 uppercase tracking-wider"
           }>Timeline</h3>
+          <div className="ml-4 h-2 border-l-2 border-slate-200" />
           <div className="space-y-2">
             {/* Master Bubble */}
             <div className={isMobile
@@ -527,6 +483,51 @@ export function SidebarContent({
               </div>
             )}
           </div>
+        </div>
+
+        {/* Add Log section */}
+        <div className="space-y-2 mt-2" data-testid={isMobile ? "log-buttons-mobile" : "log-buttons"}>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full justify-between gap-2 bg-[#4d5e700f] border-slate-300"
+                data-testid={isMobile ? "button-record-timeline-event-mobile" : "button-record-timeline-event"}
+              >
+                <span className="inline-flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-amber-500" />
+                  <span>Record Timeline Event</span>
+                </span>
+                <ChevronDown className="w-4 h-4 text-slate-500" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" sideOffset={6} className="w-[var(--radix-dropdown-menu-trigger-width)] p-1">
+              <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm mb-1" onClick={onLogCustom}>
+                <SlidersHorizontal className="w-4 h-4 text-rose-500" />
+                <span>Record Custom</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm mb-1" onClick={onLogService}>
+                <Wrench className="w-4 h-4 text-orange-500" />
+                <span>Record Service</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm mb-1" onClick={onLogPortal}>
+                <Globe className="w-4 h-4 text-cyan-500" />
+                <span>Record Portal</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm mb-1" onClick={onLogEmail}>
+                <Mail className="w-4 h-4 text-purple-400" />
+                <span>Record Email</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm mb-1" onClick={onLogText}>
+                <MessageSquare className="w-4 h-4 text-blue-400" />
+                <span>Record Text</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm" onClick={onLogCall}>
+                <Phone className="w-4 h-4 text-green-500" />
+                <span>Record Call</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* Files Section */}
