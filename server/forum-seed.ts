@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import { db } from "./db";
-import { forumCategories, forumPosts, users } from "../shared/schema";
+import { appSettings, forumCategories, forumPosts, users } from "../shared/schema";
 
 type Topic = {
   title: string;
@@ -200,4 +200,26 @@ export async function upsertCommunityTopics(): Promise<{ categories: number; cre
   }
 
   return { categories, created, updated };
+}
+
+const COMMUNITY_SEED_VERSION_KEY = "community_seed_version";
+const COMMUNITY_SEED_VERSION = "2026-03-08-pinned-v2";
+
+export async function syncCommunityTopicsVersioned(): Promise<{ ran: boolean; version: string; created: number; updated: number; categories: number }> {
+  const existing = await db.select().from(appSettings).where(eq(appSettings.key, COMMUNITY_SEED_VERSION_KEY)).limit(1);
+  const currentVersion = existing[0]?.value;
+
+  if (currentVersion === COMMUNITY_SEED_VERSION) {
+    return { ran: false, version: COMMUNITY_SEED_VERSION, created: 0, updated: 0, categories: 0 };
+  }
+
+  const result = await upsertCommunityTopics();
+
+  if (existing[0]) {
+    await db.update(appSettings).set({ value: COMMUNITY_SEED_VERSION }).where(eq(appSettings.id, existing[0].id));
+  } else {
+    await db.insert(appSettings).values({ key: COMMUNITY_SEED_VERSION_KEY, value: COMMUNITY_SEED_VERSION });
+  }
+
+  return { ran: true, version: COMMUNITY_SEED_VERSION, ...result };
 }

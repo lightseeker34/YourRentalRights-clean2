@@ -4,7 +4,7 @@ import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 import { pool } from "./db";
-import { seedCommunityTopicsIfEmpty } from "./forum-seed";
+import { seedCommunityTopicsIfEmpty, syncCommunityTopicsVersioned } from "./forum-seed";
 
 const app = express();
 app.use(compression());
@@ -70,6 +70,11 @@ app.use((req, res, next) => {
     const seeded = await seedCommunityTopicsIfEmpty();
     if (seeded.seeded) {
       log(`forum starter content seeded (${seeded.categories} categories, ${seeded.posts} posts)`, "seed");
+    }
+
+    const synced = await syncCommunityTopicsVersioned();
+    if (synced.ran) {
+      log(`forum starter content sync ${synced.version} applied (${synced.categories} categories, ${synced.created} created, ${synced.updated} updated)`, "seed");
     }
   } catch (error) {
     console.error("forum seed on startup failed:", error);
