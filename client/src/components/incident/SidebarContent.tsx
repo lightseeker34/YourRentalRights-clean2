@@ -77,6 +77,7 @@ export interface SidebarContentProps {
   openPreview: (log: IncidentLog) => void;
   openEditLog: (log: IncidentLog) => void;
   onDeleteLog: (logId: number) => void;
+  onAddToAiChat?: () => void;
   onClosePanel?: () => void;
   /** 'mobile' adds mobile-specific data-testids and styling */
   variant?: 'mobile' | 'desktop';
@@ -120,6 +121,7 @@ export function SidebarContent({
   openPreview,
   openEditLog,
   onDeleteLog,
+  onAddToAiChat,
   onClosePanel,
   variant = 'desktop',
 }: SidebarContentProps) {
@@ -440,6 +442,7 @@ export function SidebarContent({
                                   chatInputRef={chatInputRef}
                                   onEdit={openEditLog}
                                   onDelete={onDeleteLog}
+                                  onAddToAiChat={onAddToAiChat}
                                 />
                               </div>
                             ))}
@@ -490,6 +493,7 @@ export function SidebarContent({
                         chatInputRef={chatInputRef}
                         onEdit={openEditLog}
                         onDelete={onDeleteLog}
+                        onAddToAiChat={onAddToAiChat}
                       />
                       {hasAttachments && (
                         <div className="ml-3 border-l-2 border-slate-200 pl-2 pr-1 mt-0.5 flex w-full max-w-full flex-wrap gap-1 justify-start overflow-hidden">

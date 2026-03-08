@@ -1062,6 +1062,10 @@ export default function IncidentView() {
     openPreview,
     openEditLog,
     onDeleteLog: (logId: number) => deleteMutation.mutate(logId),
+    onAddToAiChat: () => {
+      setMobileDrawerOpen(false);
+      setDrawerOpenedByTour(false);
+    },
     onClosePanel: () => {
       setMobileDrawerOpen(false);
       setDrawerOpenedByTour(false);

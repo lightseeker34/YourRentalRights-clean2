@@ -32,6 +32,7 @@ interface LogEntryCardProps {
   chatInputRef: React.RefObject<ChatInputHandle | null>;
   onEdit: (log: IncidentLog) => void;
   onDelete: (logId: number) => void;
+  onAddToAiChat?: () => void;
 }
 
 const getTypeLabel = (log: IncidentLog) => {
@@ -60,6 +61,7 @@ export function LogEntryCard({
   chatInputRef,
   onEdit,
   onDelete,
+  onAddToAiChat,
 }: LogEntryCardProps) {
   const isUserChat = log.type === 'chat' && !log.isAi;
   const canAddToAiConversation = canAddLogToAiConversation(log);
@@ -133,6 +135,7 @@ export function LogEntryCard({
                 if (!aiConversationDraft) return;
                 chatInputRef.current?.setInput(aiConversationDraft.message);
                 chatInputRef.current?.setAttachments(aiConversationDraft.attachments);
+                onAddToAiChat?.();
                 setTimeout(() => { chatInputRef.current?.focus(); }, 100);
               }}
               title="Add to AI Chat"
