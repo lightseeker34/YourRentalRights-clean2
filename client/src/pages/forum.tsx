@@ -30,7 +30,7 @@ import { format, formatDistanceToNow } from "date-fns";
 import { 
   MessageSquare, Users, Eye, Clock, Pin, Lock, Plus, Search,
   TrendingUp, MessageCircle, HelpCircle, ChevronRight, Paperclip, X, FileText, Image, Music, Video, FolderUp,
-  Scale, ShieldAlert, FolderArchive, Building2, Wrench, Gavel, Wallet, Bot
+  Scale, ShieldAlert, FolderArchive, Building2, Wrench, Gavel, Wallet, Bot, ClipboardList
 } from "lucide-react";
 import { useRef, useEffect } from "react";
 import { GuidedTour } from "@/components/guided-tour";
@@ -49,6 +49,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Gavel,
   Wallet,
   Bot,
+  ClipboardList,
 };
 
 function getTrustLevelBadge(level: number) {

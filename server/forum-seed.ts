@@ -148,6 +148,32 @@ export const starterCategories: CategorySeed[] = [
       { title: "Privacy & Redaction: Sharing docs safely in community threads", content: "What to redact before posting screenshots, leases, notices, and correspondence." },
     ],
   },
+  {
+    name: "Roommates & Shared Leases",
+    description: "Co-tenant conflicts, lease transfers, replacement roommates, and shared liability.",
+    icon: "Users",
+    color: "#0ea5e9",
+    sortOrder: 9,
+    topics: [
+      { title: "Joint and Several Liability: What each roommate is legally on the hook for", content: "How shared liability works when one roommate leaves, stops paying, or causes damage." },
+      { title: "Replacement Roommate Process: Screening, approvals, and transfer terms", content: "What language to request in writing when replacing a roommate on an active lease." },
+      { title: "Internal Roommate Agreements: Rent splits, utilities, and move-out rules", content: "Templates and clauses that reduce conflict before problems escalate." },
+      { title: "Lease Exit Strategy When a Roommate Defaults", content: "Options to protect your credit and reduce damages when a co-tenant disappears or refuses to pay." },
+    ],
+  },
+  {
+    name: "Code Violations & Inspections",
+    description: "Specific housing code violations, citations, inspectors, and enforcement timelines.",
+    icon: "ClipboardList",
+    color: "#f97316",
+    sortOrder: 10,
+    topics: [
+      { title: "Code Violation Finder: How to identify and cite the exact rule", content: "Share city/state code sections for common issues like mold, leaks, heat, electrical hazards, and structural defects." },
+      { title: "Inspection Request Playbook: What to submit and what evidence to include", content: "Step-by-step for filing with code enforcement or health departments to trigger formal inspections." },
+      { title: "Violation Notice Tracking: Deadlines, re-inspections, and non-compliance", content: "How to track correction deadlines and what to do when landlords ignore citation orders." },
+      { title: "Building a Violation Packet for Court", content: "How to combine inspector reports, photos, notices, and timelines into a clear court-ready evidence bundle." },
+    ],
+  },
 ];
 
 async function getSeedAuthorId(): Promise<number> {
@@ -273,7 +299,7 @@ export async function upsertCommunityTopics(): Promise<{ categories: number; cre
 }
 
 const COMMUNITY_SEED_VERSION_KEY = "community_seed_version";
-const COMMUNITY_SEED_VERSION = "2026-03-08-categories-v4-no-emoji";
+const COMMUNITY_SEED_VERSION = "2026-03-08-categories-v5-codes-roommates";
 
 export async function syncCommunityTopicsVersioned(): Promise<{ ran: boolean; version: string; created: number; updated: number; categories: number }> {
   const existing = await db.select().from(appSettings).where(eq(appSettings.key, COMMUNITY_SEED_VERSION_KEY)).limit(1);
