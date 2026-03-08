@@ -538,7 +538,7 @@ export function SidebarContent({
 
         {/* Files Section */}
         {fileGroups.length > 0 && (
-          <div>
+          <div className="ml-[10px]">
             <h3 className={isMobile
               ? "text-sm font-bold mb-3 uppercase tracking-wider pl-[20px] pr-[20px] text-[#0f172a]"
               : "text-sm font-bold text-slate-900 mb-3 uppercase tracking-wider"
