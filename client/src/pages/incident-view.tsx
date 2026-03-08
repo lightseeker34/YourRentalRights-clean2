@@ -2660,14 +2660,17 @@ export default function IncidentView() {
           </div>
         </ScrollArea>
 
-        <ChatInput
-          ref={chatInputRef}
-          incidentId={id!}
-          logs={logs}
-          isSending={sendMutation.isPending}
-          autoFocusWhenEmpty={shouldAutoFocus}
-          onSend={(message, attachments) => sendMutation.mutate({ message, attachments })}
-        />
+        <div className="relative bg-slate-50">
+          <div className="pointer-events-none absolute -top-10 left-0 right-0 h-10 bg-gradient-to-b from-transparent to-slate-50" />
+          <ChatInput
+            ref={chatInputRef}
+            incidentId={id!}
+            logs={logs}
+            isSending={sendMutation.isPending}
+            autoFocusWhenEmpty={shouldAutoFocus}
+            onSend={(message, attachments) => sendMutation.mutate({ message, attachments })}
+          />
+        </div>
       </div>
       <GuidedTour />
     </div>

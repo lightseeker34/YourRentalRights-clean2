@@ -113,7 +113,7 @@ export const ChatInput = memo(forwardRef<ChatInputHandle, ChatInputProps>(functi
   const photoLogs = logs?.filter(l => photoTypes.includes(l.type) && l.fileUrl) || [];
 
   return (
-    <div className="shrink-0 px-3 pt-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] bg-white border-t border-slate-200">
+    <div className="shrink-0 px-3 pt-1 pb-[max(env(safe-area-inset-bottom),0.5rem)] bg-slate-50">
       <div className="w-full max-w-3xl mx-auto">
         {showEvidencePicker && (
           <div className="mb-2 p-3 bg-slate-50 rounded-lg border border-slate-200 max-h-44 overflow-y-auto">
@@ -199,7 +199,7 @@ export const ChatInput = memo(forwardRef<ChatInputHandle, ChatInputProps>(functi
               }
             }}
             placeholder="Type a message..."
-            className="border-0 shadow-none focus-visible:ring-0 resize-none min-h-[40px] max-h-[200px] px-3 py-2 text-sm caret-slate-800 placeholder:text-slate-400"
+            className="border-0 shadow-none focus-visible:ring-0 resize-none min-h-[34px] max-h-[160px] px-3 py-1.5 text-sm caret-slate-800 placeholder:text-slate-400"
             data-testid="input-chat-message"
             rows={1}
           />
