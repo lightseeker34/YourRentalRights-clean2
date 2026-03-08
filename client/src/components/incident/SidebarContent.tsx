@@ -257,7 +257,7 @@ export function SidebarContent({
             }>
               <span className="relative z-10">Timeline</span>
               <span className="absolute -left-6 top-1/2 w-4 -translate-y-1/2 border-t-2 border-slate-200" />
-              <span className="absolute left-[calc(100%+2px)] top-1/2 w-16 -translate-y-1/2 border-t-2 border-slate-200" />
+              <span className="absolute left-[calc(100%+6px)] top-1/2 w-16 -translate-y-1/2 border-t-2 border-slate-200" />
             </h3>
           </div>
 
@@ -267,7 +267,7 @@ export function SidebarContent({
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full justify-between gap-2 bg-[#4d5e700f] border-slate-300"
+                  className="w-full justify-between gap-2 bg-[#4d5e700f] border-slate-300 focus-visible:ring-0 focus-visible:outline-none active:ring-0"
                   data-testid={isMobile ? "button-record-timeline-event-mobile" : "button-record-timeline-event"}
                 >
                   <span className="inline-flex items-center gap-2">
