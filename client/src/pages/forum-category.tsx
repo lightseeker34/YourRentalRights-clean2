@@ -93,18 +93,18 @@ function PostRow({ post, author }: { post: ForumPost; author?: ForumUser }) {
             <h3 className="font-medium text-slate-900 break-words">{post.title}</h3>
           </div>
           <p className="text-sm text-slate-500 line-clamp-2 mb-2">{stripHtml(post.content)}</p>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 text-xs text-slate-400 flex-wrap">
-              <span className="flex items-center gap-1">
-                <span className="font-medium text-slate-600">{displayName}</span>
-                <span className={`px-1.5 py-0.5 rounded text-[10px] ${trustBadge.className}`}>{trustBadge.label}</span>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 min-w-0">
+            <div className="flex items-center gap-2 sm:gap-3 text-xs text-slate-400 flex-wrap min-w-0">
+              <span className="flex items-center gap-1 min-w-0">
+                <span className="font-medium text-slate-600 truncate max-w-[110px] sm:max-w-none">{displayName}</span>
+                <span className={`px-1.5 py-0.5 rounded text-[10px] shrink-0 ${trustBadge.className}`}>{trustBadge.label}</span>
               </span>
-              <span className="flex items-center gap-1">
+              <span className="flex items-center gap-1 shrink-0">
                 <Clock className="w-3 h-3" />
-                {formatDistanceToNow(new Date(post.lastActivityAt), { addSuffix: true })}
+                <span className="truncate">{formatDistanceToNow(new Date(post.lastActivityAt), { addSuffix: true })}</span>
               </span>
             </div>
-            <div className="flex items-center gap-3 text-sm text-slate-500 shrink-0">
+            <div className="flex items-center gap-3 text-sm text-slate-600 shrink-0">
               <div className="flex items-center gap-1">
                 <MessageSquare className="w-4 h-4" />
                 <span>{post.replyCount}</span>
