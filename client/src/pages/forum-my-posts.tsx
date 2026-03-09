@@ -164,22 +164,24 @@ export default function ForumMyPosts() {
                         >
                           <div className="flex items-start gap-3">
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                              <div className="flex items-center gap-2 mb-1 min-w-0">
                                 {post.isPinned && (
-                                  <Pin className="w-3 h-3 text-amber-500" />
+                                  <Badge variant="secondary" className="text-xs shrink-0">
+                                    <Pin className="w-3 h-3 mr-1" /> Pinned
+                                  </Badge>
                                 )}
                                 {post.isLocked && (
-                                  <Lock className="w-3 h-3 text-slate-400" />
+                                  <Lock className="w-3 h-3 text-slate-400 shrink-0" />
                                 )}
-                                <span className="font-medium text-slate-900 hover:text-blue-600 truncate">
+                                <span className="font-medium text-slate-900 hover:text-blue-600 truncate min-w-0 flex-1">
                                   {post.title}
                                 </span>
                               </div>
                               <p className="text-sm text-slate-600 line-clamp-2 mb-2">
                                 {stripHtml(post.content)}
                               </p>
-                              <div className="flex items-center gap-4 text-xs text-slate-400 flex-wrap">
-                                {category && (
+                              {category && (
+                                <div className="mb-2">
                                   <Badge 
                                     variant="outline" 
                                     className="text-xs"
@@ -190,16 +192,18 @@ export default function ForumMyPosts() {
                                   >
                                     {category.name}
                                   </Badge>
-                                )}
+                                </div>
+                              )}
+                              <div className="flex items-center gap-4 text-sm text-slate-500 whitespace-nowrap">
                                 <span className="flex items-center gap-1">
-                                  <Eye className="w-3 h-3" /> {post.viewCount}
-                                </span>
-                                <span className="flex items-center gap-1">
-                                  <MessageCircle className="w-3 h-3" /> {post.replyCount}
-                                </span>
-                                <span className="flex items-center gap-1">
-                                  <Clock className="w-3 h-3" />
+                                  <Clock className="w-4 h-4" />
                                   {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
+                                </span>
+                                <span className="flex items-center gap-1">
+                                  <Eye className="w-4 h-4" /> {post.viewCount}
+                                </span>
+                                <span className="flex items-center gap-1">
+                                  <MessageCircle className="w-4 h-4" /> {post.replyCount}
                                 </span>
                               </div>
                             </div>
@@ -301,22 +305,24 @@ export default function ForumMyPosts() {
                         >
                           <div className="flex items-start gap-3">
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                              <div className="flex items-center gap-2 mb-1 min-w-0">
                                 {post.isPinned && (
-                                  <Pin className="w-3 h-3 text-amber-500" />
+                                  <Badge variant="secondary" className="text-xs shrink-0">
+                                    <Pin className="w-3 h-3 mr-1" /> Pinned
+                                  </Badge>
                                 )}
                                 {post.isLocked && (
-                                  <Lock className="w-3 h-3 text-slate-400" />
+                                  <Lock className="w-3 h-3 text-slate-400 shrink-0" />
                                 )}
-                                <span className="font-medium text-slate-900 hover:text-blue-600 truncate">
+                                <span className="font-medium text-slate-900 hover:text-blue-600 truncate min-w-0 flex-1">
                                   {post.title}
                                 </span>
                               </div>
                               <p className="text-sm text-slate-600 line-clamp-2 mb-2">
                                 {stripHtml(post.content)}
                               </p>
-                              <div className="flex items-center gap-4 text-xs text-slate-400 flex-wrap">
-                                {category && (
+                              {category && (
+                                <div className="mb-2">
                                   <Badge 
                                     variant="outline" 
                                     className="text-xs"
@@ -327,16 +333,18 @@ export default function ForumMyPosts() {
                                   >
                                     {category.name}
                                   </Badge>
-                                )}
+                                </div>
+                              )}
+                              <div className="flex items-center gap-4 text-sm text-slate-500 whitespace-nowrap">
                                 <span className="flex items-center gap-1">
-                                  <Eye className="w-3 h-3" /> {post.viewCount}
-                                </span>
-                                <span className="flex items-center gap-1">
-                                  <MessageCircle className="w-3 h-3" /> {post.replyCount}
-                                </span>
-                                <span className="flex items-center gap-1">
-                                  <Clock className="w-3 h-3" />
+                                  <Clock className="w-4 h-4" />
                                   {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
+                                </span>
+                                <span className="flex items-center gap-1">
+                                  <Eye className="w-4 h-4" /> {post.viewCount}
+                                </span>
+                                <span className="flex items-center gap-1">
+                                  <MessageCircle className="w-4 h-4" /> {post.replyCount}
                                 </span>
                               </div>
                             </div>
