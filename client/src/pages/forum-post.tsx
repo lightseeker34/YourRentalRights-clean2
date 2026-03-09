@@ -434,7 +434,7 @@ export default function ForumPost() {
       </div>
       <Card className="mb-6">
         <CardHeader className="pb-2">
-          <div className="flex items-start justify-between gap-4 min-w-0">
+          <div className="flex items-start justify-between gap-2 min-w-0">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap mb-2">
                 {post.isPinned && (
@@ -447,18 +447,20 @@ export default function ForumPost() {
                     <Lock className="w-3 h-3 mr-1" /> Locked
                   </Badge>
                 )}
-                {category && (
-                  <Badge variant="outline" className="max-w-full whitespace-nowrap overflow-hidden text-ellipsis">
+              </div>
+              {category && (
+                <div className="mb-2 min-w-0">
+                  <Badge variant="outline" className="max-w-full inline-flex whitespace-nowrap overflow-hidden text-ellipsis">
                     {category.name}
                   </Badge>
-                )}
-              </div>
+                </div>
+              )}
               <h1 className="text-slate-900 mt-[10px] mb-[10px] text-[18px] font-semibold whitespace-nowrap overflow-hidden text-ellipsis max-w-full">{post.title}</h1>
             </div>
             {canModifyPost && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 p-0">
                     <MoreVertical className="w-4 h-4" />
                   </Button>
                 </DropdownMenuTrigger>
