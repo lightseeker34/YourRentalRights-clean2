@@ -419,17 +419,21 @@ export default function ForumPost() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 overflow-x-hidden">
-      <div className="mb-4">
+      <div className="mb-4 min-w-0">
         <Link href={category ? `/forum/category/${category.id}` : "/forum"}>
-          <Button variant="ghost" size="sm">
-            <ChevronLeft className="w-4 h-4 mr-1" /> Back to {category?.name || "Forum"}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="max-w-full justify-start text-left whitespace-normal break-words h-auto py-2"
+          >
+            <ChevronLeft className="w-4 h-4 mr-1 shrink-0" /> Back to {category?.name || "Forum"}
           </Button>
         </Link>
       </div>
       <Card className="mb-6">
         <CardHeader className="pb-2">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1">
+          <div className="flex items-start justify-between gap-4 min-w-0">
+            <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap mb-2">
                 {post.isPinned && (
                   <Badge variant="secondary" className="text-xs">
@@ -442,10 +446,12 @@ export default function ForumPost() {
                   </Badge>
                 )}
                 {category && (
-                  <Badge variant="outline">{category.name}</Badge>
+                  <Badge variant="outline" className="max-w-full whitespace-normal break-words text-left">
+                    {category.name}
+                  </Badge>
                 )}
               </div>
-              <h1 className="text-slate-900 mt-[10px] mb-[10px] text-[18px] font-semibold">{post.title}</h1>
+              <h1 className="text-slate-900 mt-[10px] mb-[10px] text-[18px] font-semibold break-words">{post.title}</h1>
             </div>
             {canModifyPost && (
               <DropdownMenu>
