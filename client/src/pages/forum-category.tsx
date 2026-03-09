@@ -183,7 +183,7 @@ export default function ForumCategory() {
         </Link>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">{category.name}</h1>
+            <h1 className="text-2xl font-bold text-slate-900 break-words">{category.name}</h1>
             {category.description && (
               <p className="text-slate-500">{category.description}</p>
             )}

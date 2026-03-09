@@ -450,12 +450,15 @@ export default function ForumPost() {
               </div>
               {category && (
                 <div className="mb-2 min-w-0">
-                  <Badge variant="outline" className="max-w-full inline-flex whitespace-nowrap overflow-hidden text-ellipsis">
+                  <Badge
+                    variant="outline"
+                    className="w-full sm:w-auto justify-start max-w-full whitespace-nowrap overflow-hidden text-ellipsis"
+                  >
                     {category.name}
                   </Badge>
                 </div>
               )}
-              <h1 className="text-slate-900 mt-[10px] mb-[10px] text-[18px] font-semibold whitespace-nowrap overflow-hidden text-ellipsis max-w-full">{post.title}</h1>
+              <h1 className="text-slate-900 mt-[10px] mb-[10px] text-[18px] font-semibold break-words max-w-full">{post.title}</h1>
             </div>
             {canModifyPost && (
               <DropdownMenu>
