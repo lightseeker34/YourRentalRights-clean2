@@ -377,6 +377,8 @@ function NewPostDialog({ categories }: { categories: ForumCategory[] }) {
 export default function Forum() {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchPage, setSearchPage] = useState(1);
+  const SEARCH_PAGE_SIZE = 10;
 
   // Track user activity for online status
   useEffect(() => {
@@ -421,9 +423,12 @@ export default function Forum() {
     total: number;
     categories: ForumCategory[];
   }>({
-    queryKey: ["/api/forum/search", normalizedSearch],
+    queryKey: ["/api/forum/search", normalizedSearch, searchPage],
     queryFn: async () => {
-      const res = await fetch(`/api/forum/search?q=${encodeURIComponent(normalizedSearch)}&limit=50`);
+      const offset = (searchPage - 1) * SEARCH_PAGE_SIZE;
+      const res = await fetch(
+        `/api/forum/search?q=${encodeURIComponent(normalizedSearch)}&limit=${SEARCH_PAGE_SIZE}&offset=${offset}`
+      );
       return res.json();
     },
     enabled: normalizedSearch.length >= 2,
@@ -434,6 +439,9 @@ export default function Forum() {
     if (normalizedSearch.length < 2) return [] as ForumCategory[];
     return searchData?.categories ?? [];
   }, [normalizedSearch.length, searchData?.categories]);
+
+  const totalSearchResults = searchData?.total ?? 0;
+  const totalSearchPages = Math.max(1, Math.ceil(totalSearchResults / SEARCH_PAGE_SIZE));
 
   const postCountByCategory = recentPosts.reduce((acc, post) => {
     acc[post.categoryId] = (acc[post.categoryId] || 0) + 1;
@@ -465,7 +473,10 @@ export default function Forum() {
         <Input
           placeholder="Search discussions, categories, or authors..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            setSearchPage(1);
+          }}
           className="pl-10"
           data-testid="search-forum"
         />
@@ -521,11 +532,38 @@ export default function Forum() {
                 </CardContent>
               </Card>
             ) : (
-              <div className="space-y-3">
-                {filteredPosts.map((post) => (
-                  <PostRow key={post.id} post={post} author={userMap.get(post.authorId)} />
-                ))}
-              </div>
+              <>
+                <div className="space-y-3">
+                  {filteredPosts.map((post) => (
+                    <PostRow key={post.id} post={post} author={userMap.get(post.authorId)} />
+                  ))}
+                </div>
+                {normalizedSearch.length >= 2 && totalSearchPages > 1 && (
+                  <div className="mt-4 flex items-center justify-between gap-3">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSearchPage((p) => Math.max(1, p - 1))}
+                      disabled={searchPage <= 1}
+                      data-testid="search-prev-page"
+                    >
+                      Previous
+                    </Button>
+                    <span className="text-sm text-slate-600" data-testid="search-page-indicator">
+                      Page {searchPage} of {totalSearchPages}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSearchPage((p) => Math.min(totalSearchPages, p + 1))}
+                      disabled={searchPage >= totalSearchPages}
+                      data-testid="search-next-page"
+                    >
+                      Next
+                    </Button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
