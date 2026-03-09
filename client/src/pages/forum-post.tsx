@@ -424,9 +424,11 @@ export default function ForumPost() {
           <Button
             variant="ghost"
             size="sm"
-            className="max-w-full justify-start text-left whitespace-nowrap overflow-hidden text-ellipsis"
+            className="w-full sm:w-auto max-w-full justify-start min-w-0"
           >
-            <ChevronLeft className="w-4 h-4 mr-1 shrink-0" /> Back to {category?.name || "Forum"}
+            <ChevronLeft className="w-4 h-4 mr-1 shrink-0" />
+            <span className="sm:hidden">Back</span>
+            <span className="hidden sm:inline truncate">Back to {category?.name || "Forum"}</span>
           </Button>
         </Link>
       </div>
