@@ -121,16 +121,16 @@ export default function ForumMyPosts() {
       </div>
 
       <Tabs defaultValue="posts" className="w-full">
-        <TabsList className="mb-4">
-          <TabsTrigger value="posts" data-testid="tab-posts" className="flex items-center gap-2">
+        <TabsList className="mb-4 w-full h-auto flex flex-wrap justify-start">
+          <TabsTrigger value="posts" data-testid="tab-posts" className="flex items-center gap-2 flex-1 min-w-[140px]">
             <MessageSquare className="w-4 h-4" />
             My Posts ({myPosts.length})
           </TabsTrigger>
-          <TabsTrigger value="replies" data-testid="tab-replies" className="flex items-center gap-2">
+          <TabsTrigger value="replies" data-testid="tab-replies" className="flex items-center gap-2 flex-1 min-w-[140px]">
             <MessageCircle className="w-4 h-4" />
             My Replies ({myReplies.length})
           </TabsTrigger>
-          <TabsTrigger value="bookmarks" data-testid="tab-bookmarks" className="flex items-center gap-2">
+          <TabsTrigger value="bookmarks" data-testid="tab-bookmarks" className="flex items-center gap-2 flex-1 min-w-[140px]">
             <Bookmark className="w-4 h-4" />
             Bookmarks ({bookmarkedPosts.length})
           </TabsTrigger>
@@ -178,7 +178,7 @@ export default function ForumMyPosts() {
                               <p className="text-sm text-slate-600 line-clamp-2 mb-2">
                                 {stripHtml(post.content)}
                               </p>
-                              <div className="flex items-center gap-4 text-xs text-slate-400">
+                              <div className="flex items-center gap-4 text-xs text-slate-400 flex-wrap">
                                 {category && (
                                   <Badge 
                                     variant="outline" 
@@ -250,7 +250,7 @@ export default function ForumMyPosts() {
                               <p className="text-sm text-slate-700 line-clamp-3 mb-2">
                                 {reply.content}
                               </p>
-                              <div className="flex items-center gap-4 text-xs text-slate-400">
+                              <div className="flex items-center gap-4 text-xs text-slate-400 flex-wrap">
                                 {reply.isAcceptedAnswer && (
                                   <Badge className="bg-green-100 text-green-700 text-xs">
                                     Accepted Answer
@@ -315,7 +315,7 @@ export default function ForumMyPosts() {
                               <p className="text-sm text-slate-600 line-clamp-2 mb-2">
                                 {stripHtml(post.content)}
                               </p>
-                              <div className="flex items-center gap-4 text-xs text-slate-400">
+                              <div className="flex items-center gap-4 text-xs text-slate-400 flex-wrap">
                                 {category && (
                                   <Badge 
                                     variant="outline" 
