@@ -111,26 +111,26 @@ export default function ForumMyPosts() {
 
   return (
     <div className="container mx-auto p-4 max-w-4xl overflow-x-hidden">
-      <div className="flex items-center gap-3 mb-6">
+      <div className="mb-6">
         <Link href="/forum">
-          <Button variant="ghost" size="sm" data-testid="back-to-forum">
+          <Button variant="ghost" size="sm" data-testid="back-to-forum" className="mb-2">
             <ArrowLeft className="w-4 h-4 mr-1" /> Back to Forum
           </Button>
         </Link>
-        <h1 className="text-2xl font-bold text-slate-900">My Forum Activity</h1>
+        <h1 className="text-2xl font-bold text-slate-900 text-center whitespace-nowrap">My Forum Activity</h1>
       </div>
 
       <Tabs defaultValue="posts" className="w-full">
-        <TabsList className="mb-4 w-full h-auto flex flex-wrap justify-start">
-          <TabsTrigger value="posts" data-testid="tab-posts" className="flex items-center gap-2 flex-1 min-w-[140px]">
+        <TabsList className="mb-4 w-full h-auto flex flex-nowrap">
+          <TabsTrigger value="posts" data-testid="tab-posts" className="flex items-center justify-center gap-1 flex-1 min-w-0 px-2 text-[11px] sm:text-sm whitespace-nowrap">
             <MessageSquare className="w-4 h-4" />
             My Posts ({myPosts.length})
           </TabsTrigger>
-          <TabsTrigger value="replies" data-testid="tab-replies" className="flex items-center gap-2 flex-1 min-w-[140px]">
+          <TabsTrigger value="replies" data-testid="tab-replies" className="flex items-center justify-center gap-1 flex-1 min-w-0 px-2 text-[11px] sm:text-sm whitespace-nowrap">
             <MessageCircle className="w-4 h-4" />
             My Replies ({myReplies.length})
           </TabsTrigger>
-          <TabsTrigger value="bookmarks" data-testid="tab-bookmarks" className="flex items-center gap-2 flex-1 min-w-[140px]">
+          <TabsTrigger value="bookmarks" data-testid="tab-bookmarks" className="flex items-center justify-center gap-1 flex-1 min-w-0 px-2 text-[11px] sm:text-sm whitespace-nowrap">
             <Bookmark className="w-4 h-4" />
             Bookmarks ({bookmarkedPosts.length})
           </TabsTrigger>
