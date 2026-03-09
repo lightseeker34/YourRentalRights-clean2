@@ -1239,6 +1239,61 @@ Provide your response in this exact JSON format:
     res.sendStatus(200);
   });
 
+  // Search discussions (title/content/category/author display name)
+  app.get("/api/forum/search", async (req, res) => {
+    const q = (req.query.q as string | undefined)?.trim() || "";
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : 20;
+    const offset = req.query.offset ? parseInt(req.query.offset as string) : 0;
+
+    if (!q) {
+      return res.json({ posts: [], total: 0, categories: [] });
+    }
+
+    const normalizedQ = q.toLowerCase();
+    const [{ posts: allPosts }, categories, users] = await Promise.all([
+      storage.getForumPosts(undefined, 500, 0),
+      storage.getForumCategories(),
+      storage.getAllUsers(),
+    ]);
+
+    const categoryMap = new Map(categories.map((c) => [c.id, c]));
+    const userMap = new Map(users.map((u) => [u.id, u]));
+
+    const scored = allPosts
+      .map((post) => {
+        const category = categoryMap.get(post.categoryId);
+        const author = userMap.get(post.authorId);
+        const authorName = (author?.forumDisplayName || author?.fullName || author?.username || "").toLowerCase();
+        const title = (post.title || "").toLowerCase();
+        const content = (post.content || "").toLowerCase();
+        const categoryName = (category?.name || "").toLowerCase();
+
+        let score = 0;
+        if (title.includes(normalizedQ)) score += 6;
+        if (categoryName.includes(normalizedQ)) score += 4;
+        if (authorName.includes(normalizedQ)) score += 3;
+        if (content.includes(normalizedQ)) score += 2;
+
+        return { post, score, category };
+      })
+      .filter((x) => x.score > 0)
+      .sort((a, b) => b.score - a.score || Number(b.post.isPinned) - Number(a.post.isPinned) || new Date(b.post.lastActivityAt).getTime() - new Date(a.post.lastActivityAt).getTime());
+
+    const total = scored.length;
+    const paged = scored.slice(offset, offset + limit);
+    const matchedCategories = scored.reduce<any[]>((acc, x) => {
+      if (!x.category) return acc;
+      if (!acc.some((c) => c.id === x.category!.id)) acc.push(x.category);
+      return acc;
+    }, []);
+
+    res.json({
+      posts: paged.map((x) => x.post),
+      total,
+      categories: matchedCategories,
+    });
+  });
+
   // Posts
   app.get("/api/forum/posts", async (req, res) => {
     const categoryId = req.query.categoryId ? parseInt(req.query.categoryId as string) : undefined;

@@ -24,7 +24,7 @@ import { stripHtml } from "@/components/html-content";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { format, formatDistanceToNow } from "date-fns";
 import { 
@@ -414,13 +414,26 @@ export default function Forum() {
 
   const userMap = new Map(allUsers.map((u) => [u.id, u]));
 
-  const filteredPosts = searchQuery.trim()
-    ? recentPosts.filter(
-        (p) =>
-          p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          p.content.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : recentPosts;
+  const normalizedSearch = searchQuery.trim();
+
+  const { data: searchData, isLoading: searchLoading } = useQuery<{
+    posts: ForumPost[];
+    total: number;
+    categories: ForumCategory[];
+  }>({
+    queryKey: ["/api/forum/search", normalizedSearch],
+    queryFn: async () => {
+      const res = await fetch(`/api/forum/search?q=${encodeURIComponent(normalizedSearch)}&limit=50`);
+      return res.json();
+    },
+    enabled: normalizedSearch.length >= 2,
+  });
+
+  const filteredPosts = normalizedSearch.length >= 2 ? (searchData?.posts ?? []) : recentPosts;
+  const matchedCategories = useMemo(() => {
+    if (normalizedSearch.length < 2) return [] as ForumCategory[];
+    return searchData?.categories ?? [];
+  }, [normalizedSearch.length, searchData?.categories]);
 
   const postCountByCategory = recentPosts.reduce((acc, post) => {
     acc[post.categoryId] = (acc[post.categoryId] || 0) + 1;
@@ -450,7 +463,7 @@ export default function Forum() {
       <div className="relative mb-6">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
         <Input
-          placeholder="Search discussions..."
+          placeholder="Search discussions, categories, or authors..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="pl-10"
@@ -482,11 +495,29 @@ export default function Forum() {
           </div>
 
           <div>
-            <h2 className="text-lg font-semibold text-slate-900 mb-4">Recent Discussions</h2>
-            {filteredPosts.length === 0 ? (
+            <h2 className="text-lg font-semibold text-slate-900 mb-2">
+              {normalizedSearch.length >= 2 ? `Search Results (${searchData?.total ?? 0})` : "Recent Discussions"}
+            </h2>
+            {normalizedSearch.length > 0 && normalizedSearch.length < 2 && (
+              <p className="text-sm text-slate-500 mb-3">Type at least 2 characters to search.</p>
+            )}
+            {normalizedSearch.length >= 2 && matchedCategories.length > 0 && (
+              <div className="mb-3 flex flex-wrap gap-2">
+                {matchedCategories.slice(0, 6).map((cat) => (
+                  <Badge key={cat.id} variant="outline" className="text-xs">
+                    {cat.name}
+                  </Badge>
+                ))}
+              </div>
+            )}
+            {searchLoading ? (
+              <Card>
+                <CardContent className="p-6 text-center text-slate-500">Searching discussions...</CardContent>
+              </Card>
+            ) : filteredPosts.length === 0 ? (
               <Card>
                 <CardContent className="p-6 text-center text-slate-500">
-                  {searchQuery ? "No discussions match your search." : "No discussions yet. Start one!"}
+                  {normalizedSearch ? "No discussions match your search." : "No discussions yet. Start one!"}
                 </CardContent>
               </Card>
             ) : (
