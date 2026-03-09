@@ -484,88 +484,109 @@ export default function Forum() {
 
       <div className="grid gap-8 lg:grid-cols-3 min-w-0">
         <div className="lg:col-span-2 space-y-6 min-w-0">
-          <div>
-            <h2 className="text-lg font-semibold text-slate-900 mb-4">Categories</h2>
-            <div className="space-y-2">
-              {categories.length === 0 ? (
+          {normalizedSearch.length >= 2 && (
+            <div>
+              <h2 className="text-lg font-semibold text-slate-900 mb-2">Search Results ({searchData?.total ?? 0})</h2>
+              {matchedCategories.length > 0 && (
+                <div className="mb-3 flex flex-wrap gap-2">
+                  {matchedCategories.slice(0, 6).map((cat) => (
+                    <Badge key={cat.id} variant="outline" className="text-xs">
+                      {cat.name}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+              {searchLoading ? (
+                <Card>
+                  <CardContent className="p-6 text-center text-slate-500">Searching discussions...</CardContent>
+                </Card>
+              ) : filteredPosts.length === 0 ? (
                 <Card>
                   <CardContent className="p-6 text-center text-slate-500">
-                    No categories yet. {user?.isAdmin && "Add some from the Admin panel."}
+                    No discussions match your search.
                   </CardContent>
                 </Card>
               ) : (
-                categories.map((category) => (
-                  <CategoryCard
-                    key={category.id}
-                    category={category}
-                    postCount={postCountByCategory[category.id] || 0}
-                  />
-                ))
+                <>
+                  <div className="space-y-3">
+                    {filteredPosts.map((post) => (
+                      <PostRow key={post.id} post={post} author={userMap.get(post.authorId)} />
+                    ))}
+                  </div>
+                  {totalSearchPages > 1 && (
+                    <div className="mt-4 flex items-center justify-between gap-3">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSearchPage((p) => Math.max(1, p - 1))}
+                        disabled={searchPage <= 1}
+                        data-testid="search-prev-page"
+                      >
+                        Previous
+                      </Button>
+                      <span className="text-sm text-slate-600" data-testid="search-page-indicator">
+                        Page {searchPage} of {totalSearchPages}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSearchPage((p) => Math.min(totalSearchPages, p + 1))}
+                        disabled={searchPage >= totalSearchPages}
+                        data-testid="search-next-page"
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
-          </div>
+          )}
 
-          <div>
-            <h2 className="text-lg font-semibold text-slate-900 mb-2">
-              {normalizedSearch.length >= 2 ? `Search Results (${searchData?.total ?? 0})` : "Recent Discussions"}
-            </h2>
-            {normalizedSearch.length > 0 && normalizedSearch.length < 2 && (
-              <p className="text-sm text-slate-500 mb-3">Type at least 2 characters to search.</p>
-            )}
-            {normalizedSearch.length >= 2 && matchedCategories.length > 0 && (
-              <div className="mb-3 flex flex-wrap gap-2">
-                {matchedCategories.slice(0, 6).map((cat) => (
-                  <Badge key={cat.id} variant="outline" className="text-xs">
-                    {cat.name}
-                  </Badge>
-                ))}
-              </div>
-            )}
-            {searchLoading ? (
-              <Card>
-                <CardContent className="p-6 text-center text-slate-500">Searching discussions...</CardContent>
-              </Card>
-            ) : filteredPosts.length === 0 ? (
-              <Card>
-                <CardContent className="p-6 text-center text-slate-500">
-                  {normalizedSearch ? "No discussions match your search." : "No discussions yet. Start one!"}
-                </CardContent>
-              </Card>
-            ) : (
-              <>
-                <div className="space-y-3">
-                  {filteredPosts.map((post) => (
-                    <PostRow key={post.id} post={post} author={userMap.get(post.authorId)} />
-                  ))}
+          {normalizedSearch.length < 2 && (
+            <>
+              {normalizedSearch.length > 0 && (
+                <p className="text-sm text-slate-500 -mt-2">Type at least 2 characters to search.</p>
+              )}
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900 mb-4">Categories</h2>
+                <div className="space-y-2">
+                  {categories.length === 0 ? (
+                    <Card>
+                      <CardContent className="p-6 text-center text-slate-500">
+                        No categories yet. {user?.isAdmin && "Add some from the Admin panel."}
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    categories.map((category) => (
+                      <CategoryCard
+                        key={category.id}
+                        category={category}
+                        postCount={postCountByCategory[category.id] || 0}
+                      />
+                    ))
+                  )}
                 </div>
-                {normalizedSearch.length >= 2 && totalSearchPages > 1 && (
-                  <div className="mt-4 flex items-center justify-between gap-3">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setSearchPage((p) => Math.max(1, p - 1))}
-                      disabled={searchPage <= 1}
-                      data-testid="search-prev-page"
-                    >
-                      Previous
-                    </Button>
-                    <span className="text-sm text-slate-600" data-testid="search-page-indicator">
-                      Page {searchPage} of {totalSearchPages}
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setSearchPage((p) => Math.min(totalSearchPages, p + 1))}
-                      disabled={searchPage >= totalSearchPages}
-                      data-testid="search-next-page"
-                    >
-                      Next
-                    </Button>
+              </div>
+
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900 mb-2">Recent Discussions</h2>
+                {filteredPosts.length === 0 ? (
+                  <Card>
+                    <CardContent className="p-6 text-center text-slate-500">
+                      No discussions yet. Start one!
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <div className="space-y-3">
+                    {filteredPosts.map((post) => (
+                      <PostRow key={post.id} post={post} author={userMap.get(post.authorId)} />
+                    ))}
                   </div>
                 )}
-              </>
-            )}
-          </div>
+              </div>
+            </>
+          )}
         </div>
 
         <div className="space-y-6 min-w-0">
