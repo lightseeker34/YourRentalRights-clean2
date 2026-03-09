@@ -451,7 +451,7 @@ export default function ForumPost() {
                   </Badge>
                 )}
               </div>
-              <h1 className="text-slate-900 mt-[10px] mb-[10px] text-[18px] font-semibold break-words">{post.title}</h1>
+              <h1 className="text-slate-900 mt-[10px] mb-[10px] text-[18px] font-semibold whitespace-nowrap overflow-hidden text-ellipsis max-w-full">{post.title}</h1>
             </div>
             {canModifyPost && (
               <DropdownMenu>
