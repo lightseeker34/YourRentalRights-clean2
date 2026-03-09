@@ -77,18 +77,20 @@ function PostRow({ post, author }: { post: ForumPost; author?: ForumUser }) {
       <div className="flex items-start gap-3">
         <UserAvatar user={author} size="md" />
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap mb-1">
-            {post.isPinned && (
-              <Badge variant="secondary" className="text-xs">
-                <Pin className="w-3 h-3 mr-1" /> Pinned
-              </Badge>
-            )}
-            {post.isLocked && (
-              <Badge variant="outline" className="text-xs">
-                <Lock className="w-3 h-3 mr-1" /> Locked
-              </Badge>
-            )}
-            <h3 className="font-medium text-slate-900">{post.title}</h3>
+          <div className="mb-1">
+            <div className="flex items-center gap-2 flex-wrap mb-1">
+              {post.isPinned && (
+                <Badge variant="secondary" className="text-xs">
+                  <Pin className="w-3 h-3 mr-1" /> Pinned
+                </Badge>
+              )}
+              {post.isLocked && (
+                <Badge variant="outline" className="text-xs">
+                  <Lock className="w-3 h-3 mr-1" /> Locked
+                </Badge>
+              )}
+            </div>
+            <h3 className="font-medium text-slate-900 break-words">{post.title}</h3>
           </div>
           <p className="text-sm text-slate-500 line-clamp-2 mb-2">{stripHtml(post.content)}</p>
           <div className="flex items-center justify-between">

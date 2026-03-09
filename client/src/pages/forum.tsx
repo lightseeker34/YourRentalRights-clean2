@@ -139,18 +139,20 @@ function PostRow({ post, author }: { post: ForumPost; author?: ForumUser }) {
       <CardContent className="p-3 sm:p-4 flex items-start gap-3 overflow-hidden min-w-0">
         <UserAvatar user={author} size="md" />
         <div className="flex-1 min-w-0 overflow-hidden">
-          <div className="flex items-center gap-2 mb-1 flex-wrap min-w-0">
-            {post.isPinned && (
-              <Badge variant="secondary" className="text-xs shrink-0">
-                <Pin className="w-3 h-3 mr-1" /> Pinned
-              </Badge>
-            )}
-            {post.isLocked && (
-              <Badge variant="outline" className="text-xs shrink-0">
-                <Lock className="w-3 h-3 mr-1" /> Locked
-              </Badge>
-            )}
-            <h4 className="font-medium text-slate-900 truncate min-w-0 flex-1">{post.title}</h4>
+          <div className="mb-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1 flex-wrap min-w-0">
+              {post.isPinned && (
+                <Badge variant="secondary" className="text-xs shrink-0">
+                  <Pin className="w-3 h-3 mr-1" /> Pinned
+                </Badge>
+              )}
+              {post.isLocked && (
+                <Badge variant="outline" className="text-xs shrink-0">
+                  <Lock className="w-3 h-3 mr-1" /> Locked
+                </Badge>
+              )}
+            </div>
+            <h4 className="font-medium text-slate-900 break-words min-w-0">{post.title}</h4>
           </div>
           <p className="text-sm text-slate-500 line-clamp-2 pt-[4px] pb-[4px]">{stripHtml(post.content)}</p>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-2 gap-2">

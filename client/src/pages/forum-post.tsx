@@ -163,7 +163,7 @@ function ReplyCard({
               {formatDistanceToNow(new Date(reply.createdAt), { addSuffix: true })}
             </span>
           </div>
-          <HtmlContent content={reply.content} className="text-slate-700" />
+          <HtmlContent content={reply.content} className="text-slate-700 break-words [&_*]:break-words" />
           <div className="flex items-center gap-1 mt-3 flex-wrap">
             <Button
               variant="ghost"
@@ -499,7 +499,7 @@ export default function ForumPost() {
               </div>
             </div>
           </div>
-          <HtmlContent content={post.content} className="text-slate-700" />
+          <HtmlContent content={post.content} className="text-slate-700 break-words [&_*]:break-words" />
           
           {/* Attachments */}
           {post.attachments && (post.attachments as Attachment[]).length > 0 && (
@@ -538,7 +538,7 @@ export default function ForumPost() {
             </div>
           )}
 
-          <div className="flex items-center gap-2 border-t flex-wrap ml-[10px] mr-[10px] pt-[0px] pb-[0px] mt-[10px] mb-[10px]">
+          <div className="flex items-center gap-2 border-t flex-wrap min-w-0 pt-2 mt-3">
             <Button
               variant="ghost"
               size="sm"
