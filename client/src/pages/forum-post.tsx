@@ -424,7 +424,7 @@ export default function ForumPost() {
           <Button
             variant="ghost"
             size="sm"
-            className="max-w-full justify-start text-left whitespace-normal break-words h-auto py-2"
+            className="max-w-full justify-start text-left whitespace-nowrap overflow-hidden text-ellipsis"
           >
             <ChevronLeft className="w-4 h-4 mr-1 shrink-0" /> Back to {category?.name || "Forum"}
           </Button>
@@ -446,7 +446,7 @@ export default function ForumPost() {
                   </Badge>
                 )}
                 {category && (
-                  <Badge variant="outline" className="max-w-full whitespace-normal break-words text-left">
+                  <Badge variant="outline" className="max-w-full whitespace-nowrap overflow-hidden text-ellipsis">
                     {category.name}
                   </Badge>
                 )}
