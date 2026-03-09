@@ -490,9 +490,15 @@ export default function Forum() {
               {matchedCategories.length > 0 && (
                 <div className="mb-3 flex flex-wrap gap-2">
                   {matchedCategories.slice(0, 6).map((cat) => (
-                    <Badge key={cat.id} variant="outline" className="text-xs">
-                      {cat.name}
-                    </Badge>
+                    <Link key={cat.id} href={`/forum/category/${cat.id}`}>
+                      <Badge
+                        variant="outline"
+                        className="text-xs cursor-pointer hover:bg-slate-100 transition-colors"
+                        data-testid={`search-category-${cat.id}`}
+                      >
+                        {cat.name}
+                      </Badge>
+                    </Link>
                   ))}
                 </div>
               )}
