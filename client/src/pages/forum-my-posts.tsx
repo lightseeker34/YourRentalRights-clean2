@@ -194,17 +194,19 @@ export default function ForumMyPosts() {
                                   </Badge>
                                 </div>
                               )}
-                              <div className="flex items-center gap-4 text-sm text-slate-500 whitespace-nowrap">
-                                <span className="flex items-center gap-1">
-                                  <Clock className="w-4 h-4" />
+                              <div className="flex items-center justify-between gap-3 whitespace-nowrap min-w-0">
+                                <span className="flex items-center gap-1 text-xs text-slate-400 shrink-0">
+                                  <Clock className="w-3 h-3" />
                                   {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
                                 </span>
-                                <span className="flex items-center gap-1">
-                                  <Eye className="w-4 h-4" /> {post.viewCount}
-                                </span>
-                                <span className="flex items-center gap-1">
-                                  <MessageCircle className="w-4 h-4" /> {post.replyCount}
-                                </span>
+                                <div className="flex items-center gap-4 text-sm text-slate-700 ml-auto shrink-0">
+                                  <span className="flex items-center gap-1">
+                                    <Eye className="w-4 h-4" /> {post.viewCount}
+                                  </span>
+                                  <span className="flex items-center gap-1">
+                                    <MessageCircle className="w-4 h-4" /> {post.replyCount}
+                                  </span>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -335,17 +337,19 @@ export default function ForumMyPosts() {
                                   </Badge>
                                 </div>
                               )}
-                              <div className="flex items-center gap-4 text-sm text-slate-500 whitespace-nowrap">
-                                <span className="flex items-center gap-1">
-                                  <Clock className="w-4 h-4" />
+                              <div className="flex items-center justify-between gap-3 whitespace-nowrap min-w-0">
+                                <span className="flex items-center gap-1 text-xs text-slate-400 shrink-0">
+                                  <Clock className="w-3 h-3" />
                                   {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
                                 </span>
-                                <span className="flex items-center gap-1">
-                                  <Eye className="w-4 h-4" /> {post.viewCount}
-                                </span>
-                                <span className="flex items-center gap-1">
-                                  <MessageCircle className="w-4 h-4" /> {post.replyCount}
-                                </span>
+                                <div className="flex items-center gap-4 text-sm text-slate-700 ml-auto shrink-0">
+                                  <span className="flex items-center gap-1">
+                                    <Eye className="w-4 h-4" /> {post.viewCount}
+                                  </span>
+                                  <span className="flex items-center gap-1">
+                                    <MessageCircle className="w-4 h-4" /> {post.replyCount}
+                                  </span>
+                                </div>
                               </div>
                             </div>
                           </div>
