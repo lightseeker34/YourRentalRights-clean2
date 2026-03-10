@@ -68,11 +68,19 @@ export function LogEntryCard({
     ? buildAiConversationDraftFromLog(log, logs)
     : null;
 
+  const cardToneClass = log.type === 'chat'
+    ? (
+      log.isAi
+        ? 'bg-slate-100 border-slate-300 hover:bg-slate-200'
+        : 'bg-[var(--color-user-bubble)] border-[var(--color-user-bubble-border)] hover:bg-[var(--color-user-bubble)]/90'
+    )
+    : 'bg-slate-50 border-slate-200 hover:bg-slate-100';
+
   return (
     <Card
       id={`log-entry-${log.id}`}
       key={log.id}
-      className={`p-2 rounded-lg min-h-[88px] group transition-colors cursor-pointer shadow-sm flex flex-col bg-slate-50 border-slate-200 hover:bg-slate-100 ${highlightedLogId === log.id ? 'ring-2 ring-blue-500 bg-blue-50' : ''}`}
+      className={`p-2 rounded-lg min-h-[88px] group transition-colors cursor-pointer shadow-sm flex flex-col ${cardToneClass} ${highlightedLogId === log.id ? 'ring-2 ring-blue-500' : ''}`}
       onClick={() => {
         if (log.type === 'chat') {
           const element = document.getElementById(`chat-entry-${log.id}`);
