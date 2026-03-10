@@ -861,7 +861,7 @@ export default function Dashboard() {
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button 
-              className="bg-slate-900 hover:bg-slate-800 text-center font-normal w-full shadow-sm" 
+              className="w-full h-14 text-lg font-semibold btn-gradient shadow-lg rounded-lg" 
               data-testid="add-new-log-button"
             >
               {incidents && incidents.length > 0 ? 'Add New Incident' : 'Create First Incident'}
@@ -880,7 +880,7 @@ export default function Dashboard() {
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button 
-              className="bg-slate-900 hover:bg-slate-800 text-center font-normal px-6 w-auto shadow-sm" 
+              className="h-14 text-lg font-semibold btn-gradient shadow-lg rounded-lg px-6 w-auto" 
               data-testid="add-new-log-button-desktop"
             >
               {incidents && incidents.length > 0 ? 'Add New Incident' : 'Create First Incident'}
