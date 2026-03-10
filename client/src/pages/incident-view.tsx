@@ -2458,10 +2458,15 @@ export default function IncidentView() {
                             size="sm" 
                             onClick={() => editAndResendMutation.mutate({ logId: log.id, newContent: editLogContent, attachments: editLogAttachments })}
                             disabled={editAndResendMutation.isPending}
-                            className={editAndResendMutation.isPending ? 'animate-pulse disabled:opacity-100 min-w-[130px]' : 'min-w-[130px]'}
+                            className={editAndResendMutation.isPending ? 'button-wave-loading disabled:opacity-100 min-w-[130px]' : 'min-w-[130px]'}
                             data-testid={`save-edit-chat-${log.id}`}
                           >
-                            {editAndResendMutation.isPending ? `Reanalyzing${loadingDots}` : 'Save & Resend'}
+                            {editAndResendMutation.isPending ? (
+                              <span className="inline-flex items-center">
+                                <span>Reanalyzing</span>
+                                <span className="inline-block w-[3ch] text-left">{loadingDots}</span>
+                              </span>
+                            ) : 'Save & Resend'}
                           </Button>
                         </div>
                       </div>
@@ -2599,9 +2604,14 @@ export default function IncidentView() {
                                 size="sm" 
                                 onClick={() => editAndResendMutation.mutate({ logId: log.id, newContent: editLogContent, attachments: editLogAttachments })}
                                 disabled={editAndResendMutation.isPending}
-                                className={editAndResendMutation.isPending ? 'animate-pulse disabled:opacity-100 min-w-[130px]' : 'min-w-[130px]'}
+                                className={editAndResendMutation.isPending ? 'button-wave-loading disabled:opacity-100 min-w-[130px]' : 'min-w-[130px]'}
                               >
-                                {editAndResendMutation.isPending ? `Reanalyzing${loadingDots}` : 'Save & Resend'}
+                                {editAndResendMutation.isPending ? (
+                                  <span className="inline-flex items-center">
+                                    <span>Reanalyzing</span>
+                                    <span className="inline-block w-[3ch] text-left">{loadingDots}</span>
+                                  </span>
+                                ) : 'Save & Resend'}
                               </Button>
                             </div>
                           </div>
