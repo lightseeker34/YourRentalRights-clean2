@@ -39,6 +39,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { ImagePreviewModal } from "@/components/image-preview-modal";
 
 type Attachment = { url: string; name: string; type: string };
 
@@ -254,6 +255,8 @@ export default function ForumPost() {
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [reportTarget, setReportTarget] = useState<{ id: number; type: "post" | "reply" } | null>(null);
   const [reportReason, setReportReason] = useState("");
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewName, setPreviewName] = useState("");
 
   const { data: post, isLoading: postLoading } = useQuery<ForumPostType>({
     queryKey: [`/api/forum/posts/${id}`],
@@ -525,14 +528,21 @@ export default function ForumPost() {
                 {(post.attachments as Attachment[]).map((att, idx) => (
                   <div key={idx} className="flex items-center">
                     {att.type.startsWith("image/") ? (
-                      <a href={att.url} target="_blank" rel="noopener noreferrer" className="block w-full">
+                      <button
+                        type="button"
+                        className="block w-full text-left"
+                        onClick={() => {
+                          setPreviewUrl(att.url);
+                          setPreviewName(att.name);
+                        }}
+                      >
                         <img 
                           src={att.url} 
                           loading="lazy"
                           alt={att.name}
                           className="w-full h-16 sm:h-20 object-cover rounded border cursor-pointer hover:opacity-90"
                         />
-                      </a>
+                      </button>
                     ) : (
                       <a 
                         href={att.url} 
@@ -550,6 +560,26 @@ export default function ForumPost() {
               </div>
             </div>
           )}
+
+          <ImagePreviewModal
+            open={previewUrl !== null}
+            onOpenChange={(open) => {
+              if (!open) {
+                setPreviewUrl(null);
+                setPreviewName("");
+              }
+            }}
+            previewType="image"
+            previewUrl={previewUrl}
+            previewName={previewName}
+            renderImage={() => (
+              <img
+                src={previewUrl || ""}
+                alt={previewName || "Forum attachment preview"}
+                className="max-h-full max-w-full object-contain rounded-lg"
+              />
+            )}
+          />
 
           <div className="flex items-center gap-2 border-t flex-wrap min-w-0 pt-2 mt-3">
             <Button
