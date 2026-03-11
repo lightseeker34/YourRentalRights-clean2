@@ -576,7 +576,8 @@ export default function ForumPost() {
               <img
                 src={previewUrl || ""}
                 alt={previewName || "Forum attachment preview"}
-                className="max-h-full max-w-full object-contain rounded-lg"
+                className="max-h-full max-w-full object-contain"
+                style={{ touchAction: "pan-x pan-y pinch-zoom" }}
               />
             )}
           />

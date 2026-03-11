@@ -33,14 +33,14 @@ export function ImagePreviewModal({
           </DialogHeader>
         )}
 
-        <div className={previewType === 'image' ? "relative flex items-center justify-center w-full h-full overflow-auto bg-black/90" : "flex items-center justify-center p-4 w-full max-h-[75vh] overflow-auto"}>
+        <div className={previewType === 'image' ? "relative flex items-center justify-center w-full h-full overflow-auto bg-black/95" : "flex items-center justify-center p-4 w-full max-h-[75vh] overflow-auto"}>
           {previewType === 'image' ? (
             <>
               <DialogClose asChild>
                 <button
                   type="button"
                   aria-label="Close preview"
-                  className="absolute right-4 top-4 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-black/55 text-white opacity-90 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white/70"
+                  className="absolute right-4 top-4 z-10 inline-flex h-9 w-9 items-center justify-center rounded-sm border border-white/20 bg-black/45 text-white opacity-90 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white/70"
                 >
                   <X className="h-4 w-4 stroke-[2.75]" />
                 </button>

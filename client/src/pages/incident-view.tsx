@@ -2153,11 +2153,13 @@ export default function IncidentView() {
         previewUrl={previewUrl}
         previewName={previewName}
         renderImage={() => (
-          <ImageWithFallback
-            src={previewUrl || ''}
-            alt={previewName}
-            className="block mx-auto h-auto max-w-full max-h-[88vh] object-contain"
-          />
+          <div style={{ touchAction: "pan-x pan-y pinch-zoom" }}>
+            <ImageWithFallback
+              src={previewUrl || ''}
+              alt={previewName}
+              className="block mx-auto h-auto max-w-full max-h-[88vh] object-contain"
+            />
+          </div>
         )}
       />
       {/* AI Analysis Results Modal */}
