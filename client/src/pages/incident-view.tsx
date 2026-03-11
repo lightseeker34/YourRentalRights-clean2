@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { GuidedTour, shouldOpenMobileDrawer } from "@/components/guided-tour";
 import { ChatInput, type ChatInputHandle } from "@/components/chat-input";
 import { ImagePreviewModal } from "@/components/image-preview-modal";
+import { ZoomableImage } from "@/components/zoomable-image";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -2153,13 +2154,13 @@ export default function IncidentView() {
         previewUrl={previewUrl}
         previewName={previewName}
         renderImage={() => (
-          <div style={{ touchAction: "pan-x pan-y pinch-zoom" }}>
+          <ZoomableImage>
             <ImageWithFallback
               src={previewUrl || ''}
               alt={previewName}
-              className="block mx-auto h-auto max-w-full max-h-[88vh] object-contain"
+              className="block mx-auto h-auto max-w-[96vw] max-h-[92vh] object-contain"
             />
-          </div>
+          </ZoomableImage>
         )}
       />
       {/* AI Analysis Results Modal */}

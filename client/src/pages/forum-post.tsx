@@ -40,6 +40,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { ImagePreviewModal } from "@/components/image-preview-modal";
+import { ZoomableImage } from "@/components/zoomable-image";
 
 type Attachment = { url: string; name: string; type: string };
 
@@ -573,12 +574,13 @@ export default function ForumPost() {
             previewUrl={previewUrl}
             previewName={previewName}
             renderImage={() => (
-              <img
-                src={previewUrl || ""}
-                alt={previewName || "Forum attachment preview"}
-                className="max-h-full max-w-full object-contain"
-                style={{ touchAction: "pan-x pan-y pinch-zoom" }}
-              />
+              <ZoomableImage>
+                <img
+                  src={previewUrl || ""}
+                  alt={previewName || "Forum attachment preview"}
+                  className="max-h-[92vh] max-w-[96vw] object-contain"
+                />
+              </ZoomableImage>
             )}
           />
 
