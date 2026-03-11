@@ -10,6 +10,8 @@ import fs from "fs";
 import OpenAI from "openai";
 import { assembleContextTwoPasses, formatStructuredTimelineForPrompt, formatEvidenceTimeline, formatPhotoList, formatTimelineForPrompt, formatPhotoListForPrompt, buildUserContext, buildIncidentContext, computeTimelineHash } from "./ai-context";
 import { deleteFromR2, getFromR2, isR2Enabled, uploadToR2 } from "./r2";
+import { requireAdmin, requireAuth } from "./middleware/auth";
+import { getSafeFilename, resolveFileWithin } from "./lib/files";
 
 const uploadDir = path.join(process.cwd(), "uploads");
 if (!fs.existsSync(uploadDir)) {
@@ -90,48 +92,6 @@ const uploadForumAttachment = multer({
     }
   },
 });
-
-function requireAdmin(req: any, res: any, next: any) {
-  if (!req.isAuthenticated()) return res.sendStatus(401);
-  if (!req.user?.isAdmin) return res.sendStatus(403);
-  next();
-}
-
-function requireAuth(req: any, res: any, next: any) {
-  if (!req.isAuthenticated()) return res.sendStatus(401);
-  next();
-}
-
-function getSafeFilename(input: string): string | null {
-  const trimmed = input.trim();
-  if (!trimmed) return null;
-
-  const normalized = path.posix.normalize(trimmed);
-  const basename = path.posix.basename(normalized);
-
-  if (
-    basename !== trimmed ||
-    normalized.includes("..") ||
-    trimmed.includes("/") ||
-    trimmed.includes("\\") ||
-    path.isAbsolute(trimmed)
-  ) {
-    return null;
-  }
-
-  return basename;
-}
-
-function resolveFileWithin(baseDir: string, filename: string): string | null {
-  const targetPath = path.resolve(baseDir, filename);
-  const relative = path.relative(baseDir, targetPath);
-
-  if (relative.startsWith("..") || path.isAbsolute(relative)) {
-    return null;
-  }
-
-  return targetPath;
-}
 
 export async function registerRoutes(
   httpServer: Server,
