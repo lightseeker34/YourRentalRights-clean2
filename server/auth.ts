@@ -5,7 +5,7 @@ import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
-import { User } from "@shared/schema";
+import { User, insertUserSchema } from "@shared/schema";
 
 const scryptAsync = promisify(scrypt);
 
@@ -84,13 +84,21 @@ export function setupAuth(app: Express) {
 
   app.post("/api/register", async (req, res, next) => {
     try {
-      const username = String(req.body?.username || "").trim();
-      const password = String(req.body?.password || "");
+      const parsed = insertUserSchema.safeParse({
+        username: String(req.body?.username || "").trim(),
+        password: String(req.body?.password || ""),
+      });
 
-      if (!username || username.length < 3) {
+      if (!parsed.success) {
+        return res.status(400).send("Invalid registration payload");
+      }
+
+      const { username, password } = parsed.data;
+
+      if (username.length < 3) {
         return res.status(400).send("Username must be at least 3 characters");
       }
-      if (!password || password.length < 8) {
+      if (password.length < 8) {
         return res.status(400).send("Password must be at least 8 characters");
       }
 
@@ -105,12 +113,14 @@ export function setupAuth(app: Express) {
       const userCount = await storage.getUserCount();
       const isFirstUser = userCount === 0;
 
-      const user = await storage.createUser({
-        ...req.body,
+      const createdUser = await storage.createUser({
         username,
         password: hashedPassword,
-        isAdmin: isFirstUser,
       });
+
+      const user = isFirstUser
+        ? await storage.updateUser(createdUser.id, { isAdmin: true }) ?? createdUser
+        : createdUser;
 
       req.login(user, (err) => {
         if (err) return next(err);

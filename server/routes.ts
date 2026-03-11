@@ -102,6 +102,37 @@ function requireAuth(req: any, res: any, next: any) {
   next();
 }
 
+function getSafeFilename(input: string): string | null {
+  const trimmed = input.trim();
+  if (!trimmed) return null;
+
+  const normalized = path.posix.normalize(trimmed);
+  const basename = path.posix.basename(normalized);
+
+  if (
+    basename !== trimmed ||
+    normalized.includes("..") ||
+    trimmed.includes("/") ||
+    trimmed.includes("\\") ||
+    path.isAbsolute(trimmed)
+  ) {
+    return null;
+  }
+
+  return basename;
+}
+
+function resolveFileWithin(baseDir: string, filename: string): string | null {
+  const targetPath = path.resolve(baseDir, filename);
+  const relative = path.relative(baseDir, targetPath);
+
+  if (relative.startsWith("..") || path.isAbsolute(relative)) {
+    return null;
+  }
+
+  return targetPath;
+}
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
@@ -134,30 +165,34 @@ export async function registerRoutes(
   // Serve uploaded files - verify ownership via database
   app.get("/api/uploads/:filename", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    
-    const filename = req.params.filename;
+
+    const filename = getSafeFilename(req.params.filename);
+    if (!filename) return res.status(400).json({ error: "Invalid filename" });
+
     const requestedPath = `/api/uploads/${filename}`;
     const user = req.user!;
-    
+
     // Get fresh user data from database to check ownership
     const currentUser = await storage.getUser(user.id);
     if (!currentUser) return res.sendStatus(401);
-    
+
     // Only allow access if this is the user's own lease file OR admin accessing any file
     const isOwner = currentUser.leaseDocumentUrl === requestedPath;
     if (!isOwner && !user.isAdmin) return res.sendStatus(403);
-    
-    const filePath = path.join(uploadDir, filename);
-    if (!fs.existsSync(filePath)) return res.sendStatus(404);
+
+    const filePath = resolveFileWithin(uploadDir, filename);
+    if (!filePath || !fs.existsSync(filePath)) return res.sendStatus(404);
     res.sendFile(filePath);
   });
 
   // Download document file (no auth required)
   app.get("/api/download/:filename", async (req, res) => {
-    const filename = req.params.filename;
-    const filePath = path.join(process.cwd(), filename);
-    if (!fs.existsSync(filePath)) return res.sendStatus(404);
-    
+    const filename = getSafeFilename(req.params.filename);
+    if (!filename) return res.status(400).json({ error: "Invalid filename" });
+
+    const filePath = resolveFileWithin(process.cwd(), filename);
+    if (!filePath || !fs.existsSync(filePath)) return res.sendStatus(404);
+
     // Set proper headers for Word document download
     res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
     res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
@@ -174,10 +209,12 @@ export async function registerRoutes(
     if (!currentUser) return res.sendStatus(401);
     
     if (currentUser.leaseDocumentUrl) {
-      const filename = currentUser.leaseDocumentUrl.replace("/api/uploads/", "");
-      const filePath = path.join(uploadDir, filename);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
+      const filename = getSafeFilename(currentUser.leaseDocumentUrl.replace("/api/uploads/", ""));
+      if (filename) {
+        const filePath = resolveFileWithin(uploadDir, filename);
+        if (filePath && fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
       }
     }
     
