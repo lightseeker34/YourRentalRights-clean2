@@ -24,7 +24,7 @@ export function ImagePreviewModal({
       <DialogContent
         aria-describedby={undefined}
         hideCloseButton={previewType === 'image'}
-        className={previewType === 'image' ? "w-[98vw] max-w-none h-[96vh] max-h-[96vh] rounded-xl mx-auto p-1" : "w-[90vw] max-w-3xl max-h-[90vh] rounded-xl mx-auto [&>button]:top-8 [&>button]:right-4"}
+        className={previewType === 'image' ? "w-screen max-w-none h-screen max-h-screen rounded-none border-0 bg-transparent shadow-none p-0" : "w-[90vw] max-w-3xl max-h-[90vh] rounded-xl mx-auto [&>button]:top-8 [&>button]:right-4"}
       >
         {previewType !== 'image' && (
           <DialogHeader>
@@ -33,14 +33,14 @@ export function ImagePreviewModal({
           </DialogHeader>
         )}
 
-        <div className={previewType === 'image' ? "relative flex items-center justify-center px-1 py-1 w-full h-full overflow-auto" : "flex items-center justify-center p-4 w-full max-h-[75vh] overflow-auto"}>
+        <div className={previewType === 'image' ? "relative flex items-center justify-center w-full h-full overflow-auto bg-black/90" : "flex items-center justify-center p-4 w-full max-h-[75vh] overflow-auto"}>
           {previewType === 'image' ? (
             <>
               <DialogClose asChild>
                 <button
                   type="button"
                   aria-label="Close preview"
-                  className="absolute right-4 top-4 z-10 inline-flex h-6 w-6 items-center justify-center rounded-sm border border-white/80 bg-accent text-slate-900 opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  className="absolute right-4 top-4 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-black/55 text-white opacity-90 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white/70"
                 >
                   <X className="h-4 w-4 stroke-[2.75]" />
                 </button>
