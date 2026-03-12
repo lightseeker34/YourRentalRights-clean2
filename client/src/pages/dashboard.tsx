@@ -746,6 +746,21 @@ export default function Dashboard() {
 
   return (
     <div className="container mx-auto px-0 sm:px-4 py-0 sm:py-8 max-w-6xl h-[100dvh] sm:h-auto sm:min-h-[calc(100vh-64px)] flex flex-col overflow-hidden sm:overflow-visible bg-slate-50 sm:bg-transparent">
+      {/* Mobile CTA only */}
+      <div className="shrink-0 pt-4 pb-2 px-4 bg-slate-50 z-10 sm:hidden">
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button 
+              className="w-[94%] sm:w-[15.5rem] mx-auto h-[3.25rem] text-base font-semibold btn-gradient shadow-lg rounded-lg" 
+              data-testid="add-new-log-button"
+            >
+              {incidents && incidents.length > 0 ? 'Add New Incident' : 'Create First Incident'}
+            </Button>
+          </DialogTrigger>
+          {newIncidentDialogContent}
+        </Dialog>
+      </div>
+
       {/* Desktop Header (Hidden on Mobile) */}
       <div className="hidden sm:flex shrink-0 flex-row justify-between items-center gap-4 mb-8 px-[10px]">
         <div>
@@ -834,17 +849,6 @@ export default function Dashboard() {
           </div>
         </>
       )}
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <Button
-            className="fixed bottom-6 right-4 z-20 h-14 rounded-full px-5 text-base font-semibold btn-gradient shadow-lg sm:hidden"
-            data-testid="add-new-log-button"
-          >
-            {incidents && incidents.length > 0 ? 'Add New Incident' : 'Create First Incident'}
-          </Button>
-        </DialogTrigger>
-        {newIncidentDialogContent}
-      </Dialog>
       <GuidedTour />
     </div>
   );
