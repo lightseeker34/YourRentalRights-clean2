@@ -56,6 +56,7 @@ import { MarkdownRenderer } from "@/components/incident/MarkdownRenderer";
 import { LogEntryDialog } from "@/components/incident/LogEntryDialog";
 import { EditIncidentDialog } from "@/components/incident/EditIncidentDialog";
 import { EditLogDialog } from "@/components/incident/EditLogDialog";
+import { IncidentPageShell } from "@/components/incident/IncidentPageShell";
 
 const LOG_TYPE_DISPLAY_LABELS: Record<string, string> = {
   call: 'Call',
@@ -1222,56 +1223,14 @@ export default function IncidentView() {
         onPreviewFile={(file) => openPreview(file as IncidentLog)}
         onSave={() => updateIncidentMutation.mutate()}
       />
-      {/* Fixed back button (mobile) */}
-      <div className="fixed top-3 left-3 z-30 md:hidden">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="bg-white/90 border border-slate-200 shadow-md backdrop-blur-sm rounded-xl w-10 h-10 hover:bg-white"
-          onClick={() => navigate('/dashboard')}
-          aria-label="Go back"
-          data-testid="button-back"
-        >
-          <ArrowLeft className="w-6 h-6 stroke-[2.5] text-slate-700" />
-        </Button>
-      </div>
-
-      {/* Fixed back button (desktop) */}
-      <div className="hidden md:block fixed top-3 right-3 z-30">
-        <Button
-          variant="ghost"
-          className="bg-white/90 border border-slate-200 shadow-md backdrop-blur-sm rounded-xl h-10 px-3 hover:bg-white"
-          onClick={() => navigate('/dashboard')}
-          aria-label="Back to dashboard"
-          data-testid="button-back-desktop"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2 text-slate-700" />
-          <span className="text-sm text-slate-700">Back</span>
-        </Button>
-      </div>
-      {/* Mobile drawer overlay */}
-      {mobileDrawerOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
-          onClick={() => { setMobileDrawerOpen(false); setDrawerOpenedByTour(false); }}
-        />
-      )}
-      {/* Mobile drawer */}
-      <div className={`fixed top-0 left-0 h-[100dvh] w-80 bg-white z-50 transform transition-transform duration-300 ease-out md:hidden flex flex-col shadow-xl rounded-r-xl ${mobileDrawerOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="flex-1 overflow-y-auto p-4 scrollbar-hide pb-32">
-          <SidebarContent {...sidebarProps} variant="mobile" />
-        </div>
-      </div>
-      {/* Mobile edge indicator - swipe hint */}
-      <div 
-        className="fixed left-0 top-1/2 -translate-y-1/2 z-30 md:hidden bg-white border border-slate-300 w-3 h-[22.5rem] rounded-r-lg shadow-md cursor-pointer"
-        onClick={() => { setMobileDrawerOpen(true); setDrawerOpenedByTour(false); }}
-        aria-label="Open incident panel"
+      <IncidentPageShell
+        mobileDrawerOpen={mobileDrawerOpen}
+        onBack={() => navigate('/dashboard')}
+        onOpenDrawer={() => { setMobileDrawerOpen(true); setDrawerOpenedByTour(false); }}
+        onCloseDrawer={() => { setMobileDrawerOpen(false); setDrawerOpenedByTour(false); }}
+        mobileSidebar={<SidebarContent {...sidebarProps} variant="mobile" />}
+        desktopSidebar={<SidebarContent {...sidebarProps} variant="desktop" />}
       />
-      {/* Desktop Sidebar / Case Info */}
-      <div className="w-96 border-r border-slate-200 bg-white p-6 hidden md:block overflow-y-auto pl-[20px] pr-[20px]">
-        <SidebarContent {...sidebarProps} variant="desktop" />
-      </div>
       {/* Edit Log Dialog */}
       <EditLogDialog
         open={editLogId !== null && !chatLogs.some(l => l.id === editLogId)}
