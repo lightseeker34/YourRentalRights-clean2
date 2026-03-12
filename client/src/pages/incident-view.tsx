@@ -54,6 +54,8 @@ import { ThumbnailWithDelete } from "@/components/incident/ThumbnailWithDelete";
 import { SidebarContent } from "@/components/incident/SidebarContent";
 import { MarkdownRenderer } from "@/components/incident/MarkdownRenderer";
 import { LogEntryDialog } from "@/components/incident/LogEntryDialog";
+import { EditIncidentDialog } from "@/components/incident/EditIncidentDialog";
+import { EditLogDialog } from "@/components/incident/EditLogDialog";
 
 const LOG_TYPE_DISPLAY_LABELS: Record<string, string> = {
   call: 'Call',
@@ -1039,6 +1041,13 @@ export default function IncidentView() {
 
   const evidencePhotoTypes = ['photo', 'call_photo', 'text_photo', 'email_photo', 'chat_photo', 'service_photo'];
   const evidencePhotoLogs = logs?.filter(l => evidencePhotoTypes.includes(l.type) && l.fileUrl).map(l => ({ id: l.id, fileUrl: l.fileUrl! })) || [];
+  const editPhotos = logs?.filter(l => l.type === 'photo' && (l.metadata as any)?.category === 'incident_photo' && l.fileUrl).map(l => ({ id: l.id, content: l.content, fileUrl: l.fileUrl! })) || [];
+  const logDocCategories = ['call_document', 'text_document', 'email_document', 'service_document'];
+  const editDocs = logs?.filter(l => {
+    if (l.type !== 'document' || !l.fileUrl) return false;
+    const cat = (l.metadata as any)?.category;
+    return cat === 'incident_document' || !logDocCategories.includes(cat);
+  }).map(l => ({ id: l.id, content: l.content, fileUrl: l.fileUrl! })) || [];
 
   const resetLogDialogState = () => {
     setLogPhotoFiles([]);
@@ -1196,102 +1205,23 @@ export default function IncidentView() {
         className="hidden"
       />
       {/* Edit Incident Dialog - rendered at root level to avoid mobile drawer conflicts */}
-      <Dialog open={editIncidentOpen} onOpenChange={setEditIncidentOpen}>
-        <DialogContent aria-describedby={undefined} className="w-[90%] rounded-xl sm:max-w-[425px] fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] transition-transform duration-200 pt-[35px] pb-[35px]">
-          <div className="space-y-4 pt-[8px] pb-[8px]">
-            <Input 
-              placeholder="Title"
-              value={editTitle}
-              onChange={(e) => setEditTitle(e.target.value)}
-              className="mt-[6px] mb-[6px] placeholder:text-slate-400"
-            />
-            <Textarea 
-              placeholder="Description"
-              value={editDescription}
-              onChange={(e) => setEditDescription(e.target.value)}
-              className="min-h-[140px] mt-[5px] mb-[5px] placeholder:text-slate-400"
-            />
-            {(() => {
-              const editPhotos = logs?.filter(l => l.type === 'photo' && (l.metadata as any)?.category === 'incident_photo' && l.fileUrl) || [];
-              const logDocCategories = ['call_document', 'text_document', 'email_document', 'service_document'];
-              const editDocs = logs?.filter(l => {
-                if (l.type !== 'document' || !l.fileUrl) return false;
-                const cat = (l.metadata as any)?.category;
-                return cat === 'incident_document' || !logDocCategories.includes(cat);
-              }) || [];
-              const editFiles = [...editPhotos, ...editDocs];
-              if (editFiles.length === 0) return null;
-              return (
-                <div>
-                  <div className="text-xs font-medium text-slate-500 mb-2">Attached Files</div>
-                  <div className="flex flex-wrap gap-2">
-                    {editPhotos.map((photo) => (
-                      <ThumbnailWithDelete key={photo.id} onDelete={() => deleteMutation.mutate(photo.id)} onPreview={() => openPreview(photo)} className="w-14 h-14 overflow-hidden cursor-pointer rounded-lg">
-                        <div
-                          className="w-full h-full relative group overflow-hidden rounded-lg border border-slate-200"
-                          data-testid={`edit-dialog-photo-${photo.id}`}
-                        >
-                          <img 
-                            src={photo.fileUrl!} 
-                            loading="lazy"
-                            alt={photo.content}
-                            className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                          />
-                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <ImageIcon className="w-3.5 h-3.5 text-white" />
-                          </div>
-                        </div>
-                      </ThumbnailWithDelete>
-                    ))}
-                    {editDocs.map((doc) => (
-                      <ThumbnailWithDelete key={doc.id} onDelete={() => deleteMutation.mutate(doc.id)} onPreview={() => openPreview(doc)} className="w-14 h-14 overflow-hidden cursor-pointer rounded-lg">
-                        <div
-                          className="w-full h-full flex items-center justify-center rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-colors"
-                          title={doc.content}
-                          data-testid={`edit-dialog-doc-${doc.id}`}
-                        >
-                          <Paperclip className="w-4 h-4 text-slate-500" />
-                        </div>
-                      </ThumbnailWithDelete>
-                    ))}
-                  </div>
-                </div>
-              );
-            })()}
-            <div className="flex flex-col gap-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => generalFileInputRef.current?.click()}
-                className="w-full justify-start"
-                disabled={uploadFileMutation.isPending}
-                data-testid="button-edit-incident-upload-file"
-              >
-                <Paperclip className="w-4 h-4 mr-2" />
-                Upload File
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => folderInputRef.current?.click()}
-                className="w-full justify-start"
-                disabled={uploadFileMutation.isPending}
-                data-testid="button-edit-incident-upload-folder"
-              >
-                <FolderUp className="w-4 h-4 mr-2" />
-                Upload Folder
-              </Button>
-            </div>
-            <Button 
-              onClick={() => updateIncidentMutation.mutate()} 
-              className="w-full"
-              disabled={updateIncidentMutation.isPending}
-            >
-              Save Changes
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <EditIncidentDialog
+        open={editIncidentOpen}
+        onOpenChange={setEditIncidentOpen}
+        title={editTitle}
+        description={editDescription}
+        photos={editPhotos}
+        docs={editDocs}
+        uploadPending={uploadFileMutation.isPending}
+        savePending={updateIncidentMutation.isPending}
+        onTitleChange={setEditTitle}
+        onDescriptionChange={setEditDescription}
+        onUploadFile={() => generalFileInputRef.current?.click()}
+        onUploadFolder={() => folderInputRef.current?.click()}
+        onDeleteFile={(logId) => deleteMutation.mutate(logId)}
+        onPreviewFile={(file) => openPreview(file as IncidentLog)}
+        onSave={() => updateIncidentMutation.mutate()}
+      />
       {/* Fixed back button (mobile) */}
       <div className="fixed top-3 left-3 z-30 md:hidden">
         <Button
@@ -1343,190 +1273,38 @@ export default function IncidentView() {
         <SidebarContent {...sidebarProps} variant="desktop" />
       </div>
       {/* Edit Log Dialog */}
-      <Dialog open={editLogId !== null && !chatLogs.some(l => l.id === editLogId)} onOpenChange={(open) => { if (!open) { void cancelEditComposer(); } }}>
-        <DialogContent aria-describedby={undefined} className="w-[90%] rounded-xl py-[45px]">
-          <div className="space-y-4">
-            <Textarea 
-              value={editLogContent}
-              onChange={(e) => setEditLogContent(e.target.value)}
-              className="min-h-[140px]"
-            />
-            <div className="space-y-2">
-              {/* Show existing attachments inline with remove buttons */}
-              {(editLogAttachments.length > 0 || (editLogPhoto && !editLogAttachments.includes(editLogPhoto.fileUrl!))) && (
-                <div className="flex gap-2 flex-wrap flex-row">
-                  {/* Legacy single photo first if exists */}
-                  {editLogPhoto && !editLogAttachments.includes(editLogPhoto.fileUrl!) && (
-                    <div className="relative group">
-                      <img 
-                        src={editLogPhoto.fileUrl!} 
-                        loading="lazy"
-                        alt="Attached photo"
-                        className="w-12 h-12 object-cover rounded border border-slate-200 cursor-pointer"
-                        onClick={() => openPreview(editLogPhoto)}
-                      />
-                      <button
-                        onClick={() => {
-                          if (editLogPhoto.id) {
-                            deleteMutation.mutate(editLogPhoto.id);
-                            setEditLogPhoto(null);
-                          }
-                        }}
-                        className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                        title="Remove photo"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </div>
-                  )}
-                  {/* Attachments in order added */}
-                  {editLogAttachments.map((url, idx) => {
-                    const isImage = url.match(/\.(jpg|jpeg|png|gif|webp)$/i);
-                    return (
-                      <div key={idx} className="relative group">
-                        {isImage ? (
-                          <img 
-                            src={url} 
-                            loading="lazy"
-                            alt={`Attachment ${idx + 1}`}
-                            className="w-12 h-12 object-cover rounded border border-slate-200"
-                          />
-                        ) : (
-                          <div className="w-12 h-12 flex items-center justify-center rounded border border-slate-200 bg-slate-50">
-                            <Paperclip className="w-4 h-4 text-slate-500" />
-                          </div>
-                        )}
-                        <button 
-                          onClick={() => setEditLogAttachments(prev => prev.filter((_, i) => i !== idx))}
-                          className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                          data-testid={`remove-edit-attachment-modal-${idx}`}
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-              
-              {/* Evidence picker for modal */}
-              {showEditEvidencePicker && (() => {
-                const photoTypes = ['photo', 'call_photo', 'text_photo', 'email_photo', 'chat_photo', 'service_photo'];
-                const photoLogs = logs?.filter(l => photoTypes.includes(l.type) && l.fileUrl) || [];
-                return (
-                  <div className="p-2 bg-slate-50 rounded border border-slate-200 max-h-32 overflow-y-auto">
-                    <div className="text-xs text-slate-500 mb-1">Select from evidence:</div>
-                    <div className="flex gap-1 flex-wrap">
-                      {photoLogs.map(l => (
-                        <button 
-                          key={l.id} 
-                          onClick={() => {
-                            if (!editLogAttachments.includes(l.fileUrl!)) {
-                              setEditLogAttachments(prev => [...prev, l.fileUrl!]);
-                            }
-                            setShowEditEvidencePicker(false);
-                          }}
-                          className="relative"
-                          data-testid={`modal-evidence-picker-${l.id}`}
-                        >
-                          <img 
-                            src={l.fileUrl!} 
-                            loading="lazy"
-                            alt="Evidence" 
-                            className="w-10 h-10 object-cover rounded border border-slate-300 hover:border-blue-500 transition-colors"
-                          />
-                        </button>
-                      ))}
-                      {photoLogs.length === 0 && (
-                        <div className="text-xs text-slate-400">No photos in evidence</div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })()}
-              
-              {/* Stacked attachment buttons */}
-              <div className="flex flex-col gap-2">
-                <input 
-                  type="file" 
-                  ref={editPhotoInputRef} 
-                  onChange={handleEditPhotoUpload}
-                  accept="image/*,.pdf,.doc,.docx,.txt" 
-                  multiple
-                  className="hidden"
-                />
-                <input 
-                  type="file" 
-                  ref={editFolderInputRef} 
-                  onChange={handleEditPhotoUpload}
-                  accept="image/*,.pdf,.doc,.docx,.txt" 
-                  multiple
-                  className="hidden"
-                  {...({ webkitdirectory: "", directory: "" } as any)}
-                />
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => editPhotoInputRef.current?.click()}
-                  className="w-full justify-start"
-                  data-testid="button-modal-upload-file"
-                >
-                  <Paperclip className="w-4 h-4 mr-2" />
-                  Upload File
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => editFolderInputRef.current?.click()}
-                  className="w-full justify-start"
-                  data-testid="button-modal-upload-folder"
-                >
-                  <FolderUp className="w-4 h-4 mr-2" />
-                  Upload Folder
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setShowEditEvidencePicker(!showEditEvidencePicker)}
-                  className="w-full justify-start"
-                  data-testid="button-modal-pick-evidence"
-                >
-                  <FolderOpen className="w-4 h-4 mr-2" />
-                  From Evidence
-                </Button>
-              </div>
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs text-slate-500">Severity</Label>
-              <div className="flex gap-1">
-                {SEVERITY_LEVELS.map(level => (
-                  <button
-                    key={level}
-                    type="button"
-                    onClick={() => setEditLogSeverity(level)}
-                    className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium border transition-colors ${editLogSeverity === level 
-                      ? level === 'critical' ? 'bg-red-100 border-red-300 text-red-700' 
-                        : level === 'important' ? 'bg-amber-100 border-amber-300 text-amber-700' 
-                        : 'bg-slate-100 border-slate-300 text-slate-600'
-                      : 'bg-white border-slate-200 text-slate-400 hover:border-slate-300'}`}
-                    data-testid={`severity-edit-${level}`}
-                  >
-                    {level === 'critical' ? <AlertTriangle className="w-3 h-3" /> : level === 'important' ? <Info className="w-3 h-3" /> : <Minus className="w-3 h-3" />}
-                    {level.charAt(0).toUpperCase() + level.slice(1)}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <Button 
-              onClick={() => editLogId && updateLogMutation.mutate({ logId: editLogId, content: editLogContent, severity: editLogSeverity })} 
-              className="w-full"
-              disabled={updateLogMutation.isPending}
-            >
-              Save Changes
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <EditLogDialog
+        open={editLogId !== null && !chatLogs.some(l => l.id === editLogId)}
+        onOpenChange={(open) => { if (!open) { void cancelEditComposer(); } }}
+        content={editLogContent}
+        attachments={editLogAttachments}
+        legacyPhoto={editLogPhoto}
+        showEvidencePicker={showEditEvidencePicker}
+        evidencePhotos={evidencePhotoLogs}
+        severity={editLogSeverity}
+        uploadPending={updateLogMutation.isPending}
+        photoInputRef={editPhotoInputRef}
+        folderInputRef={editFolderInputRef}
+        onContentChange={setEditLogContent}
+        onRemoveLegacyPhoto={() => {
+          if (editLogPhoto?.id) {
+            deleteMutation.mutate(editLogPhoto.id);
+            setEditLogPhoto(null);
+          }
+        }}
+        onPreviewLegacyPhoto={() => { if (editLogPhoto) openPreview(editLogPhoto); }}
+        onRemoveAttachment={(index) => setEditLogAttachments(prev => prev.filter((_, i) => i !== index))}
+        onToggleEvidencePicker={() => setShowEditEvidencePicker(!showEditEvidencePicker)}
+        onPickEvidence={(fileUrl) => {
+          if (!editLogAttachments.includes(fileUrl)) {
+            setEditLogAttachments(prev => [...prev, fileUrl]);
+          }
+          setShowEditEvidencePicker(false);
+        }}
+        onFileUpload={handleEditPhotoUpload}
+        onSeverityChange={setEditLogSeverity}
+        onSave={() => editLogId && updateLogMutation.mutate({ logId: editLogId, content: editLogContent, severity: editLogSeverity })}
+      />
       {/* Log Entry Dialogs */}
       <LogEntryDialog
         open={logCallOpen}
