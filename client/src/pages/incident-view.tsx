@@ -57,6 +57,7 @@ import { LogEntryDialog } from "@/components/incident/LogEntryDialog";
 import { EditIncidentDialog } from "@/components/incident/EditIncidentDialog";
 import { EditLogDialog } from "@/components/incident/EditLogDialog";
 import { IncidentPageShell } from "@/components/incident/IncidentPageShell";
+import { IncidentFileInputs } from "@/components/incident/IncidentFileInputs";
 
 const LOG_TYPE_DISPLAY_LABELS: Record<string, string> = {
   call: 'Call',
@@ -1156,54 +1157,13 @@ export default function IncidentView() {
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Hidden file inputs */}
-      <input
-        type="file"
-        ref={photoInputRef}
-        onChange={handlePhotoUpload}
-        accept="image/*"
-        className="hidden"
-      />
-      <input
-        type="file"
-        ref={docInputRef}
-        onChange={handleDocUpload}
-        accept=".pdf,.doc,.docx,.txt"
-        className="hidden"
-      />
-      <input
-        type="file"
-        ref={folderInputRef}
-        onChange={(e) => {
-          const files = e.target.files;
-          if (!files) return;
-          Array.from(files).forEach(file => {
-            if (file.type.startsWith('image/')) {
-              handlePhotoUpload({ target: { files: [file] } } as any);
-            } else {
-              handleDocUpload({ target: { files: [file] } } as any);
-            }
-          });
-          e.target.value = '';
-        }}
-        className="hidden"
-        {...({ webkitdirectory: "", directory: "" } as any)}
-      />
-      <input
-        type="file"
-        ref={generalFileInputRef}
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (!file) return;
-          if (file.type.startsWith('image/')) {
-            handlePhotoUpload(e);
-          } else {
-            handleDocUpload(e);
-          }
-          e.target.value = '';
-        }}
-        accept="image/*,.pdf,.doc,.docx,.txt"
-        className="hidden"
+      <IncidentFileInputs
+        photoInputRef={photoInputRef}
+        docInputRef={docInputRef}
+        folderInputRef={folderInputRef}
+        generalFileInputRef={generalFileInputRef}
+        onPhotoUpload={handlePhotoUpload}
+        onDocUpload={handleDocUpload}
       />
       {/* Edit Incident Dialog - rendered at root level to avoid mobile drawer conflicts */}
       <EditIncidentDialog
