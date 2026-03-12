@@ -70,7 +70,7 @@ export function Layout({ children, hideTicker = false, hideFooter = false }: Lay
         </div>
       )}
       {/* Navigation Bar */}
-      {!shouldHideHeader && <header className="sticky top-0 z-40 w-full border-b-0 md:border-b border-slate-200 bg-white md:bg-white/80 md:backdrop-blur-md">
+      {!shouldHideHeader && <header className={`sticky top-0 z-40 w-full border-b-0 md:border-b border-slate-200 bg-white md:bg-white/80 md:backdrop-blur-md ${isDashboard ? "hidden md:block" : ""}`}>
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 font-bold text-lg text-slate-900 hover:opacity-80 transition-opacity cursor-pointer">
             <div className="bg-slate-100 p-1.5 rounded-md border border-slate-200/50">

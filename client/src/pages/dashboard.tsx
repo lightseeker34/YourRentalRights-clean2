@@ -4,10 +4,11 @@ import { Incident, InsertIncident, IncidentLog } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Plus, FolderOpen, Clock, CheckCircle, Phone, MessageSquare, Mail, FileText, Image as ImageIcon, Trash2, ChevronRight, ChevronDown, Paperclip, X, FolderUp, Wrench, Globe, SlidersHorizontal } from "lucide-react";
+import { Plus, FolderOpen, Clock, CheckCircle, Phone, MessageSquare, Mail, FileText, Image as ImageIcon, Trash2, ChevronRight, ChevronDown, Paperclip, X, FolderUp, Menu, LayoutDashboard, User, Settings, LogOut, LogIn, Home, Info, Wrench, Globe, SlidersHorizontal } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -426,13 +427,14 @@ function TimelineCard({ incident, onPrefetch }: { incident: Incident; onPrefetch
 }
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { user, logoutMutation } = useAuth();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [incidentPhotos, setIncidentPhotos] = useState<File[]>([]);
   const [location] = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
   
   // Carousel state
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -635,6 +637,13 @@ export default function Dashboard() {
     createMutation.mutate({ data: { title, description: desc }, photos: incidentPhotos });
   };
 
+  const navItems = [
+    { href: "/", label: "Home", icon: Home },
+    { href: "/about", label: "About Us", icon: Info },
+    { href: "/resources", label: "Resources", icon: FileText },
+    { href: "/forum", label: "Community", icon: MessageSquare },
+  ];
+
   const newIncidentDialogContent = (
     <DialogContent className="w-[90%] rounded-xl sm:max-w-[425px] fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] transition-transform duration-200 pt-[45px] pb-[45px]">
       <div className="space-y-4">
@@ -746,8 +755,109 @@ export default function Dashboard() {
 
   return (
     <div className="container mx-auto px-0 sm:px-4 py-0 sm:py-8 max-w-6xl h-[100dvh] sm:h-auto sm:min-h-[calc(100vh-64px)] flex flex-col overflow-hidden sm:overflow-visible bg-slate-50 sm:bg-transparent">
-      {/* Mobile CTA only */}
-      <div className="shrink-0 pt-4 pb-2 px-4 bg-slate-50 z-10 sm:hidden">
+      {/* Mobile Header (Locked) */}
+      <div className="shrink-0 flex flex-col gap-4 pt-4 pb-2 px-4 bg-slate-50 z-10 sm:hidden">
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="font-bold text-slate-900 text-[25px]">Welcome, {user?.fullName || user?.username}</h1>
+            <p className="text-slate-600 text-[15px]">Track and manage maintenance</p>
+          </div>
+          <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="text-slate-900 -mr-2">
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+              <SheetTitle className="text-left font-bold text-slate-900 mt-4 mb-2">Menu</SheetTitle>
+              <SheetDescription className="text-left mb-6 text-slate-500">
+                Navigate our services and resources.
+              </SheetDescription>
+              <nav className="flex flex-col gap-2">
+                {navItems.map((item) => (
+                  <Link 
+                    key={item.href} 
+                    href={item.href}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-md transition-colors cursor-pointer ${
+                      location === item.href 
+                        ? "bg-slate-100 text-slate-900 font-semibold" 
+                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    }`}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <item.icon className="w-5 h-5" />
+                    {item.label}
+                  </Link>
+                ))}
+                
+                <div className="h-px bg-slate-100 my-2" />
+                
+                {user ? (
+                  <>
+                    <Link 
+                      href="/dashboard"
+                      className={`flex items-center gap-3 px-4 py-3 rounded-md transition-colors cursor-pointer ${
+                        location.startsWith("/dashboard")
+                          ? "bg-slate-100 text-slate-900 font-semibold" 
+                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                      }`}
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <LayoutDashboard className="w-5 h-5" />
+                      Dashboard
+                    </Link>
+                    <Link 
+                      href="/profile"
+                      className={`flex items-center gap-3 px-4 py-3 rounded-md transition-colors cursor-pointer ${
+                        location === "/profile"
+                          ? "bg-slate-100 text-slate-900 font-semibold" 
+                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                      }`}
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <User className="w-5 h-5" />
+                      Account
+                    </Link>
+                    {user.isAdmin && (
+                      <Link 
+                        href="/admin"
+                        className={`flex items-center gap-3 px-4 py-3 rounded-md transition-colors cursor-pointer ${
+                          location === "/admin"
+                            ? "bg-slate-100 text-slate-900 font-semibold" 
+                            : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                        }`}
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        <Settings className="w-5 h-5" />
+                        Admin
+                      </Link>
+                    )}
+                    <button 
+                      className="flex w-full items-center gap-3 px-4 py-3 rounded-md transition-colors cursor-pointer text-slate-600 hover:bg-red-50 hover:text-red-600 text-left"
+                      onClick={() => {
+                        logoutMutation.mutate();
+                        setMenuOpen(false);
+                      }}
+                    >
+                      <LogOut className="w-5 h-5" />
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <Link 
+                    href="/auth"
+                    className="flex items-center gap-3 px-4 py-3 rounded-md transition-colors cursor-pointer bg-slate-900 text-white font-semibold hover:bg-slate-800"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <LogIn className="w-5 h-5" />
+                    Login / Register
+                  </Link>
+                )}
+              </nav>
+            </SheetContent>
+          </Sheet>
+        </div>
+        
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button 
