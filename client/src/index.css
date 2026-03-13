@@ -195,8 +195,8 @@
 }
 
 @keyframes buttonWaveSweep {
-  0% { transform: translateX(-170%); }
-  100% { transform: translateX(170%); }
+  0% { transform: translateX(-180%); }
+  100% { transform: translateX(180%); }
 }
 
 .button-wave-loading,
@@ -210,9 +210,9 @@
 .text-wave-loading::after {
   content: "";
   position: absolute;
-  inset: -35% -10%;
+  inset: -45% -18%;
   pointer-events: none;
-  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.34) 50%, transparent 70%);
-  transform: translateX(-170%);
-  animation: buttonWaveSweep 2.4s ease-in-out infinite;
+  background: linear-gradient(110deg, transparent 24%, rgba(255, 255, 255, 0.5) 50%, transparent 76%);
+  transform: translateX(-180%);
+  animation: buttonWaveSweep 2s ease-in-out infinite;
 }

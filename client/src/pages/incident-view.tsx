@@ -1744,8 +1744,8 @@ export default function IncidentView() {
             ))}
             {(sendMutation.isPending || resendMutation.isPending || editAndResendMutation.isPending) && (
               <div className="flex">
-                <div className="p-4 min-w-[140px] rounded-xl bg-white border border-slate-200 text-slate-500 text-sm italic">
-                  <span className="text-wave-loading inline-block px-1">{`Analyzing${loadingDots}`}</span>
+                <div className="px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-500 text-sm italic inline-flex items-center w-fit max-w-fit">
+                  <span className="text-wave-loading inline-block px-0.5">{`Analyzing${loadingDots}`}</span>
                 </div>
               </div>
             )}
