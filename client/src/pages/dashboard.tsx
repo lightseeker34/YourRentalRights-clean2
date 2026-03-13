@@ -872,7 +872,7 @@ export default function Dashboard() {
       </div>
 
       {/* Desktop Header (Hidden on Mobile) */}
-      <div className="hidden sm:flex shrink-0 flex-row justify-between items-center gap-4 mb-8 px-[10px]">
+      <div className="hidden sm:flex shrink-0 flex-row justify-between items-center gap-4 mb-8 px-10">
         <div>
           <h1 className="text-3xl font-bold text-slate-900">Welcome, {user?.fullName || user?.username}</h1>
           <p className="text-base text-slate-600">Track and manage maintenance and interactions</p>
@@ -880,7 +880,7 @@ export default function Dashboard() {
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button 
-              className="h-[3.25rem] w-[15.5rem] text-base font-semibold btn-gradient shadow-lg rounded-lg px-4" 
+              className="h-[3.25rem] w-fit min-w-[15.5rem] text-base font-semibold btn-gradient shadow-lg rounded-lg px-5" 
               data-testid="add-new-log-button-desktop"
             >
               {incidents && incidents.length > 0 ? 'Add New Incident' : 'Create First Incident'}
