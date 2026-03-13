@@ -173,7 +173,7 @@ function TimelineCard({ incident, onPrefetch }: { incident: Incident; onPrefetch
   };
 
   return (
-    <div className="flex-shrink-0 w-full sm:w-[16.5rem]" data-testid={`incident-card-${incident.id}`}>
+    <div className="flex-shrink-0 w-full sm:w-[16rem]" data-testid={`incident-card-${incident.id}`}>
       <div className="relative group/master">
         <Link 
           className="block w-full"
@@ -183,7 +183,7 @@ function TimelineCard({ incident, onPrefetch }: { incident: Incident; onPrefetch
           onFocus={() => onPrefetch?.(incident.id)}
         >
           <div
-            className="bg-white border border-slate-200 rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer w-[94%] sm:w-[15.5rem] mx-auto"
+            className="bg-white border border-slate-200 rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer w-[96%] sm:w-[15rem] mx-auto"
             data-testid={`incident-card-bubble-${incident.id}`}
           >
             <div className="flex justify-between items-start mb-1">
@@ -237,7 +237,7 @@ function TimelineCard({ incident, onPrefetch }: { incident: Incident; onPrefetch
         </DialogContent>
       </Dialog>
       {groupedEntries().length > 0 && (
-        <div className="relative w-[94%] sm:w-[15.5rem] mx-auto pl-2 mt-2 space-y-2">
+        <div className="relative w-[96%] sm:w-[15rem] mx-auto pl-2 mt-2 space-y-2">
           <div aria-hidden="true" className="absolute top-0 bottom-0 left-[14px] border-l-2 border-slate-200" />
           {groupedEntries().map((item) => {
             if (item.type === 'chat_group') {
@@ -249,7 +249,7 @@ function TimelineCard({ incident, onPrefetch }: { incident: Incident; onPrefetch
                 <div key={item.id}>
                   {!isExpanded && (
                     <div 
-                      className="bg-slate-50 border border-slate-200 rounded-lg p-2 min-h-[88px] shadow-sm hover:bg-slate-100 transition-colors cursor-pointer w-[92%] ml-auto flex flex-col"
+                      className="bg-slate-50 border border-slate-200 rounded-lg p-2 min-h-[88px] shadow-sm hover:bg-slate-100 transition-colors cursor-pointer w-[96%] ml-auto flex flex-col"
                       onClick={() => toggleChatGroup(item.id)}
                     >
                       <div className="flex items-center justify-between gap-1.5 mb-1">
@@ -296,7 +296,7 @@ function TimelineCard({ incident, onPrefetch }: { incident: Incident; onPrefetch
                     <div className="space-y-1">
                       <button 
                         onClick={() => toggleChatGroup(item.id)}
-                        className="flex items-center justify-between w-[92%] ml-auto text-xs text-slate-500 hover:text-slate-700"
+                        className="flex items-center justify-between w-[96%] ml-auto text-xs text-slate-500 hover:text-slate-700"
                       >
                         <div className="flex items-center gap-1">
                           <MessageSquare className="w-3 h-3" />
@@ -306,7 +306,7 @@ function TimelineCard({ incident, onPrefetch }: { incident: Incident; onPrefetch
                       </button>
                       {item.chats.map((log) => (
                         <Link key={log.id} href={`/dashboard/incident/${incident.id}?log=${log.id}`} className="block w-full">
-                          <div className={`border rounded-lg p-2 min-h-[88px] shadow-sm transition-colors cursor-pointer w-[92%] ml-auto flex flex-col ${
+                          <div className={`border rounded-lg p-2 min-h-[88px] shadow-sm transition-colors cursor-pointer w-[96%] ml-auto flex flex-col ${
                             log.isAi 
                               ? "bg-slate-100 border-slate-300 hover:bg-slate-200" 
                               : "bg-[var(--color-user-bubble)] border-[var(--color-user-bubble-border)] hover:bg-[var(--color-user-bubble)]/90"
@@ -358,7 +358,7 @@ function TimelineCard({ incident, onPrefetch }: { incident: Incident; onPrefetch
             return (
               <div key={log.id} className="relative group/entry">
                 <Link href={`/dashboard/incident/${incident.id}?log=${log.id}`} className="block w-full">
-                  <div className="bg-slate-50 border border-slate-200 rounded-lg p-2 min-h-[88px] shadow-sm hover:bg-slate-100 transition-colors cursor-pointer w-[92%] ml-auto flex flex-col">
+                  <div className="bg-slate-50 border border-slate-200 rounded-lg p-2 min-h-[88px] shadow-sm hover:bg-slate-100 transition-colors cursor-pointer w-[96%] ml-auto flex flex-col">
                     <div className="flex items-center justify-between gap-1.5 mb-1">
                       <div className="flex items-center gap-1.5 min-w-0">
                         {getEntryIcon(log.type)}
@@ -952,7 +952,7 @@ export default function Dashboard() {
           </div>
           
           {/* Desktop: Original horizontal row layout */}
-          <div className="hidden sm:flex sm:flex-row gap-4 sm:gap-6 sm:overflow-x-auto px-2 sm:px-[30px] flex-1 md:overflow-y-visible pt-2 pb-32">
+          <div className="hidden sm:flex sm:flex-row gap-4 sm:gap-6 sm:overflow-x-auto px-4 sm:px-10 flex-1 md:overflow-y-visible pt-2 pb-32">
             {sortedIncidents?.map((incident) => (
               <TimelineCard key={incident.id} incident={incident} />
             ))}

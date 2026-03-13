@@ -845,7 +845,7 @@ export function GuidedTour() {
         variant="outline"
         size="sm"
         onClick={restartTour}
-        className="fixed bottom-32 right-4 z-40 gap-2 shadow-lg bg-white border-0 hover:border-0"
+        className="fixed bottom-32 right-8 z-40 gap-2 shadow-lg bg-white border-0 hover:border-0"
         data-testid="restart-tour-button"
       >
         <HelpCircle className="w-4 h-4" />

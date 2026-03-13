@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Bot, User, Send, Phone, FileText, Image as ImageIcon, Trash2, Calendar, Clock, Pencil, MessageSquare, Mail, Paperclip, X, FolderOpen, RotateCcw, ChevronDown, ChevronRight, Folder, Copy, Check, Download, FolderUp, AlertTriangle, Info, Minus, Wrench, ArrowLeft } from "lucide-react";
+import { User, Send, Phone, FileText, Image as ImageIcon, Trash2, Calendar, Clock, Pencil, MessageSquare, Mail, Paperclip, X, FolderOpen, RotateCcw, ChevronDown, ChevronRight, Folder, Copy, Check, Download, FolderUp, AlertTriangle, Info, Minus, Wrench, ArrowLeft } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useState, useRef, useEffect, useMemo } from "react";
@@ -1743,12 +1743,9 @@ export default function IncidentView() {
               </div>
             ))}
             {(sendMutation.isPending || resendMutation.isPending || editAndResendMutation.isPending) && (
-              <div className="flex gap-4 animate-pulse">
-                <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center shrink-0">
-                  <Bot className="w-5 h-5" />
-                </div>
-                <div className="p-4 min-w-[120px] rounded-xl bg-white border border-slate-200 text-slate-500 text-sm italic">
-                  {`Analyzing${loadingDots}`}
+              <div className="flex">
+                <div className="p-4 min-w-[140px] rounded-xl bg-white border border-slate-200 text-slate-500 text-sm italic">
+                  <span className="text-wave-loading inline-block px-1">{`Analyzing${loadingDots}`}</span>
                 </div>
               </div>
             )}

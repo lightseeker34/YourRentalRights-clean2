@@ -195,22 +195,24 @@
 }
 
 @keyframes buttonWaveSweep {
-  0% { transform: translateX(-140%); }
-  100% { transform: translateX(140%); }
+  0% { transform: translateX(-170%); }
+  100% { transform: translateX(170%); }
 }
 
-.button-wave-loading {
+.button-wave-loading,
+.text-wave-loading {
   position: relative;
   overflow: hidden;
   isolation: isolate;
 }
 
-.button-wave-loading::after {
+.button-wave-loading::after,
+.text-wave-loading::after {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: -35% -10%;
   pointer-events: none;
-  background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.28) 50%, transparent 65%);
-  transform: translateX(-140%);
-  animation: buttonWaveSweep 1.35s linear infinite;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.34) 50%, transparent 70%);
+  transform: translateX(-170%);
+  animation: buttonWaveSweep 2.4s ease-in-out infinite;
 }
