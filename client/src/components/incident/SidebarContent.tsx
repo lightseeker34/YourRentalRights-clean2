@@ -253,15 +253,15 @@ export function SidebarContent({
       </div>
 
       <div className="space-y-6 mt-6">
-        <div className={isMobile ? "rounded-lg border border-slate-200 bg-white p-3 shadow-sm" : ""}>
-          <div className={isMobile ? "my-1 ml-1" : "my-2 ml-[24px]"}>
+        <div className={isMobile ? "rounded-lg border border-slate-200 bg-white p-3" : ""}>
+          <div className={isMobile ? "my-1 ml-4" : "my-2 ml-[24px]"}>
             <h3 className={isMobile
               ? "relative inline-block font-bold tracking-wider text-left text-[16px] mt-[6px] mb-[6px] text-[#0f172a]"
               : "relative inline-block text-sm font-bold text-slate-900 uppercase tracking-wider"
             }>
-              <span className="relative z-10">Timeline</span>
-              <span className="absolute left-[-19.25px] top-1/2 w-4 -translate-y-1/2 border-t-2 border-slate-200" />
-              <span className="absolute left-[calc(100%+6px)] top-1/2 w-16 -translate-y-1/2 border-t-2 border-slate-200" />
+              <span className="relative z-10 bg-white pr-2">Timeline</span>
+              <span className="absolute left-[-14px] top-1/2 w-3 -translate-y-1/2 border-t-2 border-slate-100" />
+              <span className="absolute left-[calc(100%+6px)] top-1/2 w-16 -translate-y-1/2 border-t-2 border-slate-100" />
             </h3>
           </div>
 
@@ -316,7 +316,7 @@ export function SidebarContent({
           <div className="space-y-2">
             {/* Master Bubble */}
             <div className={isMobile
-              ? "bg-purple-50/30 border border-purple-100 shadow-sm rounded-lg p-3 min-h-[88px] flex flex-col"
+              ? "bg-purple-50/30 border border-purple-100 rounded-lg p-3 min-h-[88px] flex flex-col"
               : "bg-white border-2 border-input rounded-lg p-3 shadow-md min-h-[88px] flex flex-col"
             }>
               <div className="flex justify-between items-start mb-1">
@@ -538,7 +538,7 @@ export function SidebarContent({
 
         {/* Files Section */}
         {fileGroups.length > 0 && (
-          <div className={isMobile ? "rounded-lg border border-slate-200 bg-white p-3 shadow-sm" : "ml-[10px]"}>
+          <div className={isMobile ? "rounded-lg border border-slate-200 bg-white p-3" : "ml-[10px]"}>
             <h3 className={isMobile
               ? "text-sm font-bold mb-3 tracking-wider text-[#0f172a]"
               : "text-sm font-bold text-slate-900 mb-3 uppercase tracking-wider"
