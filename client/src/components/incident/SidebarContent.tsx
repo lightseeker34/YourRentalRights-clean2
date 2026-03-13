@@ -168,44 +168,46 @@ export function SidebarContent({
             )}
           </div>
         </div>
-        <h2 className="text-xl font-bold text-slate-900 mb-2 mt-3">{incident.title}</h2>
-        <p className="text-sm text-slate-600 mb-2">{incident.description}</p>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1 text-xs text-slate-400">
-            <Calendar className="w-3 h-3" />
-            <span>{formatDateTime(incident.createdAt)}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 text-slate-500 hover:text-slate-700 hover:bg-slate-50"
-              onClick={() => onSetEditIncidentOpen(true)}
-              data-testid={isMobile ? "button-edit-incident-mobile" : "button-edit-incident"}
-            >
-              <Pencil className="w-3.5 h-3.5" />
-            </Button>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-500 hover:text-red-700 hover:bg-red-50">
-                  <Trash2 className="w-3.5 h-3.5" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete This Case?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This will permanently delete the case and all its evidence. This action cannot be undone.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={onDeleteIncident} className="bg-red-600 hover:bg-red-700">
-                    Delete Case
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+        <div className="mt-3 rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
+          <h2 className="text-xl font-bold text-slate-900 mb-2">{incident.title}</h2>
+          <p className="text-sm text-slate-600 mb-3">{incident.description}</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1 text-xs text-slate-400">
+              <Calendar className="w-3 h-3" />
+              <span>{formatDateTime(incident.createdAt)}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-slate-500 hover:text-slate-700 hover:bg-slate-50"
+                onClick={() => onSetEditIncidentOpen(true)}
+                data-testid={isMobile ? "button-edit-incident-mobile" : "button-edit-incident"}
+              >
+                <Pencil className="w-3.5 h-3.5" />
+              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-500 hover:text-red-700 hover:bg-red-50">
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete This Case?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will permanently delete the case and all its evidence. This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={onDeleteIncident} className="bg-red-600 hover:bg-red-700">
+                      Delete Case
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
           </div>
         </div>
 
