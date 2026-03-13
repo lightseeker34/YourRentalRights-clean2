@@ -260,8 +260,8 @@ export function SidebarContent({
               : "relative inline-block text-sm font-bold text-slate-900 uppercase tracking-wider"
             }>
               <span className="relative z-10 bg-white pr-2">Timeline</span>
-              <span className="absolute left-[-14px] top-1/2 w-3 -translate-y-1/2 border-t-2 border-slate-100" />
-              <span className="absolute left-[calc(100%+6px)] top-1/2 w-16 -translate-y-1/2 border-t-2 border-slate-100" />
+              <span className="absolute left-[-14px] top-1/2 w-3 -translate-y-1/2 border-t-2 border-slate-200" />
+              <span className="absolute left-[calc(100%+6px)] top-1/2 w-16 -translate-y-1/2 border-t-2 border-slate-200" />
             </h3>
           </div>
 
@@ -330,7 +330,7 @@ export function SidebarContent({
 
             {/* Sub-entries with connecting line */}
             {(incidentPhotos.length > 0 || timelineItems.length > 0) && (
-              <div className="ml-4 border-l-2 border-slate-200 pl-3 space-y-2">
+              <div className="ml-4 border-l-2 border-slate-100 pl-3 space-y-2">
                 {/* Incident photos */}
                 {incidentPhotos.length > 0 && (
                   isMobile ? (
@@ -359,7 +359,7 @@ export function SidebarContent({
                       ))}
                     </div>
                   ) : (
-                    <div className="ml-4 border-l-2 border-slate-200 pl-3 mt-0.5 flex flex-wrap gap-1">
+                    <div className="ml-4 border-l-2 border-slate-100 pl-3 mt-0.5 flex flex-wrap gap-1">
                       {incidentPhotos.map((photo) => (
                         <ThumbnailWithDelete
                           key={photo.id}
@@ -496,7 +496,7 @@ export function SidebarContent({
                         onAddToAiChat={onAddToAiChat}
                       />
                       {hasAttachments && (
-                        <div className="ml-3 border-l-2 border-slate-200 pl-2 pr-1 mt-0.5 flex w-full max-w-full flex-wrap gap-1 justify-start overflow-hidden">
+                        <div className="ml-3 border-l-2 border-slate-100 pl-2 pr-1 mt-0.5 flex w-full max-w-full flex-wrap gap-1 justify-start overflow-hidden">
                           {attachedPhotos.map((photo) => (
                             <ThumbnailWithDelete key={photo.id} onDelete={() => onDeleteLog(photo.id)} onPreview={() => openPreview(photo)} className="w-10 h-10 overflow-hidden cursor-pointer rounded-md">
                               <Card className="w-full h-full relative group overflow-hidden border-slate-200 rounded-md">
