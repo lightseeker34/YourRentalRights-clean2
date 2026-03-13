@@ -253,13 +253,13 @@ export function SidebarContent({
       </div>
 
       <div className="space-y-6 mt-6">
-        <div>
-          <div className="my-2 ml-[24px]">
+        <div className={isMobile ? "rounded-lg border border-slate-200 bg-white p-3 shadow-sm" : ""}>
+          <div className={isMobile ? "my-1 ml-1" : "my-2 ml-[24px]"}>
             <h3 className={isMobile
-              ? "relative inline-block font-bold uppercase tracking-wider text-left text-[16px] mt-[6px] mb-[6px] text-[#0f172a]"
+              ? "relative inline-block font-bold tracking-wider text-left text-[16px] mt-[6px] mb-[6px] text-[#0f172a]"
               : "relative inline-block text-sm font-bold text-slate-900 uppercase tracking-wider"
             }>
-              <span className="relative z-10">timeline</span>
+              <span className="relative z-10">Timeline</span>
               <span className="absolute left-[-19.25px] top-1/2 w-4 -translate-y-1/2 border-t-2 border-slate-200" />
               <span className="absolute left-[calc(100%+6px)] top-1/2 w-16 -translate-y-1/2 border-t-2 border-slate-200" />
             </h3>
@@ -538,9 +538,9 @@ export function SidebarContent({
 
         {/* Files Section */}
         {fileGroups.length > 0 && (
-          <div className="ml-[10px]">
+          <div className={isMobile ? "rounded-lg border border-slate-200 bg-white p-3 shadow-sm" : "ml-[10px]"}>
             <h3 className={isMobile
-              ? "text-sm font-bold mb-3 uppercase tracking-wider pl-[20px] pr-[20px] text-[#0f172a]"
+              ? "text-sm font-bold mb-3 tracking-wider text-[#0f172a]"
               : "text-sm font-bold text-slate-900 mb-3 uppercase tracking-wider"
             }>Files</h3>
             <div className="space-y-1">
