@@ -259,7 +259,7 @@ export function SidebarContent({
               ? "relative inline-block font-bold uppercase tracking-wider text-left text-[16px] mt-[6px] mb-[6px] text-[#0f172a]"
               : "relative inline-block text-sm font-bold text-slate-900 uppercase tracking-wider"
             }>
-              <span className="relative z-10">Timeline</span>
+              <span className="relative z-10">timeline</span>
               <span className="absolute left-[-19.25px] top-1/2 w-4 -translate-y-1/2 border-t-2 border-slate-200" />
               <span className="absolute left-[calc(100%+6px)] top-1/2 w-16 -translate-y-1/2 border-t-2 border-slate-200" />
             </h3>
@@ -282,7 +282,7 @@ export function SidebarContent({
                     <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                   </Button>
                 </DropdownMenuTrigger>
-                <div className="absolute right-0 top-0 h-full w-16 z-10" aria-hidden="true" />
+                <div className="absolute right-0 top-0 h-full w-1/2 z-10" aria-hidden="true" />
               </div>
               <DropdownMenuContent align="start" sideOffset={6} className="w-[var(--radix-dropdown-menu-trigger-width)] p-1">
                 <DropdownMenuItem className="gap-2 border border-slate-200/60 rounded-sm mb-1" onClick={onLogCustom}>
