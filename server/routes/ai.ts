@@ -4,6 +4,7 @@ import fs from "fs";
 import OpenAI from "openai";
 import { storage } from "../storage";
 import { assembleContextTwoPasses, formatStructuredTimelineForPrompt, formatEvidenceTimeline, formatPhotoList, formatTimelineForPrompt, formatPhotoListForPrompt, buildUserContext, buildIncidentContext, computeTimelineHash } from "../ai-context";
+import { selectTimelineImagesForChat, shouldAutoAttachTimelineImages } from "../ai-image-selection";
 import { requireAdmin } from "../middleware/auth";
 import { uploadDir } from "../uploads";
 
@@ -19,12 +20,14 @@ export function registerAiRoutes(app: Express) {
     if (!incident) return res.sendStatus(404);
     if (incident.userId !== user.id && !user.isAdmin) return res.sendStatus(403);
     
+    const explicitAttachedImages = Array.isArray(attachedImages) ? attachedImages.filter((url): url is string => typeof url === "string" && url.length > 0) : [];
+
     await storage.addLog({
       incidentId,
       type: "chat",
       content: message,
       isAi: false,
-      metadata: attachedImages ? { attachedImages } : undefined,
+      metadata: explicitAttachedImages.length > 0 ? { attachedImages: explicitAttachedImages } : undefined,
     });
 
     const normalizedMessage = message.toLowerCase().trim().replace(/[\u2018\u2019\u0027]/g, "'").replace(/\s+/g, ' ');
@@ -87,6 +90,12 @@ Remember: You have access to the tenant's case information above. Use this conte
 
 IMPORTANT: The TENANT PROFILE section contains the USER's personal information (their phone, email, address, etc.) - NOT yours. You are an AI assistant and do not have a phone number or email. Never say things like "call me anytime" or offer your own contact information.
 
+IMAGE ACCESS RULES:
+- You may visually analyze photos only when image files are included in this specific AI request
+- Relevant timeline photos may sometimes be included automatically when the user asks you to inspect a photo, image, picture, or screenshot
+- If no image files were included in this request, do NOT claim that you directly viewed the image
+- In that case, say you only have the timeline/context reference unless the user attaches the file
+
 PHOTO ANALYSIS GUIDELINES:
 - Analyze photos accurately and honestly based ONLY on what you can actually see
 - Do NOT embellish, exaggerate, or invent details that are not clearly visible
@@ -97,6 +106,11 @@ PHOTO ANALYSIS GUIDELINES:
 
 CONTEXT-PASS MODE: ${includeBackfill ? "PASS 2 (older routine history included)" : "PASS 1 (critical + recent only)"}`;
     }
+
+    const autoAttachedImages = explicitAttachedImages.length === 0 && shouldAutoAttachTimelineImages(message)
+      ? selectTimelineImagesForChat(message, allLogs, 3)
+      : [];
+    const selectedImages = [...new Set([...explicitAttachedImages, ...autoAttachedImages])].slice(0, 3);
 
     const fullSystemPromptPass1 = buildSystemPrompt(evidenceContextPass1, false);
     const fullSystemPromptPass2 = buildSystemPrompt(evidenceContextPass2, true);
@@ -118,8 +132,8 @@ CONTEXT-PASS MODE: ${includeBackfill ? "PASS 2 (older routine history included)"
         const xai = new OpenAI({ apiKey: grokApiKey, baseURL: "https://api.x.ai/v1" });
         const messageContent: OpenAI.Chat.Completions.ChatCompletionContentPart[] = [{ type: "text", text: message }];
 
-        if (attachedImages && Array.isArray(attachedImages)) {
-          for (const imageUrl of attachedImages) {
+        if (selectedImages.length > 0) {
+          for (const imageUrl of selectedImages) {
             try {
               if (imageUrl.startsWith('/api/evidence/') || imageUrl.startsWith('/api/uploads/')) {
                 const filename = imageUrl.split('/').pop();
@@ -175,8 +189,8 @@ CONTEXT-PASS MODE: ${includeBackfill ? "PASS 2 (older routine history included)"
         const openai = new OpenAI({ apiKey: openaiApiKey });
         const messageContent: OpenAI.Chat.Completions.ChatCompletionContentPart[] = [{ type: "text", text: message }];
 
-        if (attachedImages && Array.isArray(attachedImages)) {
-          for (const imageUrl of attachedImages) {
+        if (selectedImages.length > 0) {
+          for (const imageUrl of selectedImages) {
             try {
               if (imageUrl.startsWith('/api/evidence/') || imageUrl.startsWith('/api/uploads/')) {
                 const filename = imageUrl.split('/').pop();
