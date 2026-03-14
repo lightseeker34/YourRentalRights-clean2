@@ -109,68 +109,72 @@ export function LogEntryCard({
           {log.content}
         </ReactMarkdown>
       </div>
-      {/* Footer: date, severity badge, and actions */}
-      <div className="flex items-center justify-between mt-auto pt-1">
-        <div className="flex items-center gap-1.5">
-          <span className="text-xs text-slate-400">{formatDateTime(log.createdAt)}</span>
-          {(() => {
-            const sev = getLogSeverity(log);
-            if (sev === 'critical') return (
-              <span className="inline-flex items-center gap-0.5 px-1.5 py-0 rounded text-[10px] font-semibold bg-red-100 text-red-700 border border-red-200" data-testid={`badge-severity-${log.id}`}>
-                <AlertTriangle className="w-2.5 h-2.5" />Critical
-              </span>
-            );
-            if (sev === 'important') return (
-              <span className="inline-flex items-center gap-0.5 px-1.5 py-0 rounded text-[10px] font-semibold bg-amber-100 text-amber-700 border border-amber-200" data-testid={`badge-severity-${log.id}`}>
-                <Info className="w-2.5 h-2.5" />Important
-              </span>
-            );
-            return null;
-          })()}
-        </div>
-        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-          {canAddToAiConversation && (
+      {/* Footer: severity + actions row, then timestamp below */}
+      <div className="mt-auto pt-0.5">
+        <div className="flex items-end justify-between">
+          <div className="flex min-w-0 items-end gap-1.5">
+            {(() => {
+              const sev = getLogSeverity(log);
+              if (sev === 'critical') return (
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-0 rounded text-[10px] font-semibold bg-red-100 text-red-700 border border-red-200" data-testid={`badge-severity-${log.id}`}>
+                  <AlertTriangle className="w-2.5 h-2.5" />Critical
+                </span>
+              );
+              if (sev === 'important') return (
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-0 rounded text-[10px] font-semibold bg-amber-100 text-amber-700 border border-amber-200" data-testid={`badge-severity-${log.id}`}>
+                  <Info className="w-2.5 h-2.5" />Important
+                </span>
+              );
+              return null;
+            })()}
+          </div>
+          <div className="flex items-end gap-1" onClick={(e) => e.stopPropagation()}>
+            {canAddToAiConversation && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-slate-500 hover:text-slate-700"
+                onClick={() => {
+                  if (!aiConversationDraft) return;
+                  chatInputRef.current?.setInput(aiConversationDraft.message);
+                  chatInputRef.current?.setAttachments(aiConversationDraft.attachments);
+                  onAddToAiChat?.();
+                  setTimeout(() => { chatInputRef.current?.focus(); }, 100);
+                }}
+                title="Add to AI Chat"
+              >
+                <MessageSquare className="w-3 h-3" />
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="icon"
               className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-slate-500 hover:text-slate-700"
-              onClick={() => {
-                if (!aiConversationDraft) return;
-                chatInputRef.current?.setInput(aiConversationDraft.message);
-                chatInputRef.current?.setAttachments(aiConversationDraft.attachments);
-                onAddToAiChat?.();
-                setTimeout(() => { chatInputRef.current?.focus(); }, 100);
-              }}
-              title="Add to AI Chat"
+              onClick={() => onEdit(log)}
             >
-              <MessageSquare className="w-3 h-3" />
+              <Pencil className="w-3 h-3" />
             </Button>
-          )}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-slate-500 hover:text-slate-700"
-            onClick={() => onEdit(log)}
-          >
-            <Pencil className="w-3 h-3" />
-          </Button>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-slate-500 hover:text-red-700">
-                <Trash2 className="w-3 h-3" />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Delete Entry?</AlertDialogTitle>
-                <AlertDialogDescription>This will permanently remove this entry from your case.</AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={() => onDelete(log.id)} className="bg-red-600 hover:bg-red-700">Delete</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-slate-500 hover:text-red-700">
+                  <Trash2 className="w-3 h-3" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete Entry?</AlertDialogTitle>
+                  <AlertDialogDescription>This will permanently remove this entry from your case.</AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => onDelete(log.id)} className="bg-red-600 hover:bg-red-700">Delete</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        </div>
+        <div className="mt-0.5 text-[10px] leading-none text-slate-400">
+          {formatDateTime(log.createdAt)}
         </div>
       </div>
     </Card>
