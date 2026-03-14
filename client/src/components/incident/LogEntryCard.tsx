@@ -80,7 +80,7 @@ export function LogEntryCard({
     <Card
       id={`log-entry-${log.id}`}
       key={log.id}
-      className={`p-2 rounded-lg min-h-[88px] group transition-colors cursor-pointer shadow-sm flex flex-col ${cardToneClass} ${highlightedLogId === log.id ? 'ring-2 ring-blue-500' : ''}`}
+      className={`p-3 rounded-lg min-h-[96px] group transition-colors cursor-pointer shadow-sm flex flex-col ${cardToneClass} ${highlightedLogId === log.id ? 'ring-2 ring-blue-500' : ''}`}
       onClick={() => {
         if (log.type === 'chat') {
           const element = document.getElementById(`chat-entry-${log.id}`);
@@ -117,7 +117,7 @@ export function LogEntryCard({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-slate-500 hover:text-slate-700"
+                className="h-6 w-6 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-slate-500 hover:text-slate-700"
                 onClick={() => {
                   if (!aiConversationDraft) return;
                   chatInputRef.current?.setInput(aiConversationDraft.message);
@@ -133,14 +133,14 @@ export function LogEntryCard({
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-slate-500 hover:text-slate-700"
+              className="h-6 w-6 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-slate-500 hover:text-slate-700"
               onClick={() => onEdit(log)}
             >
               <Pencil className="w-3 h-3" />
             </Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-slate-500 hover:text-red-700">
+                <Button variant="ghost" size="icon" className="h-6 w-6 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-slate-500 hover:text-red-700">
                   <Trash2 className="w-3 h-3" />
                 </Button>
               </AlertDialogTrigger>

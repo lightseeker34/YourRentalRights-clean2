@@ -211,13 +211,13 @@ export function SidebarContent({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-1 mb-3 mt-3">
+        <div className="grid grid-cols-2 gap-2 mb-3 mt-3">
           <Button
             variant="ghost"
             size="sm"
             onClick={onExportPdf}
             disabled={isExporting}
-            className="text-slate-600 hover:text-green-700 h-7 px-2 text-xs border border-slate-300 bg-[#4d5e700f]"
+            className="inline-flex w-full items-center justify-center text-slate-600 hover:text-green-700 h-9 px-3 text-sm border border-slate-300 bg-[#4d5e700f]"
             data-testid={isMobile ? "button-export-pdf" : "button-export-pdf-desktop"}
           >
             <Download className={`w-3.5 h-3.5 mr-1 ${isExporting ? 'animate-pulse' : ''}`} />
@@ -228,10 +228,10 @@ export function SidebarContent({
             size="sm"
             onClick={onTriggerAnalysis}
             disabled={!canRunAnalysis}
-            className={`h-7 px-2 text-xs border border-slate-300 ${
+            className={`h-9 w-full px-3 text-sm border border-slate-300 ${
               isMobile
-                ? 'inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover-elevate active-elevate-2 min-h-8 rounded-md text-slate-600 hover:text-blue-700 bg-[#4d5e700f] pt-[0px] pb-[0px] mt-[5px] mb-[5px] pl-[8px] pr-[8px] ml-[5px] mr-[5px]'
-                : canRunAnalysis ? 'text-slate-600 hover:text-blue-700 bg-[#4d5e700f]' : 'text-slate-400 bg-slate-100 opacity-60 cursor-not-allowed'
+                ? 'inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover-elevate active-elevate-2 rounded-md text-slate-600 hover:text-blue-700 bg-[#4d5e700f]'
+                : canRunAnalysis ? 'inline-flex items-center justify-center text-slate-600 hover:text-blue-700 bg-[#4d5e700f]' : 'inline-flex items-center justify-center text-slate-400 bg-slate-100 opacity-60 cursor-not-allowed'
             }`}
             title={hasReachedDailyLimit ? 'Daily limit reached — try again tomorrow' : 'Run AI case analysis'}
             data-testid={isMobile ? "button-ai-analysis" : "button-ai-analysis-desktop"}
@@ -255,15 +255,15 @@ export function SidebarContent({
       <div className="space-y-6 mt-6">
         <div className={isMobile ? "rounded-lg border border-slate-200 bg-white p-3" : ""}>
           <div className={isMobile ? "my-1 ml-4" : "my-2 ml-[24px]"}>
-            <div className="inline-flex items-center gap-2">
-              <span className="block w-3 border-t-2 border-slate-200" />
+            <div className="flex w-full items-center gap-2">
+              <span className="block flex-1 border-t-2 border-slate-200" />
               <h3 className={isMobile
-                ? "font-bold tracking-wider text-left text-[16px] mt-[6px] mb-[6px] text-[#0f172a]"
-                : "text-sm font-bold text-slate-900 uppercase tracking-wider"
+                ? "shrink-0 font-bold tracking-wider text-left text-[16px] mt-[6px] mb-[6px] text-[#0f172a]"
+                : "shrink-0 text-sm font-bold text-slate-900 uppercase tracking-wider"
               }>
                 Timeline
               </h3>
-              <span className="block w-16 border-t-2 border-slate-200" />
+              <span className="block flex-1 border-t-2 border-slate-200" />
             </div>
           </div>
 
@@ -274,7 +274,7 @@ export function SidebarContent({
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
-                    className="relative w-full justify-start gap-2 h-7 px-2 pr-20 text-xs text-slate-600 hover:text-slate-700 bg-[#4d5e700f] border border-slate-300 focus-visible:ring-0 focus-visible:outline-none active:ring-0"
+                    className="relative w-full justify-center gap-2 h-9 px-3 pr-10 text-sm font-medium text-slate-700 hover:text-slate-900 bg-slate-100 border border-slate-300 focus-visible:ring-0 focus-visible:outline-none active:ring-0 shadow-sm"
                     data-testid={isMobile ? "button-record-timeline-event-mobile" : "button-record-timeline-event"}
                   >
                     <span className="inline-flex items-center gap-2">
@@ -317,7 +317,7 @@ export function SidebarContent({
 
           <div className="space-y-2">
             {/* Master Bubble */}
-            <div className="bg-white border border-slate-200 rounded-lg p-3 shadow-sm min-h-[88px] flex flex-col hover:shadow-md transition-shadow">
+            <div className="bg-white border border-slate-200 rounded-lg p-3 shadow-sm min-h-[96px] flex flex-col hover:shadow-md transition-shadow">
               <div className="flex justify-between items-start mb-1">
                 <h3 className="font-semibold text-slate-900 text-sm line-clamp-1">{incident.title}</h3>
               </div>
@@ -329,7 +329,7 @@ export function SidebarContent({
 
             {/* Sub-entries with connecting line */}
             {(incidentPhotos.length > 0 || timelineItems.length > 0) && (
-              <div className="ml-4 border-l-2 border-slate-200 pl-3 space-y-2">
+              <div className="ml-4 border-l-2 border-slate-200 pl-4 space-y-2">
                 {/* Incident photos */}
                 {incidentPhotos.length > 0 && (
                   isMobile ? (
@@ -358,7 +358,7 @@ export function SidebarContent({
                       ))}
                     </div>
                   ) : (
-                    <div className="ml-4 border-l-2 border-slate-200 pl-3 mt-0.5 flex flex-wrap gap-1">
+                    <div className="ml-4 border-l-2 border-slate-200 pl-4 mt-0.5 flex flex-wrap gap-1">
                       {incidentPhotos.map((photo) => (
                         <ThumbnailWithDelete
                           key={photo.id}
@@ -394,7 +394,7 @@ export function SidebarContent({
                       <div key={item.id}>
                         {!isExpanded && (
                           <Card
-                            className="p-2 rounded-lg min-h-[88px] shadow-sm cursor-pointer bg-slate-50 border-slate-200 hover:bg-slate-100 transition-colors flex flex-col"
+                            className="p-3 rounded-lg min-h-[96px] shadow-sm cursor-pointer bg-slate-50 border-slate-200 hover:bg-slate-100 transition-colors flex flex-col"
                             onClick={() => onToggleChatGroup(item.id)}
                           >
                             <div className="flex items-center justify-between gap-1.5 mb-1">
