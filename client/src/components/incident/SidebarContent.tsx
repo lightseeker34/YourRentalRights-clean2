@@ -255,14 +255,16 @@ export function SidebarContent({
       <div className="space-y-6 mt-6">
         <div className={isMobile ? "rounded-lg border border-slate-200 bg-white p-3" : ""}>
           <div className={isMobile ? "my-1 ml-4" : "my-2 ml-[24px]"}>
-            <h3 className={isMobile
-              ? "relative inline-block font-bold tracking-wider text-left text-[16px] mt-[6px] mb-[6px] text-[#0f172a]"
-              : "relative inline-block text-sm font-bold text-slate-900 uppercase tracking-wider"
-            }>
-              <span className="relative z-10 bg-white pr-2">Timeline</span>
-              <span className="absolute left-[-14px] top-1/2 w-3 -translate-y-1/2 border-t-2 border-slate-200" />
-              <span className="absolute left-[calc(100%+6px)] top-1/2 w-16 -translate-y-1/2 border-t-2 border-slate-200" />
-            </h3>
+            <div className="inline-flex items-center gap-2">
+              <span className="block w-3 border-t-2 border-slate-200" />
+              <h3 className={isMobile
+                ? "font-bold tracking-wider text-left text-[16px] mt-[6px] mb-[6px] text-[#0f172a]"
+                : "text-sm font-bold text-slate-900 uppercase tracking-wider"
+              }>
+                Timeline
+              </h3>
+              <span className="block w-16 border-t-2 border-slate-200" />
+            </div>
           </div>
 
           {/* Add Log section */}
