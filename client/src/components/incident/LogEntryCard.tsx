@@ -109,10 +109,31 @@ export function LogEntryCard({
           {log.content}
         </ReactMarkdown>
       </div>
-      {/* Footer: actions + severity on the right, then timestamp below */}
+      {/* Footer: severity above, timestamp and actions on one line */}
       <div className="mt-auto pt-0.5">
         <div className="flex items-end justify-end w-full">
           <div className="ml-auto flex items-end justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+            {(() => {
+              const sev = getLogSeverity(log);
+              if (sev === 'critical') return (
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-0 rounded text-[10px] font-semibold bg-red-100 text-red-700 border border-red-200" data-testid={`badge-severity-${log.id}`}>
+                  <AlertTriangle className="w-2.5 h-2.5" />Critical
+                </span>
+              );
+              if (sev === 'important') return (
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-0 rounded text-[10px] font-semibold bg-amber-100 text-amber-700 border border-amber-200" data-testid={`badge-severity-${log.id}`}>
+                  <Info className="w-2.5 h-2.5" />Important
+                </span>
+              );
+              return null;
+            })()}
+          </div>
+        </div>
+        <div className="mt-0.5 flex items-center justify-between gap-2">
+          <div className="text-xs text-slate-400">
+            {formatDateTime(log.createdAt)}
+          </div>
+          <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
             {canAddToAiConversation && (
               <Button
                 variant="ghost"
@@ -155,24 +176,7 @@ export function LogEntryCard({
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-            {(() => {
-              const sev = getLogSeverity(log);
-              if (sev === 'critical') return (
-                <span className="inline-flex items-center gap-0.5 px-1.5 py-0 rounded text-[10px] font-semibold bg-red-100 text-red-700 border border-red-200" data-testid={`badge-severity-${log.id}`}>
-                  <AlertTriangle className="w-2.5 h-2.5" />Critical
-                </span>
-              );
-              if (sev === 'important') return (
-                <span className="inline-flex items-center gap-0.5 px-1.5 py-0 rounded text-[10px] font-semibold bg-amber-100 text-amber-700 border border-amber-200" data-testid={`badge-severity-${log.id}`}>
-                  <Info className="w-2.5 h-2.5" />Important
-                </span>
-              );
-              return null;
-            })()}
           </div>
-        </div>
-        <div className="mt-0.5 text-xs text-slate-400">
-          {formatDateTime(log.createdAt)}
         </div>
       </div>
     </Card>
