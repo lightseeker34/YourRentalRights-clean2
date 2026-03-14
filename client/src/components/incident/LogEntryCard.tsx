@@ -111,9 +111,8 @@ export function LogEntryCard({
       </div>
       {/* Footer: actions + severity on the right, then timestamp below */}
       <div className="mt-auto pt-0.5">
-        <div className="flex items-end justify-between">
-          <div />
-          <div className="flex items-end gap-1" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-end justify-end w-full">
+          <div className="ml-auto flex items-end justify-end gap-1" onClick={(e) => e.stopPropagation()}>
             {(() => {
               const sev = getLogSeverity(log);
               if (sev === 'critical') return (
@@ -172,7 +171,7 @@ export function LogEntryCard({
             </AlertDialog>
           </div>
         </div>
-        <div className="mt-0.5 text-[10px] leading-none text-slate-400">
+        <div className="mt-0.5 text-xs text-slate-400">
           {formatDateTime(log.createdAt)}
         </div>
       </div>
