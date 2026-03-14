@@ -315,10 +315,7 @@ export function SidebarContent({
 
           <div className="space-y-2">
             {/* Master Bubble */}
-            <div className={isMobile
-              ? "bg-purple-50/30 border border-purple-100 rounded-lg p-3 min-h-[88px] flex flex-col"
-              : "bg-white border-2 border-input rounded-lg p-3 shadow-md min-h-[88px] flex flex-col"
-            }>
+            <div className="bg-white border border-slate-200 rounded-lg p-3 shadow-sm min-h-[88px] flex flex-col hover:shadow-md transition-shadow">
               <div className="flex justify-between items-start mb-1">
                 <h3 className="font-semibold text-slate-900 text-sm line-clamp-1">{incident.title}</h3>
               </div>

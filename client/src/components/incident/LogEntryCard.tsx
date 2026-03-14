@@ -109,10 +109,11 @@ export function LogEntryCard({
           {log.content}
         </ReactMarkdown>
       </div>
-      {/* Footer: severity + actions row, then timestamp below */}
+      {/* Footer: actions + severity on the right, then timestamp below */}
       <div className="mt-auto pt-0.5">
         <div className="flex items-end justify-between">
-          <div className="flex min-w-0 items-end gap-1.5">
+          <div />
+          <div className="flex items-end gap-1" onClick={(e) => e.stopPropagation()}>
             {(() => {
               const sev = getLogSeverity(log);
               if (sev === 'critical') return (
@@ -127,8 +128,6 @@ export function LogEntryCard({
               );
               return null;
             })()}
-          </div>
-          <div className="flex items-end gap-1" onClick={(e) => e.stopPropagation()}>
             {canAddToAiConversation && (
               <Button
                 variant="ghost"
