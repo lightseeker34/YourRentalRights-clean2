@@ -61,11 +61,14 @@ export function IncidentPageShell({
         </div>
       </div>
 
-      <div
-        className="fixed left-0 top-1/2 -translate-y-1/2 z-30 md:hidden bg-white border border-slate-300 w-3 h-[22.5rem] rounded-r-lg shadow-md cursor-pointer"
+      <button
+        type="button"
+        className="fixed left-0 top-1/2 -translate-y-1/2 z-30 md:hidden flex h-[22.5rem] w-8 items-center justify-start bg-transparent cursor-pointer"
         onClick={onOpenDrawer}
         aria-label="Open incident panel"
-      />
+      >
+        <span className="pointer-events-none block h-full w-3 rounded-r-lg border border-slate-300 bg-white shadow-md" />
+      </button>
 
       <div className="w-96 border-r border-slate-200 bg-white p-6 hidden md:block overflow-y-auto pl-[20px] pr-[20px]">
         {desktopSidebar}

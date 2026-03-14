@@ -330,7 +330,7 @@ export function SidebarContent({
 
             {/* Sub-entries with connecting line */}
             {(incidentPhotos.length > 0 || timelineItems.length > 0) && (
-              <div className="ml-4 border-l-2 border-slate-100 pl-3 space-y-2">
+              <div className="ml-4 border-l-2 border-slate-200 pl-3 space-y-2">
                 {/* Incident photos */}
                 {incidentPhotos.length > 0 && (
                   isMobile ? (
@@ -359,7 +359,7 @@ export function SidebarContent({
                       ))}
                     </div>
                   ) : (
-                    <div className="ml-4 border-l-2 border-slate-100 pl-3 mt-0.5 flex flex-wrap gap-1">
+                    <div className="ml-4 border-l-2 border-slate-200 pl-3 mt-0.5 flex flex-wrap gap-1">
                       {incidentPhotos.map((photo) => (
                         <ThumbnailWithDelete
                           key={photo.id}
