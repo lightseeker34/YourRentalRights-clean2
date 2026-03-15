@@ -49,7 +49,7 @@ import {
 import { buildFileGroups } from "@/lib/incident/buildFileGroups";
 import { buildTimelineItems } from "@/lib/incident/buildTimelineItems";
 import { exportToPDF } from "@/lib/pdf/exportIncident";
-import { saveAnalysisAsPdfToIncident as saveAnalysisPdfHelper, type AnalysisResult } from "@/lib/pdf/exportAnalysis";
+import { downloadAnalysisPdf, saveAnalysisAsPdfToIncident as saveAnalysisPdfHelper, type AnalysisResult } from "@/lib/pdf/exportAnalysis";
 import { ThumbnailWithDelete } from "@/components/incident/ThumbnailWithDelete";
 import { SidebarContent } from "@/components/incident/SidebarContent";
 import { MarkdownRenderer } from "@/components/incident/MarkdownRenderer";
@@ -776,6 +776,11 @@ export default function IncidentView() {
     saveAnalysisPdfHelper({ incident, analysisResult, id, setIsSavingAnalysisPdf, toast, queryClient });
   };
 
+  const downloadAnalysisPdfToDevice = () => {
+    if (!incident || !analysisResult) return;
+    downloadAnalysisPdf({ incident, analysisResult });
+  };
+
     const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) uploadFileMutation.mutate({ file, category: 'incident_photo' });
@@ -1399,6 +1404,7 @@ export default function IncidentView() {
         analysisResult={analysisResult}
         isSavingAnalysisPdf={isSavingAnalysisPdf}
         onSavePdf={saveAnalysisAsPdfToIncident}
+        onDownloadPdf={downloadAnalysisPdfToDevice}
       />
       {/* Chat Area */}
       <div className="flex-1 min-w-0 w-full max-w-full overflow-x-hidden flex flex-col">

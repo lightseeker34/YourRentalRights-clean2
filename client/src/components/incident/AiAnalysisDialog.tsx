@@ -26,6 +26,7 @@ type AiAnalysisDialogProps = {
   analysisResult: AnalysisResult | null;
   isSavingAnalysisPdf?: boolean;
   onSavePdf: () => void;
+  onDownloadPdf: () => void;
 };
 
 export function AiAnalysisDialog({
@@ -34,26 +35,39 @@ export function AiAnalysisDialog({
   analysisResult,
   isSavingAnalysisPdf,
   onSavePdf,
+  onDownloadPdf,
 }: AiAnalysisDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent aria-describedby={undefined} className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <div className="flex items-center justify-between gap-3">
-            <DialogTitle className="flex items-center gap-2">
+          <div className="flex items-start justify-between gap-3">
+            <DialogTitle className="flex items-center gap-2 pt-1">
               <Bot className="w-5 h-5" />
               AI Case Analysis
             </DialogTitle>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={onSavePdf}
-              disabled={!analysisResult || isSavingAnalysisPdf}
-              data-testid="button-save-analysis-pdf"
-            >
-              {isSavingAnalysisPdf ? 'Saving...' : 'Save PDF to Incident'}
-            </Button>
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={onSavePdf}
+                disabled={!analysisResult || isSavingAnalysisPdf}
+                data-testid="button-save-analysis-pdf"
+              >
+                {isSavingAnalysisPdf ? 'Saving...' : 'Save to Incident Timeline'}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={onDownloadPdf}
+                disabled={!analysisResult}
+                data-testid="button-download-analysis-pdf"
+              >
+                Download PDF
+              </Button>
+            </div>
           </div>
           <DialogDescription className="sr-only">AI summary and recommendations for this incident.</DialogDescription>
         </DialogHeader>
