@@ -2,9 +2,9 @@ import { useState, useRef, memo, forwardRef, useImperativeHandle, useEffect } fr
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Send, Plus, Paperclip, FolderOpen, FolderUp, X, Check } from "lucide-react";
+import { Send, Plus, Paperclip, FolderOpen, FolderUp, X, Check, Bot } from "lucide-react";
 import type { IncidentLog } from "@shared/schema";
-import { getAttachmentDisplayName, isImageAttachmentLog, isLikelyImageUrl } from "@/lib/incident";
+import { getAttachmentDisplayName, isAnalysisPdf, isImageAttachmentLog, isLikelyImageUrl } from "@/lib/incident";
 
 export interface ChatInputHandle {
   setInput: (value: string) => void;
@@ -144,8 +144,11 @@ export const ChatInput = memo(forwardRef<ChatInputHandle, ChatInputProps>(functi
     if (textareaRef.current) textareaRef.current.style.height = "auto";
   };
 
-  const photoTypes = ['photo', 'call_photo', 'text_photo', 'email_photo', 'chat_photo', 'service_photo'];
-  const photoLogs = logs?.filter(l => photoTypes.includes(l.type) && l.fileUrl) || [];
+  const evidenceLogs = (logs?.filter((log) => {
+    if (!log.fileUrl) return false;
+    const category = (log.metadata as any)?.category;
+    return category !== 'chat_photo' && category !== 'chat_document';
+  }) || []).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   return (
     <div className="shrink-0 px-3 pt-1 pb-[max(env(safe-area-inset-bottom),0.5rem)] bg-slate-50">
@@ -163,27 +166,40 @@ export const ChatInput = memo(forwardRef<ChatInputHandle, ChatInputProps>(functi
               </button>
             </div>
             <div className="flex gap-2 flex-wrap">
-              {photoLogs.map(l => {
-                const isSelected = chatAttachments.includes(l.fileUrl!);
+              {evidenceLogs.map((log) => {
+                const isSelected = chatAttachments.includes(log.fileUrl!);
+                const isImage = isImageAttachmentLog(log);
+                const isAnalysis = isAnalysisPdf(log);
+                const label = getAttachmentDisplayName(log);
                 return (
                   <button
-                    key={l.id}
+                    key={log.id}
                     onClick={() => {
                       if (isSelected) {
-                        void removeAttachment(l.fileUrl!);
+                        void removeAttachment(log.fileUrl!);
                       } else {
-                        addExistingEvidence(l.fileUrl!);
+                        addExistingEvidence(log.fileUrl!);
                       }
                     }}
                     className="relative"
-                    data-testid={`evidence-picker-${l.id}`}
+                    title={label}
+                    data-testid={`evidence-picker-${log.id}`}
                   >
-                    <img
-                      src={l.fileUrl!}
-                      loading="lazy"
-                      alt="Evidence"
-                      className={`w-12 h-12 object-cover rounded border-2 transition-colors ${isSelected ? 'border-blue-500' : 'border-slate-300 hover:border-blue-400'}`}
-                    />
+                    {isImage ? (
+                      <img
+                        src={log.fileUrl!}
+                        loading="lazy"
+                        alt={label}
+                        className={`w-12 h-12 object-cover rounded border-2 transition-colors ${isSelected ? 'border-blue-500' : 'border-slate-300 hover:border-blue-400'}`}
+                      />
+                    ) : (
+                      <div className={`flex h-12 w-12 items-center justify-center rounded border-2 transition-colors ${isSelected ? 'border-blue-500 bg-blue-50' : 'border-slate-300 bg-slate-50 hover:border-blue-400'}`}>
+                        {isAnalysis ? <Bot className="w-4 h-4 text-slate-600" /> : <Paperclip className="w-4 h-4 text-slate-500" />}
+                      </div>
+                    )}
+                    {!isImage && (
+                      <div className="mt-1 w-12 truncate text-[10px] text-slate-500">{label}</div>
+                    )}
                     {isSelected && (
                       <div className="absolute inset-0 bg-blue-500/30 rounded flex items-center justify-center">
                         <Check className="w-5 h-5 text-white drop-shadow" />
@@ -192,8 +208,8 @@ export const ChatInput = memo(forwardRef<ChatInputHandle, ChatInputProps>(functi
                   </button>
                 );
               })}
-              {photoLogs.length === 0 && (
-                <div className="text-xs text-slate-400">No photos in evidence yet</div>
+              {evidenceLogs.length === 0 && (
+                <div className="text-xs text-slate-400">No evidence files available yet</div>
               )}
             </div>
           </div>
