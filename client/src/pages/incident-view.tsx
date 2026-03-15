@@ -844,13 +844,27 @@ export default function IncidentView() {
       const meta = (log.metadata as any) || {};
       const isImage = log.type === 'photo' || log.fileUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i);
       const rawName = meta.originalName || log.title || log.content || 'Attachment';
-      const previewLabel = rawName
-        .replace(/^ai-analysis-\d+-/i, 'AI Analysis - ')
-        .replace(/\.pdf$/i, '')
-        .replace(/[-_]/g, ' ')
-        .replace(/\bpdf\b/gi, '')
-        .replace(/\s+/g, ' ')
-        .trim() || 'Attachment';
+      const previewLabel = (() => {
+        const trimmed = String(rawName).trim();
+        if (meta.category === 'analysis_pdf') {
+          const dateLabel = new Date(log.createdAt).toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+          });
+          return `AI Analysis - ${dateLabel}`;
+        }
+        return trimmed
+          .replace(/^ai-analysis-\d+-/i, 'AI Analysis - ')
+          .replace(/\.pdf$/i, '')
+          .replace(/[-_]/g, ' ')
+          .replace(/\bpdf\b/gi, '')
+          .replace(/\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}/g, '')
+          .replace(/\s+/g, ' ')
+          .trim() || 'Attachment';
+      })();
       setPreviewUrl(log.fileUrl);
       setPreviewType(isImage ? 'image' : 'document');
       setPreviewName(previewLabel);

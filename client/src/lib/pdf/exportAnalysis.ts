@@ -123,7 +123,11 @@ export async function saveAnalysisAsPdfToIncident({
     pdf.setTextColor(100, 116, 139);
     addBody('This analysis is for informational purposes only and does not constitute legal advice.');
 
-    const fileName = `ai-analysis-${incident.id}-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.pdf`;
+    const generatedAt = format(new Date(), 'MMM d, yyyy h-mm a');
+    const fileName = `AI Analysis - ${incident.title} - ${generatedAt}.pdf`
+      .replace(/[\\/:*?"<>|]/g, '-')
+      .replace(/\s+/g, ' ')
+      .trim();
     const blob = pdf.output('blob');
     const file = new File([blob], fileName, { type: 'application/pdf' });
 
