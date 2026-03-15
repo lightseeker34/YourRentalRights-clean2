@@ -821,7 +821,29 @@ export function GuidedTour() {
   // Initialize displayed positions on first render only (when tour opens)
   // Use a ref to track initialization so we don't depend on tooltipPos which changes every render
   const initializedRef = useRef(false);
+  const tourButtonRef = useRef<HTMLDivElement | null>(null);
   const [tourButtonPosition, setTourButtonPosition] = useState<{ x: number; y: number } | null>(null);
+
+  const getDefaultTourButtonPosition = useCallback(() => {
+    if (typeof window === 'undefined') return { x: 0, y: 0 };
+    const buttonWidth = window.innerWidth >= 640 ? 118 : 44;
+    const buttonHeight = 36;
+    return {
+      x: window.innerWidth - buttonWidth - 32,
+      y: window.innerHeight - buttonHeight - 128,
+    };
+  }, []);
+
+  const clampTourButtonPosition = useCallback((position: { x: number; y: number }) => {
+    if (typeof window === 'undefined') return position;
+    const rect = tourButtonRef.current?.getBoundingClientRect();
+    const buttonWidth = rect?.width ?? (window.innerWidth >= 640 ? 118 : 44);
+    const buttonHeight = rect?.height ?? 36;
+    return {
+      x: Math.min(Math.max(8, position.x), window.innerWidth - buttonWidth - 8),
+      y: Math.min(Math.max(8, position.y), window.innerHeight - buttonHeight - 8),
+    };
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -830,15 +852,28 @@ export function GuidedTour() {
       try {
         const parsed = JSON.parse(saved);
         if (typeof parsed?.x === 'number' && typeof parsed?.y === 'number') {
-          setTourButtonPosition(parsed);
+          setTourButtonPosition(clampTourButtonPosition(parsed));
           return;
         }
       } catch {
         // ignore invalid saved position
       }
     }
-    setTourButtonPosition({ x: window.innerWidth - 160, y: window.innerHeight - 88 - 128 });
-  }, []);
+    setTourButtonPosition(getDefaultTourButtonPosition());
+  }, [clampTourButtonPosition, getDefaultTourButtonPosition]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !tourButtonPosition) return;
+    const handleResize = () => {
+      setTourButtonPosition((current) => {
+        const next = clampTourButtonPosition(current ?? getDefaultTourButtonPosition());
+        localStorage.setItem(TOUR_BUTTON_POSITION_KEY, JSON.stringify(next));
+        return next;
+      });
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [tourButtonPosition, clampTourButtonPosition, getDefaultTourButtonPosition]);
 
   useEffect(() => {
     if (isOpen && !isTransitioning && !initializedRef.current && spotlightRect) {
@@ -862,17 +897,18 @@ export function GuidedTour() {
   if (!isOpen) {
     return (
       <motion.div
+        ref={tourButtonRef}
         drag
         dragMomentum={false}
         dragElastic={0}
-        dragConstraints={{ left: 8, top: 8, right: Math.max(8, window.innerWidth - 180), bottom: Math.max(8, window.innerHeight - 60) }}
         className="fixed z-40 cursor-move"
         style={tourButtonPosition ? { left: tourButtonPosition.x, top: tourButtonPosition.y } : { right: 32, bottom: 128 }}
         onDragEnd={(_, info) => {
-          const nextPosition = {
-            x: Math.min(Math.max(8, (tourButtonPosition?.x ?? (window.innerWidth - 160)) + info.offset.x), window.innerWidth - 180),
-            y: Math.min(Math.max(8, (tourButtonPosition?.y ?? (window.innerHeight - 88 - 128)) + info.offset.y), window.innerHeight - 60),
-          };
+          const basePosition = tourButtonPosition ?? getDefaultTourButtonPosition();
+          const nextPosition = clampTourButtonPosition({
+            x: basePosition.x + info.offset.x,
+            y: basePosition.y + info.offset.y,
+          });
           setTourButtonPosition(nextPosition);
           localStorage.setItem(TOUR_BUTTON_POSITION_KEY, JSON.stringify(nextPosition));
         }}
