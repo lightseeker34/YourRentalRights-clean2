@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { User, Send, Phone, FileText, Image as ImageIcon, Trash2, Calendar, Clock, Pencil, MessageSquare, Mail, Paperclip, X, FolderOpen, RotateCcw, ChevronDown, ChevronRight, Folder, Copy, Check, Download, FolderUp, AlertTriangle, Info, Minus, Wrench, ArrowLeft } from "lucide-react";
+import { User, Send, Phone, FileText, Image as ImageIcon, Trash2, Calendar, Clock, Pencil, MessageSquare, Mail, Paperclip, X, FolderOpen, RotateCcw, ChevronDown, ChevronRight, Folder, Copy, Check, Download, FolderUp, AlertTriangle, Info, Minus, Wrench, ArrowLeft, Bot } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useState, useRef, useEffect, useMemo } from "react";
@@ -45,6 +45,8 @@ import {
   getAttachmentDisplayName,
   isImageAttachmentLog,
   isLikelyImageUrl,
+  isAnalysisPdf,
+  getChatAttachmentUrls,
 } from "@/lib/incident";
 import { buildFileGroups } from "@/lib/incident/buildFileGroups";
 import { buildTimelineItems } from "@/lib/incident/buildTimelineItems";
@@ -1621,65 +1623,69 @@ export default function IncidentView() {
                           <>
                             <MarkdownRenderer content={log.content} isAi={false} />
                             {/* Show attachment thumbnails for user messages */}
-                            {(log.metadata as any)?.attachedImages?.length > 0 && (
-                              <div className="flex gap-1 mt-2 flex-wrap max-w-full overflow-hidden">
-                                {((log.metadata as any).attachedImages as string[]).map((url, idx) => (
-                                  (() => {
-                                    const attachmentLog = logs?.find((entry) => entry.fileUrl === url);
-                                    const isImage = attachmentLog ? isImageAttachmentLog(attachmentLog) : isLikelyImageUrl(url);
-                                    const isAnalysis = attachmentLog ? isAnalysisPdf(attachmentLog) : false;
-                                    const attachmentName = attachmentLog ? getAttachmentDisplayName(attachmentLog) : `Attachment ${idx + 1}`;
+                            {(() => {
+                              const chatAttachments = getChatAttachmentUrls(log);
+                              if (chatAttachments.length === 0) return null;
+                              return (
+                                <div className="flex gap-1 mt-2 flex-wrap max-w-full overflow-hidden">
+                                  {chatAttachments.map((url, idx) => (
+                                    (() => {
+                                      const attachmentLog = logs?.find((entry) => entry.fileUrl === url);
+                                      const isImage = attachmentLog ? isImageAttachmentLog(attachmentLog) : isLikelyImageUrl(url);
+                                      const isAnalysis = attachmentLog ? isAnalysisPdf(attachmentLog) : false;
+                                      const attachmentName = attachmentLog ? getAttachmentDisplayName(attachmentLog) : `Attachment ${idx + 1}`;
 
-                                    const handleAttachmentClick = (e: React.MouseEvent) => {
-                                      e.stopPropagation();
-                                      if (attachmentLog) {
-                                        openPreview(attachmentLog);
-                                        return;
-                                      }
+                                      const handleAttachmentClick = (e: React.MouseEvent) => {
+                                        e.stopPropagation();
+                                        if (attachmentLog) {
+                                          openPreview(attachmentLog);
+                                          return;
+                                        }
+
+                                        if (isImage) {
+                                          setPreviewUrl(url);
+                                          setPreviewType('image');
+                                          setPreviewName(attachmentName);
+                                          return;
+                                        }
+
+                                        window.open(url, "_blank", "noopener,noreferrer");
+                                      };
 
                                       if (isImage) {
-                                        setPreviewUrl(url);
-                                        setPreviewType('image');
-                                        setPreviewName(attachmentName);
-                                        return;
+                                        return (
+                                          <img
+                                            key={idx}
+                                            src={url}
+                                            loading="lazy"
+                                            alt={attachmentName}
+                                            className="w-8 h-8 object-cover rounded border border-white/30 cursor-pointer hover:opacity-80 transition-opacity"
+                                            onClick={handleAttachmentClick}
+                                            data-testid={`chat-attachment-thumb-${log.id}-${idx}`}
+                                          />
+                                        );
                                       }
 
-                                      window.open(url, "_blank", "noopener,noreferrer");
-                                    };
-
-                                    if (isImage) {
                                       return (
-                                        <img
+                                        <button
                                           key={idx}
-                                          src={url}
-                                          loading="lazy"
-                                          alt={attachmentName}
-                                          className="w-8 h-8 object-cover rounded border border-white/30 cursor-pointer hover:opacity-80 transition-opacity"
+                                          type="button"
+                                          className={`relative w-8 h-8 rounded border transition-colors flex items-center justify-center ${isAnalysis ? 'border-slate-300 bg-slate-100 hover:bg-slate-200' : 'border-white/30 bg-white/10 hover:bg-white/20'}`}
                                           onClick={handleAttachmentClick}
+                                          title={attachmentName}
                                           data-testid={`chat-attachment-thumb-${log.id}-${idx}`}
-                                        />
+                                        >
+                                          {isAnalysis ? <Bot className="w-3 h-3 text-slate-600" /> : <Paperclip className="w-3 h-3 text-white" />}
+                                          {isAnalysis && (
+                                            <span className="absolute -bottom-0.5 -right-0.5 text-[7px] px-0.5 py-[1px] rounded bg-slate-600 text-white font-semibold leading-none">PDF</span>
+                                          )}
+                                        </button>
                                       );
-                                    }
-
-                                    return (
-                                      <button
-                                        key={idx}
-                                        type="button"
-                                        className={`relative w-8 h-8 rounded border transition-colors flex items-center justify-center ${isAnalysis ? 'border-slate-300 bg-slate-100 hover:bg-slate-200' : 'border-white/30 bg-white/10 hover:bg-white/20'}`}
-                                        onClick={handleAttachmentClick}
-                                        title={attachmentName}
-                                        data-testid={`chat-attachment-thumb-${log.id}-${idx}`}
-                                      >
-                                        {isAnalysis ? <Bot className="w-3 h-3 text-slate-600" /> : <Paperclip className="w-3 h-3 text-white" />}
-                                        {isAnalysis && (
-                                          <span className="absolute -bottom-0.5 -right-0.5 text-[7px] px-0.5 py-[1px] rounded bg-slate-600 text-white font-semibold leading-none">PDF</span>
-                                        )}
-                                      </button>
-                                    );
-                                  })()
-                                ))}
-                              </div>
-                            )}
+                                    })()
+                                  ))}
+                                </div>
+                              );
+                            })()}
                           </>
                         )}
                       </div>

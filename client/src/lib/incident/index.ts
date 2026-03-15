@@ -53,6 +53,16 @@ export const getAttachedDocuments = (log: IncidentLog, logs: IncidentLog[]): Inc
   });
 };
 
+/**
+ * Safely extract chat attachment URLs from a log's metadata.
+ * Returns only valid string URLs; never throws on malformed or missing data.
+ */
+export const getChatAttachmentUrls = (log: IncidentLog): string[] => {
+  const raw = (log.metadata as any)?.attachedImages;
+  if (!Array.isArray(raw)) return [];
+  return raw.filter((u): u is string => typeof u === "string" && u.length > 0);
+};
+
 export const getAttachedFiles = (log: IncidentLog, logs: IncidentLog[]): IncidentLog[] => {
   const attachedFiles = [...getAttachedPhotos(log, logs), ...getAttachedDocuments(log, logs)];
 
