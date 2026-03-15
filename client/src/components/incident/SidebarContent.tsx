@@ -491,7 +491,7 @@ export function SidebarContent({
                         onAddToAiChat={onAddToAiChat}
                       />
                       {hasAttachments && (
-                        <div className="ml-4 border-l-2 border-slate-200 pl-3 pt-0.5 flex w-full max-w-full flex-wrap gap-1 justify-start overflow-hidden">
+                        <div className="ml-4 mt-2 border-l-2 border-slate-200 pl-3 flex w-full max-w-full flex-wrap gap-1 justify-start overflow-hidden">
                           {attachedPhotos.map((photo) => (
                             <ThumbnailWithDelete key={photo.id} onDelete={() => onDeleteLog(photo.id)} onPreview={() => openPreview(photo)} className="w-10 h-10 overflow-hidden cursor-pointer rounded-md">
                               <Card className="w-full h-full relative group overflow-hidden border-slate-200 rounded-md">
