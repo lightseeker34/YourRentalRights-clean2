@@ -26,7 +26,7 @@ export function IncidentPageShell({
         <Button
           variant="ghost"
           size="icon"
-          className="bg-white/90 border border-slate-200 shadow-md backdrop-blur-sm rounded-xl w-10 h-10 hover:bg-white"
+          className="w-10 h-10 rounded-xl border-0 shadow-none bg-slate-50 text-slate-700 hover:bg-slate-50"
           onClick={onBack}
           aria-label="Go back"
           data-testid="button-back"
@@ -38,7 +38,7 @@ export function IncidentPageShell({
       <div className="hidden md:block fixed top-3 right-3 z-30">
         <Button
           variant="ghost"
-          className="bg-white/90 border border-slate-200 shadow-md backdrop-blur-sm rounded-xl h-10 px-3 hover:bg-white"
+          className="h-10 px-3 rounded-xl border-0 shadow-none bg-slate-50 text-slate-700 hover:bg-slate-50"
           onClick={onBack}
           aria-label="Back to dashboard"
           data-testid="button-back-desktop"

@@ -202,6 +202,7 @@ function getPageFromPath(pathname: string): string {
 const TOUR_STORAGE_KEY = "unified_tour_state";
 const TOUR_COMPLETED_KEY = "unified_tour_completed";
 const INCIDENT_PATH_KEY = "tour_incident_path";
+const TOUR_BUTTON_POSITION_KEY = "guided_tour_button_position";
 
 interface TourState {
   globalStepIndex: number;
@@ -820,6 +821,25 @@ export function GuidedTour() {
   // Initialize displayed positions on first render only (when tour opens)
   // Use a ref to track initialization so we don't depend on tooltipPos which changes every render
   const initializedRef = useRef(false);
+  const [tourButtonPosition, setTourButtonPosition] = useState<{ x: number; y: number } | null>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const saved = localStorage.getItem(TOUR_BUTTON_POSITION_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (typeof parsed?.x === 'number' && typeof parsed?.y === 'number') {
+          setTourButtonPosition(parsed);
+          return;
+        }
+      } catch {
+        // ignore invalid saved position
+      }
+    }
+    setTourButtonPosition({ x: window.innerWidth - 176, y: window.innerHeight - 148 });
+  }, []);
+
   useEffect(() => {
     if (isOpen && !isTransitioning && !initializedRef.current && spotlightRect) {
       setDisplayedSpotlightRect(spotlightRect);
@@ -841,16 +861,32 @@ export function GuidedTour() {
 
   if (!isOpen) {
     return (
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={restartTour}
-        className="fixed bottom-32 right-8 z-40 gap-2 shadow-lg bg-white border-0 hover:border-0"
-        data-testid="restart-tour-button"
+      <motion.div
+        drag
+        dragMomentum={false}
+        dragElastic={0}
+        className="fixed z-40 cursor-move"
+        style={tourButtonPosition ? { left: tourButtonPosition.x, top: tourButtonPosition.y } : { right: 32, bottom: 128 }}
+        onDragEnd={(_, info) => {
+          const nextPosition = {
+            x: Math.max(8, (tourButtonPosition?.x ?? (window.innerWidth - 176)) + info.offset.x),
+            y: Math.max(8, (tourButtonPosition?.y ?? (window.innerHeight - 148)) + info.offset.y),
+          };
+          setTourButtonPosition(nextPosition);
+          localStorage.setItem(TOUR_BUTTON_POSITION_KEY, JSON.stringify(nextPosition));
+        }}
       >
-        <HelpCircle className="w-4 h-4" />
-        <span className="hidden sm:inline">Help Tour</span>
-      </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={restartTour}
+          className="gap-2 shadow-lg bg-white border-0 hover:border-0"
+          data-testid="restart-tour-button"
+        >
+          <HelpCircle className="w-4 h-4" />
+          <span className="hidden sm:inline">Help Tour</span>
+        </Button>
+      </motion.div>
     );
   }
 
