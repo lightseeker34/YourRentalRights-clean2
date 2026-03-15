@@ -165,14 +165,14 @@ export function LogEntryCard({
                   <Trash2 className="w-3 h-3" />
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete Entry?</AlertDialogTitle>
-                  <AlertDialogDescription>This will permanently remove this entry from your case.</AlertDialogDescription>
+              <AlertDialogContent className="max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl">
+                <AlertDialogHeader className="space-y-2">
+                  <AlertDialogTitle className="text-lg text-slate-900">Delete Entry?</AlertDialogTitle>
+                  <AlertDialogDescription className="text-sm text-slate-500">This will permanently remove this entry from your case.</AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => onDelete(log.id)} className="bg-red-600 hover:bg-red-700">Delete</AlertDialogAction>
+                <AlertDialogFooter className="mt-2">
+                  <AlertDialogCancel className="rounded-xl border-slate-300">Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => onDelete(log.id)} className="rounded-xl bg-red-600 hover:bg-red-700">Delete</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>

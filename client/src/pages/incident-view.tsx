@@ -841,10 +841,19 @@ export default function IncidentView() {
 
   const openPreview = (log: IncidentLog) => {
     if (log.fileUrl) {
+      const meta = (log.metadata as any) || {};
       const isImage = log.type === 'photo' || log.fileUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+      const rawName = meta.originalName || log.title || log.content || 'Attachment';
+      const previewLabel = rawName
+        .replace(/^ai-analysis-\d+-/i, 'AI Analysis - ')
+        .replace(/\.pdf$/i, '')
+        .replace(/[-_]/g, ' ')
+        .replace(/\bpdf\b/gi, '')
+        .replace(/\s+/g, ' ')
+        .trim() || 'Attachment';
       setPreviewUrl(log.fileUrl);
       setPreviewType(isImage ? 'image' : 'document');
-      setPreviewName(log.content);
+      setPreviewName(previewLabel);
     }
   };
 

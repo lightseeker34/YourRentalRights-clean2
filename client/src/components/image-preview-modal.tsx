@@ -1,4 +1,4 @@
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Paperclip, X } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -24,16 +24,16 @@ export function ImagePreviewModal({
       <DialogContent
         aria-describedby={undefined}
         hideCloseButton={previewType === 'image'}
-        className={previewType === 'image' ? "w-screen max-w-none h-screen max-h-screen rounded-none border-0 bg-transparent shadow-none p-0" : "w-[90vw] max-w-3xl max-h-[90vh] rounded-xl mx-auto [&>button]:top-8 [&>button]:right-4"}
+        className={previewType === 'image' ? "w-screen max-w-none h-screen max-h-screen rounded-none border-0 bg-transparent shadow-none p-0" : "w-[90vw] max-w-3xl max-h-[90vh] rounded-2xl mx-auto p-0 overflow-hidden"}
       >
         {previewType !== 'image' && (
-          <DialogHeader>
-            <DialogTitle className="pt-[10px] pb-[10px]">{previewName}</DialogTitle>
+          <div className="border-b border-slate-200 px-5 pt-5 pb-4 pr-14">
+            <DialogTitle className="text-base leading-snug text-slate-900 break-words">{previewName}</DialogTitle>
             <DialogDescription className="sr-only">Preview uploaded evidence file.</DialogDescription>
-          </DialogHeader>
+          </div>
         )}
 
-        <div className={previewType === 'image' ? "relative flex items-center justify-center w-full h-full overflow-auto bg-black/95" : "flex items-center justify-center p-4 w-full max-h-[75vh] overflow-auto"}>
+        <div className={previewType === 'image' ? "relative flex items-center justify-center w-full h-full overflow-auto bg-black/95" : "flex items-center justify-center p-5 w-full max-h-[75vh] overflow-auto"}>
           {previewType === 'image' ? (
             <>
               <DialogClose asChild>
