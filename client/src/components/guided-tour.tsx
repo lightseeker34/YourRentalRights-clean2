@@ -202,7 +202,6 @@ function getPageFromPath(pathname: string): string {
 const TOUR_STORAGE_KEY = "unified_tour_state";
 const TOUR_COMPLETED_KEY = "unified_tour_completed";
 const INCIDENT_PATH_KEY = "tour_incident_path";
-const TOUR_BUTTON_POSITION_KEY = "guided_tour_button_position";
 
 interface TourState {
   globalStepIndex: number;
@@ -821,59 +820,6 @@ export function GuidedTour() {
   // Initialize displayed positions on first render only (when tour opens)
   // Use a ref to track initialization so we don't depend on tooltipPos which changes every render
   const initializedRef = useRef(false);
-  const tourButtonRef = useRef<HTMLDivElement | null>(null);
-  const [tourButtonPosition, setTourButtonPosition] = useState<{ x: number; y: number } | null>(null);
-
-  const getDefaultTourButtonPosition = useCallback(() => {
-    if (typeof window === 'undefined') return { x: 0, y: 0 };
-    const buttonWidth = window.innerWidth >= 640 ? 118 : 44;
-    const buttonHeight = 36;
-    return {
-      x: window.innerWidth - buttonWidth - 32,
-      y: window.innerHeight - buttonHeight - 128,
-    };
-  }, []);
-
-  const clampTourButtonPosition = useCallback((position: { x: number; y: number }) => {
-    if (typeof window === 'undefined') return position;
-    const rect = tourButtonRef.current?.getBoundingClientRect();
-    const buttonWidth = rect?.width ?? (window.innerWidth >= 640 ? 118 : 44);
-    const buttonHeight = rect?.height ?? 36;
-    return {
-      x: Math.min(Math.max(8, position.x), window.innerWidth - buttonWidth - 8),
-      y: Math.min(Math.max(8, position.y), window.innerHeight - buttonHeight - 8),
-    };
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const saved = localStorage.getItem(TOUR_BUTTON_POSITION_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (typeof parsed?.x === 'number' && typeof parsed?.y === 'number') {
-          setTourButtonPosition(clampTourButtonPosition(parsed));
-          return;
-        }
-      } catch {
-        // ignore invalid saved position
-      }
-    }
-    setTourButtonPosition(getDefaultTourButtonPosition());
-  }, [clampTourButtonPosition, getDefaultTourButtonPosition]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || !tourButtonPosition) return;
-    const handleResize = () => {
-      setTourButtonPosition((current) => {
-        const next = clampTourButtonPosition(current ?? getDefaultTourButtonPosition());
-        localStorage.setItem(TOUR_BUTTON_POSITION_KEY, JSON.stringify(next));
-        return next;
-      });
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [tourButtonPosition, clampTourButtonPosition, getDefaultTourButtonPosition]);
 
   useEffect(() => {
     if (isOpen && !isTransitioning && !initializedRef.current && spotlightRect) {
@@ -896,39 +842,16 @@ export function GuidedTour() {
 
   if (!isOpen) {
     return (
-      <motion.div
-        ref={tourButtonRef}
-        drag
-        dragMomentum={false}
-        dragElastic={0}
-        className="fixed z-40 cursor-move"
-        style={tourButtonPosition ? { left: tourButtonPosition.x, top: tourButtonPosition.y } : { right: 32, bottom: 128 }}
-        onDragEnd={(_, info) => {
-          const basePosition = tourButtonPosition ?? getDefaultTourButtonPosition();
-          const nextPosition = clampTourButtonPosition({
-            x: basePosition.x + info.offset.x,
-            y: basePosition.y + info.offset.y,
-          });
-          setTourButtonPosition(nextPosition);
-          localStorage.setItem(TOUR_BUTTON_POSITION_KEY, JSON.stringify(nextPosition));
-        }}
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={restartTour}
+        className="fixed bottom-32 right-8 z-40 gap-2 shadow-lg bg-white border-0 hover:border-0"
+        data-testid="restart-tour-button"
       >
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={(e) => {
-            if ((e as any).detail === 0) return;
-            restartTour();
-          }}
-          className="gap-2 shadow-lg bg-white border-0 hover:border-0 pointer-events-none"
-          data-testid="restart-tour-button"
-        >
-          <span className="inline-flex items-center gap-2 pointer-events-auto">
-            <HelpCircle className="w-4 h-4" />
-            <span className="hidden sm:inline">Help Tour</span>
-          </span>
-        </Button>
-      </motion.div>
+        <HelpCircle className="w-4 h-4" />
+        <span className="hidden sm:inline">Help Tour</span>
+      </Button>
     );
   }
 
