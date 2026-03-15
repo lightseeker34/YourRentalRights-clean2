@@ -347,9 +347,16 @@ export function SidebarContent({
                       ))}
                       {incidentDocs.map((doc) => (
                         <ThumbnailWithDelete key={doc.id} onDelete={() => onDeleteLog(doc.id)} onPreview={() => openPreview(doc)} className="w-10 h-10 overflow-hidden cursor-pointer rounded-md">
-                          <Card className="w-full h-full relative group overflow-hidden border-slate-200 flex items-center justify-center bg-slate-50 hover:bg-slate-100 rounded-md">
-                            <Paperclip className="w-4 h-4 text-slate-500" />
-                          </Card>
+                          {isAnalysisPdf(doc) ? (
+                            <Card className="w-full h-full relative flex items-center justify-center border-violet-200 bg-violet-50 rounded-md" title="AI-generated PDF analysis">
+                              <Bot className="w-4 h-4 text-violet-600" />
+                              <span className="absolute -bottom-0.5 -right-0.5 text-[8px] px-1 py-[1px] rounded bg-violet-600 text-white font-semibold">PDF</span>
+                            </Card>
+                          ) : (
+                            <Card className="w-full h-full relative group overflow-hidden border-slate-200 flex items-center justify-center bg-slate-50 hover:bg-slate-100 rounded-md">
+                              <Paperclip className="w-4 h-4 text-slate-500" />
+                            </Card>
+                          )}
                         </ThumbnailWithDelete>
                       ))}
                     </div>

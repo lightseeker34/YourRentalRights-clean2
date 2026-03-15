@@ -19,6 +19,12 @@ export function buildFileGroups(logs: IncidentLog[], incident: Incident | undefi
   const usedPhotoIds = new Set<number>();
   const usedDocIds = new Set<number>();
 
+  const analysisPdfs = allDocuments.filter(d => getMetaCategory(d) === 'analysis_pdf');
+  if (analysisPdfs.length > 0) {
+    analysisPdfs.forEach(d => usedDocIds.add(d.id));
+    groups.push({ id: 'analysis-pdfs', label: 'AI Analysis PDFs', icon: Bot, color: 'text-violet-600', files: analysisPdfs, type: 'analysis_pdf' });
+  }
+
   const incidentPhotos = allPhotos.filter(p => getMetaCategory(p) === 'incident_photo');
   incidentPhotos.forEach(p => usedPhotoIds.add(p.id));
   if (incidentPhotos.length > 0 && incident) {
@@ -96,12 +102,7 @@ export function buildFileGroups(logs: IncidentLog[], incident: Incident | undefi
   }
 
   const standaloneDocuments = allDocuments.filter(d => !usedDocIds.has(d.id));
-  const analysisPdfs = standaloneDocuments.filter(d => getMetaCategory(d) === 'analysis_pdf');
   const regularDocuments = standaloneDocuments.filter(d => getMetaCategory(d) !== 'analysis_pdf');
-
-  if (analysisPdfs.length > 0) {
-    groups.push({ id: 'analysis-pdfs', label: 'AI Analysis PDFs', icon: Bot, color: 'text-violet-600', files: analysisPdfs, type: 'analysis_pdf' });
-  }
 
   if (regularDocuments.length > 0) {
     groups.push({ id: 'documents', label: 'Documents', icon: Paperclip, color: 'text-slate-500', files: regularDocuments, type: 'document' });
