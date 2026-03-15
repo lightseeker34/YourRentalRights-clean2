@@ -1746,7 +1746,7 @@ export default function IncidentView() {
                                 setEditLogId(log.id); 
                                 setEditLogContent(log.content);
                                 // Load existing attachments
-                                const existingAttachments = (log.metadata as any)?.attachedImages || [];
+                                const existingAttachments = getChatAttachmentUrls(log);
                                 setEditLogAttachments(existingAttachments);
                                 setShowEditEvidencePicker(false);
                               }}
