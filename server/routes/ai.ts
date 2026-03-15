@@ -7,6 +7,7 @@ import { assembleContextTwoPasses, formatStructuredTimelineForPrompt, formatEvid
 import { selectTimelineImagesForChat, shouldAutoAttachTimelineImages } from "../ai-image-selection";
 import { requireAdmin } from "../middleware/auth";
 import { uploadDir } from "../uploads";
+import type { IncidentLog } from "@shared/schema";
 
 export function registerAiRoutes(app: Express) {
   // --- AI Agent Endpoint ---
@@ -73,6 +74,56 @@ export function registerAiRoutes(app: Express) {
       }
     }
 
+    function shouldAutoAttachTimelineFiles(userMessage: string): boolean {
+      const normalized = userMessage.toLowerCase();
+      return /\b(file|files|document|documents|pdf|pdfs|attachment|attachments|folder|folders|lease|notice|letter|report)\b/.test(normalized);
+    }
+
+    function selectTimelineFilesForChat(userMessage: string, logs: IncidentLog[], limit = 5): IncidentLog[] {
+      const normalized = userMessage.toLowerCase();
+      const terms = normalized.match(/[a-z0-9]+/g) || [];
+      const fileLogs = logs.filter((log) => {
+        if (!log.fileUrl) return false;
+        const meta = (log.metadata as any) || {};
+        const mimeType = String(meta.mimeType || '').toLowerCase();
+        return !mimeType.startsWith('image/');
+      });
+
+      const scored = fileLogs.map((log) => {
+        const meta = (log.metadata as any) || {};
+        const haystack = [log.title, log.content, meta.originalName, meta.category, log.type]
+          .filter(Boolean)
+          .join(' ')
+          .toLowerCase();
+        let score = 0;
+        for (const term of terms) {
+          if (term.length < 3) continue;
+          if (haystack.includes(term)) score += 2;
+        }
+        if (/\b(pdf|document|attachment|file|folder)\b/.test(normalized)) score += 1;
+        if (meta.category === 'analysis_pdf' && /\b(ai|analysis|report|pdf)\b/.test(normalized)) score += 3;
+        return { log, score };
+      });
+
+      return scored
+        .filter(({ score }) => score > 0)
+        .sort((a, b) => b.score - a.score || new Date(b.log.createdAt).getTime() - new Date(a.log.createdAt).getTime())
+        .slice(0, limit)
+        .map(({ log }) => log);
+    }
+
+    function formatAutoAttachedFileContext(fileLogs: IncidentLog[]): string {
+      if (fileLogs.length === 0) return '';
+      return fileLogs.map((log) => {
+        const meta = (log.metadata as any) || {};
+        const fileName = meta.originalName || log.title || log.content || `File ${log.id}`;
+        const category = meta.category || log.type;
+        const createdAt = new Date(log.createdAt).toISOString().slice(0, 10);
+        const note = log.content && log.content !== fileName ? ` | note: ${log.content}` : '';
+        return `- [${createdAt}] [ID:${log.id}] ${fileName} | category: ${category}${note}`;
+      }).join('\n');
+    }
+
     function buildSystemPrompt(evidenceContext: string, includeBackfill: boolean): string {
       return `${systemPrompt || "You are a tenant advocacy assistant."}
 
@@ -111,6 +162,10 @@ CONTEXT-PASS MODE: ${includeBackfill ? "PASS 2 (older routine history included)"
       ? selectTimelineImagesForChat(message, allLogs, 3)
       : [];
     const selectedImages = [...new Set([...explicitAttachedImages, ...autoAttachedImages])].slice(0, 3);
+    const autoAttachedFiles = explicitAttachedImages.length === 0 && shouldAutoAttachTimelineFiles(message)
+      ? selectTimelineFilesForChat(message, allLogs, 5)
+      : [];
+    const autoAttachedFileContext = formatAutoAttachedFileContext(autoAttachedFiles);
 
     const fullSystemPromptPass1 = buildSystemPrompt(evidenceContextPass1, false);
     const fullSystemPromptPass2 = buildSystemPrompt(evidenceContextPass2, true);
@@ -130,7 +185,10 @@ CONTEXT-PASS MODE: ${includeBackfill ? "PASS 2 (older routine history included)"
 
       if (grokApiKey) {
         const xai = new OpenAI({ apiKey: grokApiKey, baseURL: "https://api.x.ai/v1" });
-        const messageContent: OpenAI.Chat.Completions.ChatCompletionContentPart[] = [{ type: "text", text: message }];
+        const enrichedMessage = autoAttachedFileContext
+          ? `${message}\n\nAUTO-INCLUDED TIMELINE FILE REFERENCES (because the user explicitly asked about files/documents/attachments):\n${autoAttachedFileContext}\n\nUse these file references when answering. If the user needs exact document contents and they were not manually attached, say you can identify the relevant file(s) from the timeline and ask them to attach the specific file for line-by-line review.`
+          : message;
+        const messageContent: OpenAI.Chat.Completions.ChatCompletionContentPart[] = [{ type: "text", text: enrichedMessage }];
 
         if (selectedImages.length > 0) {
           for (const imageUrl of selectedImages) {
@@ -187,7 +245,10 @@ CONTEXT-PASS MODE: ${includeBackfill ? "PASS 2 (older routine history included)"
         }
       } else if (openaiApiKey) {
         const openai = new OpenAI({ apiKey: openaiApiKey });
-        const messageContent: OpenAI.Chat.Completions.ChatCompletionContentPart[] = [{ type: "text", text: message }];
+        const enrichedMessage = autoAttachedFileContext
+          ? `${message}\n\nAUTO-INCLUDED TIMELINE FILE REFERENCES (because the user explicitly asked about files/documents/attachments):\n${autoAttachedFileContext}\n\nUse these file references when answering. If the user needs exact document contents and they were not manually attached, say you can identify the relevant file(s) from the timeline and ask them to attach the specific file for line-by-line review.`
+          : message;
+        const messageContent: OpenAI.Chat.Completions.ChatCompletionContentPart[] = [{ type: "text", text: enrichedMessage }];
 
         if (selectedImages.length > 0) {
           for (const imageUrl of selectedImages) {
@@ -447,6 +508,100 @@ Provide your response in this exact JSON format:
       const review = await storage.createLitigationReview({
         incidentId,
         userId: user.id,
+        triggeredBy: triggeredBy || 'user',
+        evidenceScore: analysisResult.evidenceScore,
+        recommendation: analysisResult.recommendation,
+        summary: analysisResult.summary,
+        violations: analysisResult.violations,
+        timelineAnalysis: analysisResult.timelineAnalysis,
+        nextSteps: analysisResult.nextSteps,
+        fullAnalysis: analysisResult,
+      });
+
+      await storage.setSetting(cacheKey, JSON.stringify({ hash: timelineHash, review }));
+      res.json(review);
+    } catch (error: any) {
+      console.error("Litigation review error:", error);
+      res.status(500).json({ error: error.message || "Failed to generate litigation review" });
+    }
+  });
+
+  app.get("/api/incidents/:id/litigation-reviews", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const incidentId = parseInt(req.params.id);
+    const user = req.user!;
+    const incident = await storage.getIncident(incidentId);
+    if (!incident) return res.sendStatus(404);
+    if (incident.userId !== user.id && !user.isAdmin) return res.sendStatus(403);
+    const reviews = await storage.getLitigationReviewsByIncident(incidentId);
+    res.json(reviews);
+  });
+
+  app.get("/api/admin/pdf-exports", requireAdmin, async (req, res) => {
+    const exports = await storage.getRecentPdfExports(50);
+    res.json(exports);
+  });
+
+  app.get("/api/admin/litigation-stats", requireAdmin, async (req, res) => {
+    const pdfExportCount = await storage.getPdfExportCount();
+    const litigationReviewCount = await storage.getLitigationReviewCount();
+    const strongCaseCount = await storage.getStrongCaseCount();
+
+    res.json({
+      pdfExports: pdfExportCount,
+      litigationReviews: litigationReviewCount,
+      strongCases: strongCaseCount,
+    });
+  });
+}
+userId: user.id,
+        triggeredBy: triggeredBy || 'user',
+        evidenceScore: analysisResult.evidenceScore,
+        recommendation: analysisResult.recommendation,
+        summary: analysisResult.summary,
+        violations: analysisResult.violations,
+        timelineAnalysis: analysisResult.timelineAnalysis,
+        nextSteps: analysisResult.nextSteps,
+        fullAnalysis: analysisResult,
+      });
+
+      await storage.setSetting(cacheKey, JSON.stringify({ hash: timelineHash, review }));
+      res.json(review);
+    } catch (error: any) {
+      console.error("Litigation review error:", error);
+      res.status(500).json({ error: error.message || "Failed to generate litigation review" });
+    }
+  });
+
+  app.get("/api/incidents/:id/litigation-reviews", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const incidentId = parseInt(req.params.id);
+    const user = req.user!;
+    const incident = await storage.getIncident(incidentId);
+    if (!incident) return res.sendStatus(404);
+    if (incident.userId !== user.id && !user.isAdmin) return res.sendStatus(403);
+    const reviews = await storage.getLitigationReviewsByIncident(incidentId);
+    res.json(reviews);
+  });
+
+  app.get("/api/admin/pdf-exports", requireAdmin, async (req, res) => {
+    const exports = await storage.getRecentPdfExports(50);
+    res.json(exports);
+  });
+
+  app.get("/api/admin/litigation-stats", requireAdmin, async (req, res) => {
+    const pdfExportCount = await storage.getPdfExportCount();
+    const litigationReviewCount = await storage.getLitigationReviewCount();
+    const strongCaseCount = await storage.getStrongCaseCount();
+
+    res.json({
+      pdfExports: pdfExportCount,
+      litigationReviews: litigationReviewCount,
+      strongCases: strongCaseCount,
+    });
+  });
+}
+userId: user.id,
         triggeredBy: triggeredBy || 'user',
         evidenceScore: analysisResult.evidenceScore,
         recommendation: analysisResult.recommendation,
