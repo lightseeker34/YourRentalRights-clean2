@@ -42,9 +42,9 @@ export function AiAnalysisDialog({
       <DialogContent aria-describedby={undefined} className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-xl">
         <DialogHeader>
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <div className="min-w-0 flex-1">
-              <DialogTitle className="flex items-center gap-2 text-lg text-slate-900">
-                <Bot className="h-4 w-4 text-slate-700" />
+            <div className="min-w-0 flex-1 text-center">
+              <DialogTitle className="flex items-center justify-center gap-2 text-lg text-slate-900">
+                <Bot className="h-5 w-5 text-slate-700" />
                 <span>AI Analysis</span>
               </DialogTitle>
               <p className="mt-1 text-sm text-slate-500">Review the analysis, then save it to your timeline or download a PDF copy.</p>
