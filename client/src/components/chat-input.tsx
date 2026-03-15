@@ -209,7 +209,7 @@ export const ChatInput = memo(forwardRef<ChatInputHandle, ChatInputProps>(functi
                 );
               })}
               {evidenceLogs.length === 0 && (
-                <div className="text-xs text-slate-400">No evidence files available yet</div>
+                <div className="text-xs text-slate-400">No evidence photos available yet</div>
               )}
             </div>
           </div>

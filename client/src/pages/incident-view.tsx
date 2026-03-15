@@ -1430,23 +1430,32 @@ export default function IncidentView() {
                           {/* Show existing attachments with remove buttons */}
                           {editLogAttachments.length > 0 && (
                             <div className="flex gap-2 flex-wrap">
-                              {editLogAttachments.map((url, idx) => (
-                                <div key={idx} className="relative group mt-[5px] mb-[5px]">
-                                  <img 
-                                    src={url} 
-                                    loading="lazy"
-                                    alt={`Attachment ${idx + 1}`}
-                                    className="w-12 h-12 object-cover rounded border border-slate-200 mt-[6px] mb-[6px]"
-                                  />
-                                  <button 
-                                    onClick={() => setEditLogAttachments(prev => prev.filter((_, i) => i !== idx))}
-                                    className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    data-testid={`remove-edit-attachment-${idx}`}
-                                  >
-                                    <X className="w-3 h-3" />
-                                  </button>
-                                </div>
-                              ))}
+                              {editLogAttachments.map((url, idx) => {
+                                const isImage = /\.(jpg|jpeg|png|gif|webp)(?:[?#].*)?$/i.test(url);
+                                return (
+                                  <div key={idx} className="relative group mt-[5px] mb-[5px]">
+                                    {isImage ? (
+                                      <img 
+                                        src={url} 
+                                        loading="lazy"
+                                        alt={`Attachment ${idx + 1}`}
+                                        className="w-12 h-12 object-cover rounded border border-slate-200 mt-[6px] mb-[6px]"
+                                      />
+                                    ) : (
+                                      <div className="w-12 h-12 flex items-center justify-center rounded border border-slate-200 bg-slate-50 mt-[6px] mb-[6px]">
+                                        <Paperclip className="w-4 h-4 text-slate-500" />
+                                      </div>
+                                    )}
+                                    <button 
+                                      onClick={() => setEditLogAttachments(prev => prev.filter((_, i) => i !== idx))}
+                                      className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                                      data-testid={`remove-edit-attachment-${idx}`}
+                                    >
+                                      <X className="w-3 h-3" />
+                                    </button>
+                                  </div>
+                                );
+                              })}
                             </div>
                           )}
                           

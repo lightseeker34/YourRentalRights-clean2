@@ -69,22 +69,31 @@ export function MobileChatEditDialog({
 
           {attachments.length > 0 && (
             <div className="flex gap-2 flex-wrap">
-              {attachments.map((url, idx) => (
-                <div key={`${url}-${idx}`} className="relative group">
-                  <img
-                    src={url}
-                    loading="lazy"
-                    alt={`Attachment ${idx + 1}`}
-                    className="w-12 h-12 object-cover rounded border border-slate-200"
-                  />
-                  <button
-                    onClick={() => onRemoveAttachment(idx)}
-                    className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-              ))}
+              {attachments.map((url, idx) => {
+                const isImage = /\.(jpg|jpeg|png|gif|webp)(?:[?#].*)?$/i.test(url);
+                return (
+                  <div key={`${url}-${idx}`} className="relative group">
+                    {isImage ? (
+                      <img
+                        src={url}
+                        loading="lazy"
+                        alt={`Attachment ${idx + 1}`}
+                        className="w-12 h-12 object-cover rounded border border-slate-200"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 flex items-center justify-center rounded border border-slate-200 bg-slate-50">
+                        <Paperclip className="w-4 h-4 text-slate-500" />
+                      </div>
+                    )}
+                    <button
+                      onClick={() => onRemoveAttachment(idx)}
+                      className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           )}
 
