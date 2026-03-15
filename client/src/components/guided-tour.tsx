@@ -837,7 +837,7 @@ export function GuidedTour() {
         // ignore invalid saved position
       }
     }
-    setTourButtonPosition({ x: window.innerWidth - 176, y: window.innerHeight - 148 });
+    setTourButtonPosition({ x: window.innerWidth - 160, y: window.innerHeight - 88 - 128 });
   }, []);
 
   useEffect(() => {
@@ -869,8 +869,8 @@ export function GuidedTour() {
         style={tourButtonPosition ? { left: tourButtonPosition.x, top: tourButtonPosition.y } : { right: 32, bottom: 128 }}
         onDragEnd={(_, info) => {
           const nextPosition = {
-            x: Math.max(8, (tourButtonPosition?.x ?? (window.innerWidth - 176)) + info.offset.x),
-            y: Math.max(8, (tourButtonPosition?.y ?? (window.innerHeight - 148)) + info.offset.y),
+            x: Math.max(8, (tourButtonPosition?.x ?? (window.innerWidth - 160)) + info.offset.x),
+            y: Math.max(8, (tourButtonPosition?.y ?? (window.innerHeight - 88 - 128)) + info.offset.y),
           };
           setTourButtonPosition(nextPosition);
           localStorage.setItem(TOUR_BUTTON_POSITION_KEY, JSON.stringify(nextPosition));
@@ -879,12 +879,17 @@ export function GuidedTour() {
         <Button
           variant="outline"
           size="sm"
-          onClick={restartTour}
-          className="gap-2 shadow-lg bg-white border-0 hover:border-0"
+          onClick={(e) => {
+            if ((e as any).detail === 0) return;
+            restartTour();
+          }}
+          className="gap-2 shadow-lg bg-white border-0 hover:border-0 pointer-events-none"
           data-testid="restart-tour-button"
         >
-          <HelpCircle className="w-4 h-4" />
-          <span className="hidden sm:inline">Help Tour</span>
+          <span className="inline-flex items-center gap-2 pointer-events-auto">
+            <HelpCircle className="w-4 h-4" />
+            <span className="hidden sm:inline">Help Tour</span>
+          </span>
         </Button>
       </motion.div>
     );
