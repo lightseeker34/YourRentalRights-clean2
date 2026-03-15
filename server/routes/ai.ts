@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import path from "path";
 import fs from "fs";
+import { spawnSync } from "child_process";
 import OpenAI from "openai";
 import { storage } from "../storage";
 import { assembleContextTwoPasses, formatStructuredTimelineForPrompt, formatEvidenceTimeline, formatPhotoList, formatTimelineForPrompt, formatPhotoListForPrompt, buildUserContext, buildIncidentContext, computeTimelineHash } from "../ai-context";
@@ -79,7 +80,7 @@ export function registerAiRoutes(app: Express) {
       return /\b(file|files|document|documents|pdf|pdfs|attachment|attachments|folder|folders|lease|notice|letter|report)\b/.test(normalized);
     }
 
-    function selectTimelineFilesForChat(userMessage: string, logs: IncidentLog[], limit = 5): IncidentLog[] {
+    function selectTimelineFilesForChat(userMessage: string, logs: IncidentLog[], limit = 2): IncidentLog[] {
       const normalized = userMessage.toLowerCase();
       const terms = normalized.match(/[a-z0-9]+/g) || [];
       const fileLogs = logs.filter((log) => {
@@ -112,16 +113,47 @@ export function registerAiRoutes(app: Express) {
         .map(({ log }) => log);
     }
 
-    function formatAutoAttachedFileContext(fileLogs: IncidentLog[]): string {
+    function extractTimelineFileText(log: IncidentLog): string {
+      if (!log.fileUrl) return '';
+      try {
+        const filename = log.fileUrl.split('/').pop();
+        const filePath = path.join(uploadDir, filename || '');
+        if (!fs.existsSync(filePath)) return '';
+        const meta = (log.metadata as any) || {};
+        const mimeType = String(meta.mimeType || '').toLowerCase();
+        const ext = path.extname(filePath).toLowerCase();
+
+        if (mimeType === 'text/plain' || ext === '.txt') {
+          return fs.readFileSync(filePath, 'utf8').slice(0, 12000);
+        }
+
+        if (mimeType === 'application/pdf' || ext === '.pdf') {
+          const result = spawnSync('pdftotext', ['-layout', '-nopgbrk', filePath, '-'], {
+            encoding: 'utf8',
+            timeout: 8000,
+            maxBuffer: 1024 * 1024 * 4,
+          });
+          if (result.status === 0 && result.stdout) {
+            return String(result.stdout).replace(/\s+\n/g, '\n').trim().slice(0, 12000);
+          }
+        }
+      } catch (error) {
+        console.error('Error extracting timeline file text for AI:', error);
+      }
+      return '';
+    }
+
+    function buildAutoAttachedFilePrompt(fileLogs: IncidentLog[]): string {
       if (fileLogs.length === 0) return '';
-      return fileLogs.map((log) => {
+      const sections = fileLogs.map((log) => {
         const meta = (log.metadata as any) || {};
         const fileName = meta.originalName || log.title || log.content || `File ${log.id}`;
         const category = meta.category || log.type;
         const createdAt = new Date(log.createdAt).toISOString().slice(0, 10);
-        const note = log.content && log.content !== fileName ? ` | note: ${log.content}` : '';
-        return `- [${createdAt}] [ID:${log.id}] ${fileName} | category: ${category}${note}`;
-      }).join('\n');
+        const extractedText = extractTimelineFileText(log);
+        return [`FILE: ${fileName}`, `DATE: ${createdAt}`, `CATEGORY: ${category}`, extractedText ? `EXTRACTED CONTENT:\n${extractedText}` : 'EXTRACTED CONTENT: [Unavailable for automatic extraction]'].join('\n');
+      });
+      return `\n\nAUTO-ATTACHED TIMELINE DOCUMENTS (because the user explicitly asked about a file/document/PDF):\n${sections.join('\n\n---\n\n')}\n\nUse the attached document content when answering. If extraction is unavailable for a file, say that clearly.`;
     }
 
     function buildSystemPrompt(evidenceContext: string, includeBackfill: boolean): string {
@@ -163,9 +195,9 @@ CONTEXT-PASS MODE: ${includeBackfill ? "PASS 2 (older routine history included)"
       : [];
     const selectedImages = [...new Set([...explicitAttachedImages, ...autoAttachedImages])].slice(0, 3);
     const autoAttachedFiles = explicitAttachedImages.length === 0 && shouldAutoAttachTimelineFiles(message)
-      ? selectTimelineFilesForChat(message, allLogs, 5)
+      ? selectTimelineFilesForChat(message, allLogs, 2)
       : [];
-    const autoAttachedFileContext = formatAutoAttachedFileContext(autoAttachedFiles);
+    const autoAttachedFilePrompt = buildAutoAttachedFilePrompt(autoAttachedFiles);
 
     const fullSystemPromptPass1 = buildSystemPrompt(evidenceContextPass1, false);
     const fullSystemPromptPass2 = buildSystemPrompt(evidenceContextPass2, true);
@@ -185,9 +217,7 @@ CONTEXT-PASS MODE: ${includeBackfill ? "PASS 2 (older routine history included)"
 
       if (grokApiKey) {
         const xai = new OpenAI({ apiKey: grokApiKey, baseURL: "https://api.x.ai/v1" });
-        const enrichedMessage = autoAttachedFileContext
-          ? `${message}\n\nAUTO-INCLUDED TIMELINE FILE REFERENCES (because the user explicitly asked about files/documents/attachments):\n${autoAttachedFileContext}\n\nUse these file references when answering. If the user needs exact document contents and they were not manually attached, say you can identify the relevant file(s) from the timeline and ask them to attach the specific file for line-by-line review.`
-          : message;
+        const enrichedMessage = `${message}${autoAttachedFilePrompt}`;
         const messageContent: OpenAI.Chat.Completions.ChatCompletionContentPart[] = [{ type: "text", text: enrichedMessage }];
 
         if (selectedImages.length > 0) {
@@ -245,9 +275,7 @@ CONTEXT-PASS MODE: ${includeBackfill ? "PASS 2 (older routine history included)"
         }
       } else if (openaiApiKey) {
         const openai = new OpenAI({ apiKey: openaiApiKey });
-        const enrichedMessage = autoAttachedFileContext
-          ? `${message}\n\nAUTO-INCLUDED TIMELINE FILE REFERENCES (because the user explicitly asked about files/documents/attachments):\n${autoAttachedFileContext}\n\nUse these file references when answering. If the user needs exact document contents and they were not manually attached, say you can identify the relevant file(s) from the timeline and ask them to attach the specific file for line-by-line review.`
-          : message;
+        const enrichedMessage = `${message}${autoAttachedFilePrompt}`;
         const messageContent: OpenAI.Chat.Completions.ChatCompletionContentPart[] = [{ type: "text", text: enrichedMessage }];
 
         if (selectedImages.length > 0) {
@@ -508,100 +536,6 @@ Provide your response in this exact JSON format:
       const review = await storage.createLitigationReview({
         incidentId,
         userId: user.id,
-        triggeredBy: triggeredBy || 'user',
-        evidenceScore: analysisResult.evidenceScore,
-        recommendation: analysisResult.recommendation,
-        summary: analysisResult.summary,
-        violations: analysisResult.violations,
-        timelineAnalysis: analysisResult.timelineAnalysis,
-        nextSteps: analysisResult.nextSteps,
-        fullAnalysis: analysisResult,
-      });
-
-      await storage.setSetting(cacheKey, JSON.stringify({ hash: timelineHash, review }));
-      res.json(review);
-    } catch (error: any) {
-      console.error("Litigation review error:", error);
-      res.status(500).json({ error: error.message || "Failed to generate litigation review" });
-    }
-  });
-
-  app.get("/api/incidents/:id/litigation-reviews", async (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
-    const incidentId = parseInt(req.params.id);
-    const user = req.user!;
-    const incident = await storage.getIncident(incidentId);
-    if (!incident) return res.sendStatus(404);
-    if (incident.userId !== user.id && !user.isAdmin) return res.sendStatus(403);
-    const reviews = await storage.getLitigationReviewsByIncident(incidentId);
-    res.json(reviews);
-  });
-
-  app.get("/api/admin/pdf-exports", requireAdmin, async (req, res) => {
-    const exports = await storage.getRecentPdfExports(50);
-    res.json(exports);
-  });
-
-  app.get("/api/admin/litigation-stats", requireAdmin, async (req, res) => {
-    const pdfExportCount = await storage.getPdfExportCount();
-    const litigationReviewCount = await storage.getLitigationReviewCount();
-    const strongCaseCount = await storage.getStrongCaseCount();
-
-    res.json({
-      pdfExports: pdfExportCount,
-      litigationReviews: litigationReviewCount,
-      strongCases: strongCaseCount,
-    });
-  });
-}
-userId: user.id,
-        triggeredBy: triggeredBy || 'user',
-        evidenceScore: analysisResult.evidenceScore,
-        recommendation: analysisResult.recommendation,
-        summary: analysisResult.summary,
-        violations: analysisResult.violations,
-        timelineAnalysis: analysisResult.timelineAnalysis,
-        nextSteps: analysisResult.nextSteps,
-        fullAnalysis: analysisResult,
-      });
-
-      await storage.setSetting(cacheKey, JSON.stringify({ hash: timelineHash, review }));
-      res.json(review);
-    } catch (error: any) {
-      console.error("Litigation review error:", error);
-      res.status(500).json({ error: error.message || "Failed to generate litigation review" });
-    }
-  });
-
-  app.get("/api/incidents/:id/litigation-reviews", async (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
-    const incidentId = parseInt(req.params.id);
-    const user = req.user!;
-    const incident = await storage.getIncident(incidentId);
-    if (!incident) return res.sendStatus(404);
-    if (incident.userId !== user.id && !user.isAdmin) return res.sendStatus(403);
-    const reviews = await storage.getLitigationReviewsByIncident(incidentId);
-    res.json(reviews);
-  });
-
-  app.get("/api/admin/pdf-exports", requireAdmin, async (req, res) => {
-    const exports = await storage.getRecentPdfExports(50);
-    res.json(exports);
-  });
-
-  app.get("/api/admin/litigation-stats", requireAdmin, async (req, res) => {
-    const pdfExportCount = await storage.getPdfExportCount();
-    const litigationReviewCount = await storage.getLitigationReviewCount();
-    const strongCaseCount = await storage.getStrongCaseCount();
-
-    res.json({
-      pdfExports: pdfExportCount,
-      litigationReviews: litigationReviewCount,
-      strongCases: strongCaseCount,
-    });
-  });
-}
-userId: user.id,
         triggeredBy: triggeredBy || 'user',
         evidenceScore: analysisResult.evidenceScore,
         recommendation: analysisResult.recommendation,
