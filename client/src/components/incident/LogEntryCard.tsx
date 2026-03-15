@@ -129,16 +129,16 @@ export function LogEntryCard({
             })()}
           </div>
         </div>
-        <div className="mt-0.5 flex items-center justify-between gap-2">
-          <div className="text-xs text-slate-400">
+        <div className="mt-0.5 flex items-center justify-between gap-1 whitespace-nowrap">
+          <div className="min-w-0 shrink text-xs text-slate-400 whitespace-nowrap">
             {formatDateTime(log.createdAt)}
           </div>
-          <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+          <div className="flex shrink-0 items-center gap-0.5" onClick={(e) => e.stopPropagation()}>
             {canAddToAiConversation && (
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-slate-500 hover:text-slate-700"
+                className="h-5.5 w-5.5 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-slate-500 hover:text-slate-700"
                 onClick={() => {
                   if (!aiConversationDraft) return;
                   chatInputRef.current?.setInput(aiConversationDraft.message);
@@ -154,14 +154,14 @@ export function LogEntryCard({
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-slate-500 hover:text-slate-700"
+              className="h-5.5 w-5.5 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-slate-500 hover:text-slate-700"
               onClick={() => onEdit(log)}
             >
               <Pencil className="w-3 h-3" />
             </Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-6 w-6 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-slate-500 hover:text-red-700">
+                <Button variant="ghost" size="icon" className="h-5.5 w-5.5 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-slate-500 hover:text-red-700">
                   <Trash2 className="w-3 h-3" />
                 </Button>
               </AlertDialogTrigger>
