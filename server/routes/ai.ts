@@ -606,31 +606,3 @@ Provide your response in this exact JSON format:
     });
   });
 }
-, async (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
-    const incidentId = parseInt(req.params.id);
-    const user = req.user!;
-    const incident = await storage.getIncident(incidentId);
-    if (!incident) return res.sendStatus(404);
-    if (incident.userId !== user.id && !user.isAdmin) return res.sendStatus(403);
-    const reviews = await storage.getLitigationReviewsByIncident(incidentId);
-    res.json(reviews);
-  });
-
-  app.get("/api/admin/pdf-exports", requireAdmin, async (req, res) => {
-    const exports = await storage.getRecentPdfExports(50);
-    res.json(exports);
-  });
-
-  app.get("/api/admin/litigation-stats", requireAdmin, async (req, res) => {
-    const pdfExportCount = await storage.getPdfExportCount();
-    const litigationReviewCount = await storage.getLitigationReviewCount();
-    const strongCaseCount = await storage.getStrongCaseCount();
-
-    res.json({
-      pdfExports: pdfExportCount,
-      litigationReviews: litigationReviewCount,
-      strongCases: strongCaseCount,
-    });
-  });
-}
