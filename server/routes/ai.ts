@@ -23,14 +23,14 @@ export function registerAiRoutes(app: Express) {
     if (!incident) return res.sendStatus(404);
     if (incident.userId !== user.id && !user.isAdmin) return res.sendStatus(403);
     
-    const explicitAttachedImages = Array.isArray(attachedImages) ? attachedImages.filter((url): url is string => typeof url === "string" && url.length > 0) : [];
+    const explicitAttachedAssets = Array.isArray(attachedImages) ? attachedImages.filter((url): url is string => typeof url === "string" && url.length > 0) : [];
 
     await storage.addLog({
       incidentId,
       type: "chat",
       content: message,
       isAi: false,
-      metadata: explicitAttachedImages.length > 0 ? { attachedImages: explicitAttachedImages } : undefined,
+      metadata: explicitAttachedAssets.length > 0 ? { attachedImages: explicitAttachedAssets } : undefined,
     });
 
     const normalizedMessage = message.toLowerCase().trim().replace(/[\u2018\u2019\u0027]/g, "'").replace(/\s+/g, ' ');
@@ -214,13 +214,25 @@ PHOTO ANALYSIS GUIDELINES:
 CONTEXT-PASS MODE: ${includeBackfill ? "PASS 2 (older routine history included)" : "PASS 1 (critical + recent only)"}`;
     }
 
+    const explicitAttachedFileLogs = explicitAttachedAssets
+      .map((url) => allLogs.find((log) => log.fileUrl === url))
+      .filter((log): log is IncidentLog => {
+        if (!log?.fileUrl) return false;
+        const meta = (log.metadata as any) || {};
+        const mimeType = String(meta.mimeType || '').toLowerCase();
+        return !mimeType.startsWith('image/');
+      });
+    const explicitAttachedImages = explicitAttachedAssets.filter((url) => !explicitAttachedFileLogs.some((log) => log.fileUrl === url));
+
     const autoAttachedImages = explicitAttachedImages.length === 0 && shouldAutoAttachTimelineImages(message)
       ? selectTimelineImagesForChat(message, allLogs, 3)
       : [];
     const selectedImages = [...new Set([...explicitAttachedImages, ...autoAttachedImages])].slice(0, 3);
-    const autoAttachedFiles = explicitAttachedImages.length === 0 && shouldAutoAttachTimelineFiles(message)
-      ? selectTimelineFilesForChat(message, allLogs, 2)
-      : [];
+    const autoAttachedFiles = explicitAttachedFileLogs.length > 0
+      ? explicitAttachedFileLogs.slice(0, 2)
+      : shouldAutoAttachTimelineFiles(message)
+        ? selectTimelineFilesForChat(message, allLogs, 2)
+        : [];
     if (autoAttachedFiles.length > 0) {
       console.info('[ai-doc-attach-select]', JSON.stringify({
         incidentId,
