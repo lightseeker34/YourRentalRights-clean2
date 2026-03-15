@@ -3,6 +3,7 @@ import path from "path";
 import fs from "fs";
 import { spawnSync } from "child_process";
 import OpenAI from "openai";
+import { PDFParse } from "pdf-parse";
 import { storage } from "../storage";
 import { assembleContextTwoPasses, formatStructuredTimelineForPrompt, formatEvidenceTimeline, formatPhotoList, formatTimelineForPrompt, formatPhotoListForPrompt, buildUserContext, buildIncidentContext, computeTimelineHash } from "../ai-context";
 import { selectTimelineImagesForChat, shouldAutoAttachTimelineImages } from "../ai-image-selection";
@@ -148,13 +149,26 @@ export function registerAiRoutes(app: Express) {
         }
 
         if (mimeType === 'application/pdf' || ext === '.pdf') {
-          const result = spawnSync('pdftotext', ['-layout', '-nopgbrk', filePath, '-'], {
+          // Try pdftotext (CLI) first, then fall back to pdf-parse (Node.js library)
+          const pdftotextResult = spawnSync('pdftotext', ['-layout', '-nopgbrk', filePath, '-'], {
             encoding: 'utf8',
             timeout: 8000,
             maxBuffer: 1024 * 1024 * 4,
           });
-          if (result.status === 0 && result.stdout) {
-            return String(result.stdout).replace(/\s+\n/g, '\n').trim().slice(0, 12000);
+          if (pdftotextResult.status === 0 && pdftotextResult.stdout) {
+            return String(pdftotextResult.stdout).replace(/\s+\n/g, '\n').trim().slice(0, 12000);
+          }
+          // Fallback: use pdf-parse (pure Node.js, no system binary required)
+          try {
+            const pdfBuffer = await fs.promises.readFile(filePath);
+            const parser = new PDFParse({ data: pdfBuffer });
+            const textResult = await parser.getText();
+            await parser.destroy();
+            if (textResult.text) {
+              return textResult.text.replace(/\s+\n/g, '\n').trim().slice(0, 12000);
+            }
+          } catch (pdfParseErr) {
+            console.error('pdf-parse fallback failed:', pdfParseErr);
           }
         }
       } catch (error) {
@@ -196,6 +210,12 @@ ${evidenceContext || "No evidence logged yet."}
 Remember: You have access to the tenant's case information above. Use this context to provide personalized, actionable advice. Reference specific dates, communications, and evidence when relevant.
 
 IMPORTANT: The TENANT PROFILE section contains the USER's personal information (their phone, email, address, etc.) - NOT yours. You are an AI assistant and do not have a phone number or email. Never say things like "call me anytime" or offer your own contact information.
+
+DOCUMENT/PDF ANALYSIS RULES:
+- When a document or PDF is attached, its extracted text content will be included in the AUTO-ATTACHED TIMELINE DOCUMENTS section
+- You MUST read and analyze this extracted content to answer questions about the document
+- Reference specific clauses, dates, amounts, and terms from the document when answering
+- If extracted content is provided, do NOT say you cannot read or access the document
 
 IMAGE ACCESS RULES:
 - You may visually analyze photos only when image files are included in this specific AI request
