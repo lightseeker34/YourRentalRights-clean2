@@ -8,6 +8,7 @@ import { assembleContextTwoPasses, formatStructuredTimelineForPrompt, formatEvid
 import { selectTimelineImagesForChat, shouldAutoAttachTimelineImages } from "../ai-image-selection";
 import { requireAdmin } from "../middleware/auth";
 import { uploadDir } from "../uploads";
+import { getFromR2, isR2Enabled } from "../r2";
 import type { IncidentLog } from "@shared/schema";
 
 export function registerAiRoutes(app: Express) {
@@ -113,14 +114,33 @@ export function registerAiRoutes(app: Express) {
         .map(({ log }) => log);
     }
 
-    function extractTimelineFileText(log: IncidentLog): string {
+    async function extractTimelineFileText(log: IncidentLog): Promise<string> {
       if (!log.fileUrl) return '';
+      let cleanupPath: string | null = null;
       try {
-        const filename = log.fileUrl.split('/').pop();
-        const filePath = path.join(uploadDir, filename || '');
-        if (!fs.existsSync(filePath)) return '';
         const meta = (log.metadata as any) || {};
         const mimeType = String(meta.mimeType || '').toLowerCase();
+        const r2Key = typeof meta.r2Key === 'string' ? meta.r2Key : '';
+        const localFilename = log.fileUrl.split('/').pop();
+        let filePath = path.join(uploadDir, localFilename || '');
+
+        if ((!localFilename || !fs.existsSync(filePath)) && r2Key && isR2Enabled()) {
+          const r2Obj = await getFromR2(r2Key);
+          const body = r2Obj.Body;
+          if (body) {
+            const chunks: Buffer[] = [];
+            const stream = body as any;
+            for await (const chunk of stream as AsyncIterable<Buffer>) {
+              chunks.push(Buffer.from(chunk));
+            }
+            const extFromMeta = path.extname(meta.originalName || localFilename || '').toLowerCase() || (mimeType === 'application/pdf' ? '.pdf' : mimeType === 'text/plain' ? '.txt' : '');
+            filePath = path.join(uploadDir, `ai-extract-${log.id}-${Date.now()}${extFromMeta}`);
+            fs.writeFileSync(filePath, Buffer.concat(chunks));
+            cleanupPath = filePath;
+          }
+        }
+
+        if (!fs.existsSync(filePath)) return '';
         const ext = path.extname(filePath).toLowerCase();
 
         if (mimeType === 'text/plain' || ext === '.txt') {
@@ -139,20 +159,24 @@ export function registerAiRoutes(app: Express) {
         }
       } catch (error) {
         console.error('Error extracting timeline file text for AI:', error);
+      } finally {
+        if (cleanupPath && fs.existsSync(cleanupPath)) {
+          try { fs.unlinkSync(cleanupPath); } catch {}
+        }
       }
       return '';
     }
 
-    function buildAutoAttachedFilePrompt(fileLogs: IncidentLog[]): string {
+    async function buildAutoAttachedFilePrompt(fileLogs: IncidentLog[]): Promise<string> {
       if (fileLogs.length === 0) return '';
-      const sections = fileLogs.map((log) => {
+      const sections = await Promise.all(fileLogs.map(async (log) => {
         const meta = (log.metadata as any) || {};
         const fileName = meta.originalName || log.title || log.content || `File ${log.id}`;
         const category = meta.category || log.type;
         const createdAt = new Date(log.createdAt).toISOString().slice(0, 10);
-        const extractedText = extractTimelineFileText(log);
+        const extractedText = await extractTimelineFileText(log);
         return [`FILE: ${fileName}`, `DATE: ${createdAt}`, `CATEGORY: ${category}`, extractedText ? `EXTRACTED CONTENT:\n${extractedText}` : 'EXTRACTED CONTENT: [Unavailable for automatic extraction]'].join('\n');
-      });
+      }));
       return `\n\nAUTO-ATTACHED TIMELINE DOCUMENTS (because the user explicitly asked about a file/document/PDF):\n${sections.join('\n\n---\n\n')}\n\nUse the attached document content when answering. If extraction is unavailable for a file, say that clearly.`;
     }
 
@@ -555,6 +579,34 @@ Provide your response in this exact JSON format:
   });
 
   app.get("/api/incidents/:id/litigation-reviews", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const incidentId = parseInt(req.params.id);
+    const user = req.user!;
+    const incident = await storage.getIncident(incidentId);
+    if (!incident) return res.sendStatus(404);
+    if (incident.userId !== user.id && !user.isAdmin) return res.sendStatus(403);
+    const reviews = await storage.getLitigationReviewsByIncident(incidentId);
+    res.json(reviews);
+  });
+
+  app.get("/api/admin/pdf-exports", requireAdmin, async (req, res) => {
+    const exports = await storage.getRecentPdfExports(50);
+    res.json(exports);
+  });
+
+  app.get("/api/admin/litigation-stats", requireAdmin, async (req, res) => {
+    const pdfExportCount = await storage.getPdfExportCount();
+    const litigationReviewCount = await storage.getLitigationReviewCount();
+    const strongCaseCount = await storage.getStrongCaseCount();
+
+    res.json({
+      pdfExports: pdfExportCount,
+      litigationReviews: litigationReviewCount,
+      strongCases: strongCaseCount,
+    });
+  });
+}
+, async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     const incidentId = parseInt(req.params.id);
     const user = req.user!;
