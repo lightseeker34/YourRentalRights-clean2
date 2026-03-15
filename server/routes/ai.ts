@@ -221,7 +221,19 @@ CONTEXT-PASS MODE: ${includeBackfill ? "PASS 2 (older routine history included)"
     const autoAttachedFiles = explicitAttachedImages.length === 0 && shouldAutoAttachTimelineFiles(message)
       ? selectTimelineFilesForChat(message, allLogs, 2)
       : [];
-    const autoAttachedFilePrompt = buildAutoAttachedFilePrompt(autoAttachedFiles);
+    if (autoAttachedFiles.length > 0) {
+      console.info('[ai-doc-attach-select]', JSON.stringify({
+        incidentId,
+        count: autoAttachedFiles.length,
+        files: autoAttachedFiles.map((log) => ({
+          id: log.id,
+          fileUrl: log.fileUrl,
+          name: ((log.metadata as any)?.originalName || log.title || log.content || `File ${log.id}`),
+          category: ((log.metadata as any)?.category || log.type),
+        })),
+      }));
+    }
+    const autoAttachedFilePrompt = await buildAutoAttachedFilePrompt(autoAttachedFiles);
 
     const fullSystemPromptPass1 = buildSystemPrompt(evidenceContextPass1, false);
     const fullSystemPromptPass2 = buildSystemPrompt(evidenceContextPass2, true);
