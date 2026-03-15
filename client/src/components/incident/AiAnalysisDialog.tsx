@@ -39,14 +39,19 @@ export function AiAnalysisDialog({
 }: AiAnalysisDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent aria-describedby={undefined} className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent aria-describedby={undefined} className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-xl">
         <DialogHeader>
-          <div className="flex items-start justify-between gap-3">
-            <DialogTitle className="flex items-center gap-2 pt-1">
-              <Bot className="w-5 h-5" />
-              AI Case Analysis
-            </DialogTitle>
-            <div className="flex flex-wrap items-center justify-end gap-2">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-lg bg-white border border-slate-200">
+                <Bot className="w-5 h-5 text-slate-700" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <DialogTitle className="text-lg text-slate-900">AI Analysis</DialogTitle>
+                <p className="mt-1 text-sm text-slate-500">Review the analysis, then save it to your timeline or download a PDF copy.</p>
+              </div>
+            </div>
+            <div className="mt-4 flex flex-col gap-2 sm:max-w-[220px] sm:ml-auto">
               <Button
                 type="button"
                 variant="outline"
@@ -54,8 +59,9 @@ export function AiAnalysisDialog({
                 onClick={onSavePdf}
                 disabled={!analysisResult || isSavingAnalysisPdf}
                 data-testid="button-save-analysis-pdf"
+                className="w-full justify-center"
               >
-                {isSavingAnalysisPdf ? 'Saving...' : 'Save to Incident Timeline'}
+                {isSavingAnalysisPdf ? 'Saving...' : 'Save to Timeline'}
               </Button>
               <Button
                 type="button"
@@ -64,6 +70,7 @@ export function AiAnalysisDialog({
                 onClick={onDownloadPdf}
                 disabled={!analysisResult}
                 data-testid="button-download-analysis-pdf"
+                className="w-full justify-center"
               >
                 Download PDF
               </Button>
