@@ -193,12 +193,12 @@ export const ChatInput = memo(forwardRef<ChatInputHandle, ChatInputProps>(functi
                         className={`w-12 h-12 object-cover rounded border-2 transition-colors ${isSelected ? 'border-blue-500' : 'border-slate-300 hover:border-blue-400'}`}
                       />
                     ) : (
-                      <div className={`flex h-12 w-12 items-center justify-center rounded border-2 transition-colors ${isSelected ? 'border-blue-500 bg-blue-50' : 'border-slate-300 bg-slate-50 hover:border-blue-400'}`}>
+                      <div className={`relative flex h-12 w-12 items-center justify-center rounded border-2 transition-colors ${isSelected ? 'border-blue-500 bg-blue-50' : 'border-slate-300 bg-slate-50 hover:border-blue-400'}`}>
                         {isAnalysis ? <Bot className="w-4 h-4 text-slate-600" /> : <Paperclip className="w-4 h-4 text-slate-500" />}
+                        {isAnalysis && (
+                          <span className="absolute -bottom-0.5 -right-0.5 text-[8px] px-1 py-[1px] rounded bg-slate-600 text-white font-semibold">PDF</span>
+                        )}
                       </div>
-                    )}
-                    {!isImage && (
-                      <div className="mt-1 w-12 truncate text-[10px] text-slate-500">{label}</div>
                     )}
                     {isSelected && (
                       <div className="absolute inset-0 bg-blue-500/30 rounded flex items-center justify-center">
@@ -223,6 +223,7 @@ export const ChatInput = memo(forwardRef<ChatInputHandle, ChatInputProps>(functi
                   {(() => {
                     const attachmentLog = logs?.find((log) => log.fileUrl === url);
                     const isImage = attachmentLog ? isImageAttachmentLog(attachmentLog) : isLikelyImageUrl(url);
+                    const isAnalysis = attachmentLog ? isAnalysisPdf(attachmentLog) : false;
                     const attachmentName = attachmentLog ? getAttachmentDisplayName(attachmentLog) : `Attachment ${idx + 1}`;
 
                     if (isImage) {
@@ -239,11 +240,14 @@ export const ChatInput = memo(forwardRef<ChatInputHandle, ChatInputProps>(functi
 
                     return (
                       <div
-                        className="w-14 h-14 rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-center"
+                        className={`relative w-14 h-14 rounded-lg border flex items-center justify-center ${isAnalysis ? 'border-slate-200 bg-slate-100' : 'border-slate-200 bg-slate-50'}`}
                         data-testid={`chat-attachment-preview-${idx}`}
                         title={attachmentName}
                       >
-                        <Paperclip className="w-5 h-5 text-slate-500" />
+                        {isAnalysis ? <Bot className="w-5 h-5 text-slate-600" /> : <Paperclip className="w-5 h-5 text-slate-500" />}
+                        {isAnalysis && (
+                          <span className="absolute -bottom-0.5 -right-0.5 text-[8px] px-1 py-[1px] rounded bg-slate-600 text-white font-semibold">PDF</span>
+                        )}
                       </div>
                     );
                   })()}

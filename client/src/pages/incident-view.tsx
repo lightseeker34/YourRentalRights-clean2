@@ -1612,6 +1612,7 @@ export default function IncidentView() {
                                   (() => {
                                     const attachmentLog = logs?.find((entry) => entry.fileUrl === url);
                                     const isImage = attachmentLog ? isImageAttachmentLog(attachmentLog) : isLikelyImageUrl(url);
+                                    const isAnalysis = attachmentLog ? isAnalysisPdf(attachmentLog) : false;
                                     const attachmentName = attachmentLog ? getAttachmentDisplayName(attachmentLog) : `Attachment ${idx + 1}`;
 
                                     const handleAttachmentClick = (e: React.MouseEvent) => {
@@ -1649,12 +1650,15 @@ export default function IncidentView() {
                                       <button
                                         key={idx}
                                         type="button"
-                                        className="w-8 h-8 rounded border border-white/30 bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center"
+                                        className={`relative w-8 h-8 rounded border transition-colors flex items-center justify-center ${isAnalysis ? 'border-slate-300 bg-slate-100 hover:bg-slate-200' : 'border-white/30 bg-white/10 hover:bg-white/20'}`}
                                         onClick={handleAttachmentClick}
                                         title={attachmentName}
                                         data-testid={`chat-attachment-thumb-${log.id}-${idx}`}
                                       >
-                                        <Paperclip className="w-3 h-3 text-white" />
+                                        {isAnalysis ? <Bot className="w-3 h-3 text-slate-600" /> : <Paperclip className="w-3 h-3 text-white" />}
+                                        {isAnalysis && (
+                                          <span className="absolute -bottom-0.5 -right-0.5 text-[7px] px-0.5 py-[1px] rounded bg-slate-600 text-white font-semibold leading-none">PDF</span>
+                                        )}
                                       </button>
                                     );
                                   })()
