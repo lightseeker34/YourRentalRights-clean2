@@ -165,7 +165,7 @@ export function LogEntryCard({
                   <Trash2 className="w-3 h-3" />
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent className="max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl">
+              <AlertDialogContent className="w-[92vw] max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl">
                 <AlertDialogHeader className="space-y-2">
                   <AlertDialogTitle className="text-lg text-slate-900">Delete Entry?</AlertDialogTitle>
                   <AlertDialogDescription className="text-sm text-slate-500">This will permanently remove this entry from your case.</AlertDialogDescription>
