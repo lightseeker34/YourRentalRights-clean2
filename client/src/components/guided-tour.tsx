@@ -865,12 +865,13 @@ export function GuidedTour() {
         drag
         dragMomentum={false}
         dragElastic={0}
+        dragConstraints={{ left: 8, top: 8, right: Math.max(8, window.innerWidth - 180), bottom: Math.max(8, window.innerHeight - 60) }}
         className="fixed z-40 cursor-move"
         style={tourButtonPosition ? { left: tourButtonPosition.x, top: tourButtonPosition.y } : { right: 32, bottom: 128 }}
         onDragEnd={(_, info) => {
           const nextPosition = {
-            x: Math.max(8, (tourButtonPosition?.x ?? (window.innerWidth - 160)) + info.offset.x),
-            y: Math.max(8, (tourButtonPosition?.y ?? (window.innerHeight - 88 - 128)) + info.offset.y),
+            x: Math.min(Math.max(8, (tourButtonPosition?.x ?? (window.innerWidth - 160)) + info.offset.x), window.innerWidth - 180),
+            y: Math.min(Math.max(8, (tourButtonPosition?.y ?? (window.innerHeight - 88 - 128)) + info.offset.y), window.innerHeight - 60),
           };
           setTourButtonPosition(nextPosition);
           localStorage.setItem(TOUR_BUTTON_POSITION_KEY, JSON.stringify(nextPosition));
