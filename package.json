@@ -14,6 +14,7 @@
     "forum:seed-topics": "npx tsx script/seed-community-topics.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.888.0",
     "@hookform/resolvers": "^3.10.0",
     "@jridgewell/trace-mapping": "^0.3.25",
     "@neondatabase/serverless": "^1.0.2",
@@ -77,6 +78,7 @@
     "openai": "^6.16.0",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
+    "pdf-parse": "^2.4.5",
     "pg": "^8.16.3",
     "react": "^19.2.0",
     "react-day-picker": "^9.11.1",
@@ -94,8 +96,7 @@
     "wouter": "^3.3.5",
     "ws": "^8.18.0",
     "zod": "^3.25.76",
-    "zod-validation-error": "^3.4.0",
-    "@aws-sdk/client-s3": "^3.888.0"
+    "zod-validation-error": "^3.4.0"
   },
   "devDependencies": {
     "@replit/vite-plugin-cartographer": "^0.4.4",
@@ -108,6 +109,7 @@
     "@types/node": "^20.19.0",
     "@types/passport": "^1.0.16",
     "@types/passport-local": "^1.0.38",
+    "@types/pdf-parse": "^1.1.5",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@types/ws": "^8.5.13",
